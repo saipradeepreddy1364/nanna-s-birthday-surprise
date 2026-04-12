@@ -1,16 +1,32 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState, useCallback } from "react";
+import { AnimatePresence } from "framer-motion";
+import OpeningPage from "@/components/OpeningPage";
+import GallerySection from "@/components/GallerySection";
+import ScrollingText from "@/components/ScrollingText";
+import HeartScene from "@/components/HeartScene";
+import FinalPage from "@/components/FinalPage";
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
+type Section = "opening" | "gallery" | "text" | "heart" | "final";
+
+const Index = () => {
+  const [section, setSection] = useState<Section>("opening");
+
+  const goToGallery = useCallback(() => setSection("gallery"), []);
+  const goToText = useCallback(() => setSection("text"), []);
+  const goToHeart = useCallback(() => setSection("heart"), []);
+  const goToFinal = useCallback(() => setSection("final"), []);
+
   return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
+    <div className="min-h-screen" style={{ background: "var(--gradient-romantic)" }}>
+      <AnimatePresence mode="wait">
+        {section === "opening" && <OpeningPage onComplete={goToGallery} />}
+        {section === "gallery" && <GallerySection onComplete={goToText} />}
+        {section === "text" && <ScrollingText onComplete={goToHeart} />}
+        {section === "heart" && <HeartScene onComplete={goToFinal} />}
+        {section === "final" && <FinalPage />}
+      </AnimatePresence>
     </div>
   );
 };
-
-const Index = PlaceholderIndex;
 
 export default Index;

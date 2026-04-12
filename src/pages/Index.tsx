@@ -4,6 +4,7 @@ import OpeningPage from "@/components/OpeningPage";
 import GallerySection from "@/components/GallerySection";
 import ScrollingText from "@/components/ScrollingText";
 import HeartScene from "@/components/HeartScene";
+import BackgroundMusic from "@/components/BackgroundMusic";
 import FinalPage from "@/components/FinalPage";
 
 type Section = "opening" | "gallery" | "text" | "heart" | "final";
@@ -18,6 +19,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen" style={{ background: "var(--gradient-romantic)" }}>
+      <BackgroundMusic />
       <AnimatePresence mode="wait">
         {section === "opening" && <OpeningPage onComplete={goToGallery} />}
         {section === "gallery" && <GallerySection onComplete={goToText} />}

@@ -4,6 +4,7 @@ import OpeningPage from "@/components/OpeningPage";
 import GallerySection from "@/components/GallerySection";
 import ScrollingText from "@/components/ScrollingText";
 import HeartScene from "@/components/HeartScene";
+import BackgroundMusic from "@/components/BackgroundMusic";
 import FinalPage from "@/components/FinalPage";
 
 type Section = "opening" | "gallery" | "text" | "heart" | "final";

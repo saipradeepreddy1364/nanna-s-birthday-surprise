@@ -19,6 +19,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen" style={{ background: "var(--gradient-romantic)" }}>
+      <BackgroundMusic />
       <AnimatePresence mode="wait">
         {section === "opening" && <OpeningPage onComplete={goToGallery} />}
         {section === "gallery" && <GallerySection onComplete={goToText} />}

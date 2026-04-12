@@ -3,25 +3,20 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import gsap from "gsap";
 
-const PORTRAIT_IMAGE = "/placeholder.svg"; // Replace with Harshi's portrait
+const PORTRAIT_IMAGE = "/placeholder.svg"; // Replace with Nanna's portrait
 
 const HEART_SVG_PATH =
   "M300,107.77C284.68,55.67,239.76,0,162.31,0,64.83,0,0,82.08,0,171.71c0,.48,0,.95,0,1.43-.52,19.5,0,217.94,299.87,379.69v0l0,0,.05,0,0,0,0,0v0C600,391.08,600.48,192.64,600,173.14c0-.48,0-.95,0-1.43C600,82.08,535.17,0,437.69,0,360.24,0,315.32,55.67,300,107.77";
 
-interface HeartSceneProps {
-  onComplete: () => void;
-}
-
-const HeartScene = ({ onComplete }: HeartSceneProps) => {
+const HeartScene = () => {
   const mountRef = useRef<HTMLDivElement>(null);
   const [showClosing, setShowClosing] = useState(false);
-  const [confetti, setConfetti] = useState<
-    Array<{ id: number; left: number; color: string; delay: number }>
-  >([]);
+  const [confetti, setConfetti] = useState<Array<{ id: number; left: number; color: string; delay: number }>>([]);
 
   useEffect(() => {
     if (!mountRef.current) return;
 
+    // Create hidden SVG to sample path
     const svgNS = "http://www.w3.org/2000/svg";
     const svg = document.createElementNS(svgNS, "svg");
     svg.setAttribute("viewBox", "0 0 600 552");
@@ -34,6 +29,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
 
     const length = path.getTotalLength();
 
+    // Three.js setup
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
       75,
@@ -52,6 +48,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
 
+    // Particles
     const tl = gsap.timeline({ repeat: -1, yoyo: true });
     const vertices: THREE.Vector3[] = [];
 
@@ -62,6 +59,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       vector.y += (Math.random() - 0.5) * 30;
       vector.z += (Math.random() - 0.5) * 70;
       vertices.push(vector);
+
       tl.from(
         vector,
         {
@@ -81,6 +79,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       blending: THREE.AdditiveBlending,
       size: 3,
     });
+
     const particles = new THREE.Points(geometry, material);
     particles.position.x -= 600 / 2;
     particles.position.y += 552 / 2;
@@ -105,10 +104,10 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
     };
-
     window.addEventListener("resize", onResize);
     requestAnimationFrame(render);
 
+    // Show closing after 8s
     const closingTimer = setTimeout(() => {
       setShowClosing(true);
       setConfetti(
@@ -123,15 +122,13 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       );
     }, 8000);
 
-    const completeTimer = setTimeout(onComplete, 14000);
-
+    // Cleanup
     document.body.removeChild(svg);
 
     return () => {
       window.removeEventListener("resize", onResize);
       cancelAnimationFrame(animId);
       clearTimeout(closingTimer);
-      clearTimeout(completeTimer);
       tl.kill();
       renderer.dispose();
       geometry.dispose();
@@ -140,35 +137,29 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
         mountRef.current.removeChild(renderer.domElement);
       }
     };
-  }, [onComplete]);
+  }, []);
 
   return (
-    <div
-      className="fixed inset-0 z-40"
-      style={{ background: "var(--gradient-romantic)" }}
-    >
+    <div className="fixed inset-0 z-40" style={{ background: "linear-gradient(135deg, hsl(340, 30%, 8%) 0%, hsl(342, 40%, 12%) 100%)" }}>
       <div ref={mountRef} className="absolute inset-0" />
 
-      {/* Portrait in center */}
+      {/* Portrait in center of heart */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
         <div
           className="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden animate-heartbeat"
           style={{
             border: "3px solid hsl(342, 82%, 56%)",
-            boxShadow: "var(--glow-pink)",
+            boxShadow: "0 0 30px hsl(342, 82%, 56%, 0.5)",
           }}
         >
-          <img
-            src={PORTRAIT_IMAGE}
-            alt="Harshi"
-            className="w-full h-full object-cover"
-          />
+          <img src={PORTRAIT_IMAGE} alt="Nanna" className="w-full h-full object-cover" />
         </div>
       </div>
 
       {/* Closing text */}
       {showClosing && (
         <>
+          {/* Confetti */}
           {confetti.map((c) => (
             <div
               key={c.id}
@@ -180,13 +171,19 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
               }}
             />
           ))}
-          <div className="absolute inset-0 flex items-center justify-center z-20">
+
+          <div
+            className="absolute inset-0 flex items-center justify-center z-20"
+            style={{
+              animation: "heartbeat 2s ease-in-out infinite",
+            }}
+          >
             <h1
-              className="font-cursive text-5xl sm:text-7xl md:text-9xl text-center px-4 glow-gold animate-text-glow"
+              className="font-cursive text-5xl sm:text-7xl md:text-9xl text-center px-4 glow-gold"
               style={{
                 color: "hsl(38, 70%, 55%)",
                 opacity: 0,
-                animation: "fade-in 2s ease forwards, text-glow-pulse 2s ease-in-out 2s infinite",
+                animation: "fade-in 2s ease forwards",
               }}
             >
               Happy 21st Nanna 💝

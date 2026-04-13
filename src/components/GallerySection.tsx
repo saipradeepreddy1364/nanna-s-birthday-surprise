@@ -118,11 +118,6 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
       className="fixed inset-0 flex items-center justify-center overflow-hidden"
       style={{ background: "var(--gradient-romantic)" }}
     >
-      {/* Counter */}
-      <div className="absolute top-6 right-6 z-20 font-elegant text-muted-foreground text-lg">
-        {currentIndex + 1} / {GALLERY_IMAGES.length}
-      </div>
-
       {/* Decorative border frame */}
       <div
         className="absolute inset-8 sm:inset-16 border rounded-lg pointer-events-none z-10"
@@ -151,35 +146,12 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
           <div
             className="absolute inset-0"
             style={{
-              background: "linear-gradient(to top, hsl(340, 30%, 8%, 0.5) 0%, transparent 40%)",
+              background:
+                "linear-gradient(to top, hsl(340, 30%, 8%, 0.5) 0%, transparent 40%)",
             }}
           />
-          <div className="absolute bottom-4 left-4 right-4 text-center">
-            <p className="font-cursive text-2xl sm:text-3xl text-primary-foreground glow-pink">
-              {image.alt}
-            </p>
-          </div>
         </motion.div>
       </AnimatePresence>
-
-      {/* Progress dots */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-20">
-        {GALLERY_IMAGES.map((_, i) => (
-          <div
-            key={i}
-            className="w-2 h-2 rounded-full transition-all duration-300"
-            style={{
-              backgroundColor:
-                i === currentIndex
-                  ? "hsl(342, 82%, 56%)"
-                  : i < currentIndex
-                  ? "hsl(38, 70%, 55%, 0.6)"
-                  : "hsl(340, 20%, 30%)",
-              transform: i === currentIndex ? "scale(1.5)" : "scale(1)",
-            }}
-          />
-        ))}
-      </div>
     </div>
   );
 };

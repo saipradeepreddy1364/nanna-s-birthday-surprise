@@ -25,9 +25,6 @@ const PETAL_COLORS   = ["hsl(342,82%,70%)", "hsl(350,90%,75%)", "hsl(330,80%,65%
 const HEART_COLORS   = ["hsl(342,82%,60%)", "hsl(38,70%,60%)",  "hsl(350,90%,70%)", "hsl(320,75%,65%)"];
 const SPARKLE_COLORS = ["hsl(38,90%,65%)",  "hsl(50,95%,70%)",  "hsl(38,70%,55%)",  "hsl(55,100%,75%)"];
 
-// smoothstep easing
-const smoothstep = (t: number) => t * t * (3 - 2 * t);
-
 const HeartScene = () => {
   const mountRef = useRef<HTMLDivElement>(null);
   const [showClosing, setShowClosing] = useState(false);
@@ -84,35 +81,30 @@ const HeartScene = () => {
     renderer.setClearColor(0x000000, 0);
     mountRef.current.appendChild(renderer.domElement);
 
-    // ── Build dense particle set ──────────────────────────────────────────
-    // STEP 0.1 → ~18000 particles (thick, dense heart outline matching original).
-    // NO per-particle gsap tweens — uses clock lerp instead to avoid freeze.
-    const STEP = 0.1;
+    // ── Dense particles with GSAP per-particle timeline (exact match) ─────
+    // i += 0.1 → ~18,000 particles animated individually — same as reference
+    const tl = gsap.timeline({ repeat: -1, yoyo: true });
+    const vertices: THREE.Vector3[] = [];
 
-    const targets:  THREE.Vector3[] = []; // final heart positions
-    const origins:  THREE.Vector3[] = []; // all start from center
-    const vertices: THREE.Vector3[] = []; // current (interpolated) positions
-    const delays:   number[]        = []; // per-particle stagger 0..1
-
-    for (let i = 0; i < length; i += STEP) {
+    for (let i = 0; i < length; i += 0.1) {
       const point = path.getPointAtLength(i);
+      const vector = new THREE.Vector3(point.x, -point.y, 0);
+      vector.x += (Math.random() - 0.5) * 30;
+      vector.y += (Math.random() - 0.5) * 30;
+      vector.z += (Math.random() - 0.5) * 70;
+      vertices.push(vector);
 
-      // Target = heart outline + small scatter for depth
-      targets.push(new THREE.Vector3(
-        point.x + (Math.random() - 0.5) * 28,
-       -point.y + (Math.random() - 0.5) * 28,
-        (Math.random() - 0.5) * 65,
-      ));
-
-      // Origin = center of heart with tiny random spread so they burst outward
-      origins.push(new THREE.Vector3(
-        300 + (Math.random() - 0.5) * 60,
-       -276 + (Math.random() - 0.5) * 60,
-        (Math.random() - 0.5) * 30,
-      ));
-
-      vertices.push(new THREE.Vector3(300, -276, 0));
-      delays.push(Math.random()); // stagger spread
+      tl.from(
+        vector,
+        {
+          x: 600 / 2,
+          y: -552 / 2,
+          z: 0,
+          ease: "power2.inOut",
+          duration: 2 + Math.random() * 3,
+        },
+        i * 0.002
+      );
     }
 
     const geometry = new THREE.BufferGeometry().setFromPoints(vertices);
@@ -128,47 +120,17 @@ const HeartScene = () => {
     particles.position.y =  552 / 2;
     scene.add(particles);
 
-    // Gentle left-right sway via gsap (one tween only)
+    // Gentle left-right sway
     gsap.fromTo(
       scene.rotation,
       { y: -0.2 },
       { y: 0.2, repeat: -1, yoyo: true, ease: "power2.inOut", duration: 3 }
     );
 
-    // ── Clock-based animation ─────────────────────────────────────────────
-    const clock        = new THREE.Clock();
-    const CYCLE_IN  = 3.0; // seconds to form heart
-    const CYCLE_HOLD = 1.8; // hold fully formed
-    const CYCLE_OUT  = 2.5; // seconds to collapse
-    const CYCLE_TOTAL = CYCLE_IN + CYCLE_HOLD + CYCLE_OUT + 0.5; // gap before repeat
-
+    // ── Render loop ───────────────────────────────────────────────────────
     let animId: number;
     const render = () => {
       animId = requestAnimationFrame(render);
-
-      const elapsed = clock.getElapsedTime();
-      const cycleT  = elapsed % CYCLE_TOTAL;
-
-      let globalProgress: number;
-      if (cycleT < CYCLE_IN) {
-        globalProgress = cycleT / CYCLE_IN;               // 0 → 1 forming
-      } else if (cycleT < CYCLE_IN + CYCLE_HOLD) {
-        globalProgress = 1;                                 // hold
-      } else if (cycleT < CYCLE_IN + CYCLE_HOLD + CYCLE_OUT) {
-        globalProgress = 1 - (cycleT - CYCLE_IN - CYCLE_HOLD) / CYCLE_OUT; // 1 → 0 dissolve
-      } else {
-        globalProgress = 0;                                 // gap
-      }
-
-      for (let i = 0; i < vertices.length; i++) {
-        // Each particle starts moving after its personal delay (stagger 0..1 → 0..0.35s lag)
-        const staggeredT = Math.max(0, Math.min(1,
-          (globalProgress - delays[i] * 0.25) / 0.75
-        ));
-        const eased = smoothstep(staggeredT);
-        vertices[i].lerpVectors(origins[i], targets[i], eased);
-      }
-
       geometry.setFromPoints(vertices);
       renderer.render(scene, camera);
     };
@@ -190,6 +152,7 @@ const HeartScene = () => {
       window.removeEventListener("resize", onResize);
       cancelAnimationFrame(animId);
       clearTimeout(closingTimer);
+      tl.kill();
       renderer.dispose();
       geometry.dispose();
       material.dispose();

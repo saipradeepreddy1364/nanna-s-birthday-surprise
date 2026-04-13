@@ -7,7 +7,7 @@ const PORTRAIT_IMAGE = "/placeholder.svg"; // Replace with Nanna's portrait
 const HEART_SVG_PATH =
   "M300,107.77C284.68,55.67,239.76,0,162.31,0,64.83,0,0,82.08,0,171.71c0,.48,0,.95,0,1.43-.52,19.5,0,217.94,299.87,379.69v0l0,0,.05,0,0,0,0,0v0C600,391.08,600.48,192.64,600,173.14c0-.48,0-.95,0-1.43C600,82.08,535.17,0,437.69,0,360.24,0,315.32,55.67,300,107.77";
 
-// ── Falling element types ────────────────────────────────────────────────────
+// ── Falling element types ─────────────────────────────────────────────────────
 type FallingItem = {
   id: number;
   type: "petal" | "heart" | "sparkle";
@@ -21,12 +21,15 @@ type FallingItem = {
   color: string;
 };
 
-const PETAL_COLORS  = ["hsl(342,82%,70%)", "hsl(350,90%,75%)", "hsl(330,80%,65%)", "hsl(355,85%,72%)"];
-const HEART_COLORS  = ["hsl(342,82%,60%)", "hsl(38,70%,60%)",  "hsl(350,90%,70%)", "hsl(320,75%,65%)"];
-const SPARKLE_COLORS = ["hsl(38,90%,65%)", "hsl(50,95%,70%)",  "hsl(38,70%,55%)",  "hsl(55,100%,75%)"];
+const PETAL_COLORS   = ["hsl(342,82%,70%)", "hsl(350,90%,75%)", "hsl(330,80%,65%)", "hsl(355,85%,72%)"];
+const HEART_COLORS   = ["hsl(342,82%,60%)", "hsl(38,70%,60%)",  "hsl(350,90%,70%)", "hsl(320,75%,65%)"];
+const SPARKLE_COLORS = ["hsl(38,90%,65%)",  "hsl(50,95%,70%)",  "hsl(38,70%,55%)",  "hsl(55,100%,75%)"];
+
+// smoothstep easing
+const smoothstep = (t: number) => t * t * (3 - 2 * t);
 
 const HeartScene = () => {
-  const mountRef   = useRef<HTMLDivElement>(null);
+  const mountRef = useRef<HTMLDivElement>(null);
   const [showClosing, setShowClosing] = useState(false);
 
   // Pre-generate falling items once
@@ -35,17 +38,18 @@ const HeartScene = () => {
       const type: FallingItem["type"] =
         i < 22 ? "petal" : i < 42 ? "heart" : "sparkle";
       const colors =
-        type === "petal" ? PETAL_COLORS :
-        type === "heart" ? HEART_COLORS : SPARKLE_COLORS;
+        type === "petal"   ? PETAL_COLORS :
+        type === "heart"   ? HEART_COLORS : SPARKLE_COLORS;
       return {
         id: i,
         type,
         left:     Math.random() * 100,
         delay:    Math.random() * 4,
         duration: 4 + Math.random() * 5,
-        size:     type === "sparkle" ? 4 + Math.random() * 6
-                : type === "heart"   ? 10 + Math.random() * 14
-                :                      12 + Math.random() * 16,
+        size:
+          type === "sparkle" ? 4 + Math.random() * 6 :
+          type === "heart"   ? 10 + Math.random() * 14 :
+                               12 + Math.random() * 16,
         opacity:  0.5 + Math.random() * 0.5,
         drift:    (Math.random() - 0.5) * 100,
         rotate:   Math.random() * 360,
@@ -57,7 +61,7 @@ const HeartScene = () => {
   useEffect(() => {
     if (!mountRef.current) return;
 
-    // Hidden SVG to sample heart path
+    // ── Hidden SVG to sample path ─────────────────────────────────────────
     const svgNS = "http://www.w3.org/2000/svg";
     const svg   = document.createElementNS(svgNS, "svg");
     svg.setAttribute("viewBox", "0 0 600 552");
@@ -67,9 +71,9 @@ const HeartScene = () => {
     svg.appendChild(path);
     document.body.appendChild(svg);
 
-    const length = path.getTotalLength();
+    const length = path.getTotalLength(); // ~1800 units
 
-    // ── Three.js ─────────────────────────────────────────────────────────────
+    // ── Three.js setup ────────────────────────────────────────────────────
     const scene    = new THREE.Scene();
     const camera   = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
     camera.position.z = 500;
@@ -80,52 +84,95 @@ const HeartScene = () => {
     renderer.setClearColor(0x000000, 0);
     mountRef.current.appendChild(renderer.domElement);
 
-    // FIXED step: 2 instead of 0.1 — avoids 18 000 gsap tweens freezing the browser
-    const STEP = 2;
-    const tl   = gsap.timeline({ repeat: -1, yoyo: true });
-    const vertices: THREE.Vector3[] = [];
+    // ── Build dense particle set ──────────────────────────────────────────
+    // STEP 0.5 → ~3600 particles (thick heart outline).
+    // NO per-particle gsap tweens — uses clock lerp instead to avoid freeze.
+    const STEP = 0.5;
+
+    const targets:  THREE.Vector3[] = []; // final heart positions
+    const origins:  THREE.Vector3[] = []; // all start from center
+    const vertices: THREE.Vector3[] = []; // current (interpolated) positions
+    const delays:   number[]        = []; // per-particle stagger 0..1
 
     for (let i = 0; i < length; i += STEP) {
-      const point  = path.getPointAtLength(i);
-      const vector = new THREE.Vector3(point.x, -point.y, 0);
-      vector.x += (Math.random() - 0.5) * 30;
-      vector.y += (Math.random() - 0.5) * 30;
-      vector.z += (Math.random() - 0.5) * 70;
-      vertices.push(vector);
+      const point = path.getPointAtLength(i);
 
-      tl.from(vector, {
-        x: 600 / 2,
-        y: -552 / 2,
-        z: 0,
-        ease: "power2.inOut",
-        duration: 2 + Math.random() * 3,
-      }, (i / length) * 2);
+      // Target = heart outline + small scatter for depth
+      targets.push(new THREE.Vector3(
+        point.x + (Math.random() - 0.5) * 28,
+       -point.y + (Math.random() - 0.5) * 28,
+        (Math.random() - 0.5) * 65,
+      ));
+
+      // Origin = center of heart with tiny random spread so they burst outward
+      origins.push(new THREE.Vector3(
+        300 + (Math.random() - 0.5) * 60,
+       -276 + (Math.random() - 0.5) * 60,
+        (Math.random() - 0.5) * 30,
+      ));
+
+      vertices.push(new THREE.Vector3(300, -276, 0));
+      delays.push(Math.random()); // stagger spread
     }
 
     const geometry = new THREE.BufferGeometry().setFromPoints(vertices);
     const material = new THREE.PointsMaterial({
-      color: 0xee5282,
+      color:    0xee5282,
       blending: THREE.AdditiveBlending,
-      size: 3,
+      size:     3,
     });
 
-    const particles     = new THREE.Points(geometry, material);
-    particles.position.x -= 600 / 2;
-    particles.position.y += 552 / 2;
+    const particles = new THREE.Points(geometry, material);
+    // Shift so heart is centred on screen
+    particles.position.x = -600 / 2;
+    particles.position.y =  552 / 2;
     scene.add(particles);
 
+    // Gentle left-right sway via gsap (one tween only)
     gsap.fromTo(
       scene.rotation,
       { y: -0.2 },
       { y: 0.2, repeat: -1, yoyo: true, ease: "power2.inOut", duration: 3 }
     );
 
+    // ── Clock-based animation ─────────────────────────────────────────────
+    const clock        = new THREE.Clock();
+    const CYCLE_IN  = 3.0; // seconds to form heart
+    const CYCLE_HOLD = 1.8; // hold fully formed
+    const CYCLE_OUT  = 2.5; // seconds to collapse
+    const CYCLE_TOTAL = CYCLE_IN + CYCLE_HOLD + CYCLE_OUT + 0.5; // gap before repeat
+
     let animId: number;
     const render = () => {
       animId = requestAnimationFrame(render);
+
+      const elapsed = clock.getElapsedTime();
+      const cycleT  = elapsed % CYCLE_TOTAL;
+
+      let globalProgress: number;
+      if (cycleT < CYCLE_IN) {
+        globalProgress = cycleT / CYCLE_IN;               // 0 → 1 forming
+      } else if (cycleT < CYCLE_IN + CYCLE_HOLD) {
+        globalProgress = 1;                                 // hold
+      } else if (cycleT < CYCLE_IN + CYCLE_HOLD + CYCLE_OUT) {
+        globalProgress = 1 - (cycleT - CYCLE_IN - CYCLE_HOLD) / CYCLE_OUT; // 1 → 0 dissolve
+      } else {
+        globalProgress = 0;                                 // gap
+      }
+
+      for (let i = 0; i < vertices.length; i++) {
+        // Each particle starts moving after its personal delay (stagger 0..1 → 0..0.35s lag)
+        const staggeredT = Math.max(0, Math.min(1,
+          (globalProgress - delays[i] * 0.25) / 0.75
+        ));
+        const eased = smoothstep(staggeredT);
+        vertices[i].lerpVectors(origins[i], targets[i], eased);
+      }
+
       geometry.setFromPoints(vertices);
       renderer.render(scene, camera);
     };
+    render();
 
     const onResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
@@ -133,8 +180,8 @@ const HeartScene = () => {
       renderer.setSize(window.innerWidth, window.innerHeight);
     };
     window.addEventListener("resize", onResize);
-    requestAnimationFrame(render);
 
+    // Show closing text + falling elements after 8s
     const closingTimer = setTimeout(() => setShowClosing(true), 8000);
 
     document.body.removeChild(svg);
@@ -143,7 +190,6 @@ const HeartScene = () => {
       window.removeEventListener("resize", onResize);
       cancelAnimationFrame(animId);
       clearTimeout(closingTimer);
-      tl.kill();
       renderer.dispose();
       geometry.dispose();
       material.dispose();
@@ -161,14 +207,14 @@ const HeartScene = () => {
       {/* ── Keyframes ── */}
       <style>{`
         @keyframes hs-fall {
-          0%   { transform: translateY(-30px) translateX(0) rotate(0deg) scale(1);   opacity: 0; }
+          0%   { transform: translateY(-30px) translateX(0) rotate(0deg) scale(1); opacity: 0; }
           6%   { opacity: 1; }
           90%  { opacity: 0.85; }
           100% { transform: translateY(105vh) translateX(var(--hs-drift)) rotate(var(--hs-spin)) scale(0.6); opacity: 0; }
         }
         @keyframes hs-sparkle-fall {
           0%   { transform: translateY(-10px) scale(0); opacity: 0; }
-          15%  { transform: translateY(5vh)   scale(1); opacity: 1; }
+          15%  { transform: translateY(5vh) scale(1); opacity: 1; }
           85%  { opacity: 1; }
           100% { transform: translateY(105vh) translateX(var(--hs-drift)) scale(0); opacity: 0; }
         }
@@ -177,15 +223,15 @@ const HeartScene = () => {
           50%      { filter: drop-shadow(0 0 10px var(--hs-color)) drop-shadow(0 0 20px var(--hs-color)); }
         }
         @keyframes hs-fadein {
-          0%   { opacity: 0; transform: scale(0.8); }
-          100% { opacity: 1; transform: scale(1);   }
+          0%   { opacity: 0; transform: scale(0.85); }
+          100% { opacity: 1; transform: scale(1); }
         }
       `}</style>
 
       {/* Three.js canvas */}
       <div ref={mountRef} className="absolute inset-0" />
 
-      {/* ── Beautiful falling elements ── */}
+      {/* ── Beautiful falling elements (after 8s) ── */}
       {showClosing && fallingItems.map((item) => (
         <div
           key={item.id}
@@ -207,9 +253,7 @@ const HeartScene = () => {
           }}
         >
           {item.type === "petal" && (
-            <svg
-              width={item.size} height={item.size}
-              viewBox="0 0 24 24"
+            <svg width={item.size} height={item.size} viewBox="0 0 24 24"
               style={{
                 opacity: item.opacity,
                 animationName: "hs-glow-pulse",
@@ -218,7 +262,6 @@ const HeartScene = () => {
                 animationTimingFunction: "ease-in-out",
               }}
             >
-              {/* Layered petal shape */}
               <ellipse cx="12" cy="11" rx="7" ry="10"
                 fill={item.color} opacity="0.9" transform="rotate(15 12 11)" />
               <ellipse cx="12" cy="11" rx="4" ry="7"
@@ -227,9 +270,7 @@ const HeartScene = () => {
           )}
 
           {item.type === "heart" && (
-            <svg
-              width={item.size} height={item.size}
-              viewBox="0 0 24 24"
+            <svg width={item.size} height={item.size} viewBox="0 0 24 24"
               style={{
                 opacity: item.opacity,
                 animationName: "hs-glow-pulse",
@@ -238,36 +279,28 @@ const HeartScene = () => {
                 animationTimingFunction: "ease-in-out",
               }}
             >
-              {/* Mini heart */}
               <path
                 d="M12 21C12 21 3 14 3 8.5C3 5.42 5.42 3 8.5 3C10.24 3 11.91 3.81 12 5C12.09 3.81 13.76 3 15.5 3C18.58 3 21 5.42 21 8.5C21 14 12 21 12 21Z"
-                fill={item.color}
-                opacity="0.95"
+                fill={item.color} opacity="0.95"
               />
               <path
                 d="M12 18C12 18 5 12.5 5 8.5C5 6.57 6.57 5 8.5 5C10.07 5 11 6 12 7C13 6 13.93 5 15.5 5C17.43 5 19 6.57 19 8.5C19 12.5 12 18 12 18Z"
-                fill="hsl(350,100%,85%)"
-                opacity="0.3"
+                fill="hsl(350,100%,85%)" opacity="0.3"
               />
             </svg>
           )}
 
           {item.type === "sparkle" && (
-            <svg
-              width={item.size} height={item.size}
-              viewBox="0 0 24 24"
+            <svg width={item.size} height={item.size} viewBox="0 0 24 24"
               style={{ opacity: item.opacity }}
             >
-              {/* 4-point star sparkle */}
               <path
                 d="M12 2L13.5 10.5L22 12L13.5 13.5L12 22L10.5 13.5L2 12L10.5 10.5Z"
-                fill={item.color}
-                opacity="0.95"
+                fill={item.color} opacity="0.95"
               />
               <path
                 d="M12 5L13 10.5L19 12L13 13.5L12 19L11 13.5L5 12L11 10.5Z"
-                fill="hsl(50,100%,90%)"
-                opacity="0.5"
+                fill="hsl(50,100%,90%)" opacity="0.5"
               />
             </svg>
           )}

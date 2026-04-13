@@ -85,9 +85,9 @@ const HeartScene = () => {
     mountRef.current.appendChild(renderer.domElement);
 
     // ── Build dense particle set ──────────────────────────────────────────
-    // STEP 0.5 → ~3600 particles (thick heart outline).
+    // STEP 0.1 → ~18000 particles (thick, dense heart outline matching original).
     // NO per-particle gsap tweens — uses clock lerp instead to avoid freeze.
-    const STEP = 0.5;
+    const STEP = 0.1;
 
     const targets:  THREE.Vector3[] = []; // final heart positions
     const origins:  THREE.Vector3[] = []; // all start from center

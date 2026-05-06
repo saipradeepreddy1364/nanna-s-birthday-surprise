@@ -202,6 +202,16 @@ const HeartScene = () => {
           0%   { opacity: 0; transform: scale(0.85); }
           100% { opacity: 1; transform: scale(1); }
         }
+        @keyframes heartGrow {
+          0% {
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 0;
+          }
+          100% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+          }
+        }
       `}</style>
 
       {/* Three.js canvas */}
@@ -283,39 +293,45 @@ const HeartScene = () => {
         </div>
       ))}
 
-      {/* Portrait centered in heart, appearing after animation */}
-      {showClosing && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-          <div
-            id="portrait-container"
-            className="w-[350px] h-[350px] sm:w-[500px] sm:h-[500px] md:w-[650px] md:h-[650px] relative"
+      {/* Portrait centered in heart, expanding from start */}
+      <div 
+        className="fixed z-10 pointer-events-none"
+        style={{
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          transformOrigin: "center center",
+          animation: "heartGrow 2s ease-out forwards",
+          animationDelay: "0.5s", // Slight delay to let particles start first
+        }}
+      >
+        <div
+          id="portrait-container"
+          className="w-[300px] h-[300px] sm:w-[450px] sm:h-[450px] md:w-[600px] md:h-[600px] relative flex items-center justify-center overflow-hidden"
+          style={{
+            filter: "drop-shadow(0 0 50px hsla(342, 82%, 56%, 0.5))",
+          }}
+        >
+          {/* SVG definition for the clipPath */}
+          <svg width="0" height="0" className="absolute">
+            <defs>
+              <clipPath id="heart-clip" clipPathUnits="objectBoundingBox">
+                <path d={HEART_CLIP_PATH} />
+              </clipPath>
+            </defs>
+          </svg>
+          
+          <img 
+            src={PORTRAIT_IMAGE} 
+            alt="Nanna" 
+            className="w-full h-full object-contain object-center"
             style={{
-              filter: "drop-shadow(0 0 40px hsla(342, 82%, 56%, 0.6))",
-              transformOrigin: "center center",
+              clipPath: "url(#heart-clip)",
+              WebkitClipPath: "url(#heart-clip)",
             }}
-          >
-            {/* SVG definition for the clipPath */}
-            <svg width="0" height="0" className="absolute">
-              <defs>
-                <clipPath id="heart-clip" clipPathUnits="objectBoundingBox">
-                  <path d={HEART_CLIP_PATH} />
-                </clipPath>
-              </defs>
-            </svg>
-            
-            <img 
-              src={PORTRAIT_IMAGE} 
-              alt="Nanna" 
-              className="w-full h-full object-contain"
-              style={{
-                clipPath: "url(#heart-clip)",
-                WebkitClipPath: "url(#heart-clip)",
-                transform: "scale(0.85)", // Shrunk slightly to fit within the heart without cropping
-              }}
-            />
-          </div>
+          />
         </div>
-      )}
+      </div>
 
       {/* Closing text - moved below the heart */}
       {showText && (

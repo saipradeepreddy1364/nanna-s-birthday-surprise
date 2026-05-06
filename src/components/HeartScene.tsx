@@ -21,7 +21,7 @@ type FallingItem = {
   color: string;
 };
 
-const HEART_CLIP_PATH = "M0.5,0.95 L0.42,0.88 C0.15,0.65,0,0.48,0,0.3 C0,0.15,0.1,0.05,0.25,0.05 C0.35,0.05,0.45,0.1,0.5,0.2 C0.55,0.1,0.65,0.05,0.75,0.05 C0.9,0.05,1,0.15,1,0.3 C1,0.48,0.85,0.65,0.58,0.88 L0.5,0.95 Z";
+const HEART_CLIP_PATH = "M0.5,1 C0.5,1 0,0.7 0,0.35 C0,0.15 0.15,0 0.35,0 C0.5,0 0.5,0.15 0.5,0.15 C0.5,0.15 0.5,0 0.65,0 C0.85,0 1,0.15 1,0.35 C1,0.7 0.5,1 0.5,1 Z";
 
 const PETAL_COLORS   = ["hsl(342,82%,70%)", "hsl(350,90%,75%)", "hsl(330,80%,65%)", "hsl(355,85%,72%)"];
 const HEART_COLORS   = ["hsl(342,82%,60%)", "hsl(38,70%,60%)",  "hsl(350,90%,70%)", "hsl(320,75%,65%)"];
@@ -91,8 +91,7 @@ const HeartScene = () => {
 
     for (let i = 0; i < length; i += 0.08) {
       const point = path.getPointAtLength(i);
-      // Shift vertices to center (600/2, 552/2)
-      const vector = new THREE.Vector3(point.x - 300, -(point.y - 276), 0);
+      const vector = new THREE.Vector3(point.x, -point.y, 0);
       vector.x += (Math.random() - 0.5) * 30;
       vector.y += (Math.random() - 0.5) * 30;
       vector.z += (Math.random() - 0.5) * 70;
@@ -101,8 +100,8 @@ const HeartScene = () => {
       tl.from(
         vector,
         {
-          x: 600 / 2,
-          y: -552 / 2,
+          x: 300,
+          y: -276,
           z: 0,
           ease: "power2.inOut",
           duration: 2 + Math.random() * 3,
@@ -119,9 +118,14 @@ const HeartScene = () => {
     });
 
     const particles = new THREE.Points(geometry, material);
-    // Centered via vertex shift above, now just scale it up
-    particles.scale.set(1.4, 1.4, 1.4); 
+    // Shift heart to center of the screen
+    particles.position.x = -300;
+    particles.position.y = 276;
+    particles.scale.set(0, 0, 0); // Start at 0 for synced growth
     scene.add(particles);
+
+    // Sync scaling of heart particles
+    gsap.to(particles.scale, { x: 1.4, y: 1.4, z: 1.4, duration: 4, ease: "power2.out", delay: 0.5 });
 
     // Gentle left-right sway
     gsap.fromTo(
@@ -148,13 +152,12 @@ const HeartScene = () => {
 
     // Show portrait image after 8s
     const closingTimer = setTimeout(() => {
-      setShowClosing(true);
       // Animate the portrait scaling up
       gsap.fromTo("#portrait-container", 
         { scale: 0, opacity: 0 }, 
-        { scale: 1, opacity: 1, duration: 3, ease: "power2.out" }
+        { scale: 1, opacity: 1, duration: 4, ease: "power2.out" }
       );
-    }, 8000);
+    }, 500); // Start growth almost immediately to sync with particles
     
     // Show text after an additional 4s (12s total)
     const textTimer = setTimeout(() => setShowText(true), 12000);
@@ -300,10 +303,9 @@ const HeartScene = () => {
         style={{
           top: "50%",
           left: "50%",
-          transform: "translate(-50%, -50%)",
+          transform: "translate(-50%, -50%) scale(0)",
+          opacity: 0,
           transformOrigin: "center center",
-          animation: "heartGrow 5s cubic-bezier(0.2, 0, 0.2, 1) forwards",
-          animationDelay: "0.2s",
         }}
       >
         <div

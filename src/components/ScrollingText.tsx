@@ -26,7 +26,7 @@ const ScrollingText = ({ onComplete }: ScrollingTextProps) => {
       const timer = setTimeout(() => setVisibleLines((prev) => prev + 1), 2000);
       return () => clearTimeout(timer);
     } else {
-      const timer = setTimeout(onComplete, 3000);
+      const timer = setTimeout(onComplete, 1000);
       return () => clearTimeout(timer);
     }
   }, [visibleLines, onComplete]);

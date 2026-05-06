@@ -83,11 +83,11 @@ const HeartScene = () => {
     mountRef.current.appendChild(renderer.domElement);
 
     // ── Dense particles with GSAP per-particle timeline (exact match) ─────
-    // i += 0.05 → ~36,000 particles (doubled density)
+    // i += 0.15 → ~12,000 particles (Faster initialization)
     const tl = gsap.timeline({ repeat: -1, yoyo: true });
     const vertices: THREE.Vector3[] = [];
 
-    for (let i = 0; i < length; i += 0.05) {
+    for (let i = 0; i < length; i += 0.15) {
       const point = path.getPointAtLength(i);
       const vector = new THREE.Vector3(point.x, -point.y, 0);
       vector.x += (Math.random() - 0.5) * 30;

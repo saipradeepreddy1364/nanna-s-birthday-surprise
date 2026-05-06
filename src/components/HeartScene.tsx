@@ -296,7 +296,7 @@ const HeartScene = () => {
             <img 
               src={PORTRAIT_IMAGE} 
               alt="Nanna" 
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain bg-black/10"
               style={{
                 clipPath: "url(#heart-clip)",
                 WebkitClipPath: "url(#heart-clip)",

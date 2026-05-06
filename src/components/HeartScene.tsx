@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useMemo } from "react";
 import * as THREE from "three";
 import gsap from "gsap";
 
-const PORTRAIT_IMAGE = "/placeholder.svg"; // Replace with Nanna's portrait
+const PORTRAIT_IMAGE = "/nanna-portrait.jpg"; // Updated to use the custom portrait
 
 const HEART_SVG_PATH =
   "M300,107.77C284.68,55.67,239.76,0,162.31,0,64.83,0,0,82.08,0,171.71c0,.48,0,.95,0,1.43-.52,19.5,0,217.94,299.87,379.69v0l0,0,.05,0,0,0,0,0v0C600,391.08,600.48,192.64,600,173.14c0-.48,0-.95,0-1.43C600,82.08,535.17,0,437.69,0,360.24,0,315.32,55.67,300,107.77";
@@ -270,18 +270,36 @@ const HeartScene = () => {
         </div>
       ))}
 
-      {/* Portrait centered in heart */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-        <div
-          className="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden animate-heartbeat"
-          style={{
-            border: "3px solid hsl(342, 82%, 56%)",
-            boxShadow: "0 0 30px hsla(342, 82%, 56%, 0.5)",
-          }}
-        >
-          <img src={PORTRAIT_IMAGE} alt="Nanna" className="w-full h-full object-cover" />
+      {/* Portrait centered in heart, appearing after animation */}
+      {showClosing && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+          <div
+            className="w-64 h-64 sm:w-80 sm:h-80 md:w-[400px] md:h-[400px] animate-heartbeat relative"
+            style={{
+              filter: "drop-shadow(0 0 20px hsla(342, 82%, 56%, 0.4))",
+            }}
+          >
+            {/* SVG definition for the clipPath */}
+            <svg width="0" height="0" className="absolute">
+              <defs>
+                <clipPath id="heart-clip" clipPathUnits="objectBoundingBox">
+                  <path d="M0.5,0.89 L0.44,0.83 C0.22,0.64,0.08,0.51,0.08,0.35 C0.08,0.22,0.18,0.12,0.31,0.12 C0.38,0.12,0.45,0.16,0.5,0.21 C0.55,0.16,0.62,0.12,0.69,0.12 C0.82,0.12,0.92,0.22,0.92,0.35 C0.92,0.51,0.78,0.64,0.56,0.83 L0.5,0.89 Z" />
+                </clipPath>
+              </defs>
+            </svg>
+            
+            <img 
+              src={PORTRAIT_IMAGE} 
+              alt="Nanna" 
+              className="w-full h-full object-cover"
+              style={{
+                clipPath: "url(#heart-clip)",
+                WebkitClipPath: "url(#heart-clip)",
+              }}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Closing text */}
       {showClosing && (

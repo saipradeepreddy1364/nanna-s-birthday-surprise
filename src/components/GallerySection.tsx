@@ -1,159 +1,121 @@
 import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Placeholder images - replace with real ones
-const GALLERY_IMAGES = Array.from({ length: 12 }, (_, i) => ({
-  id: i,
-  src: "/placeholder.svg",
-  alt: `Memory ${i + 1}`,
-}));
-
-type AnimEffect = {
-  initial: Record<string, number | string>;
-  animate: Record<string, number | string>;
-  transition: Record<string, unknown>;
-  style?: Record<string, string>;
-};
-
-const effects: AnimEffect[] = [
-  // 1. Zoom In
-  {
-    initial: { scale: 0.3, opacity: 0 },
-    animate: { scale: 1, opacity: 1 },
-    transition: { duration: 1.2, ease: "easeOut" },
-  },
-  // 2. Zoom Out
-  {
-    initial: { scale: 1.8, opacity: 0 },
-    animate: { scale: 1, opacity: 1 },
-    transition: { duration: 1.2, ease: "easeOut" },
-  },
-  // 3. Blur to clear
-  {
-    initial: { filter: "blur(20px)", opacity: 0 },
-    animate: { filter: "blur(0px)", opacity: 1 },
-    transition: { duration: 1.5, ease: "easeOut" },
-  },
-  // 4. Circular reveal (scale from point)
-  {
-    initial: { scale: 0, borderRadius: "50%", opacity: 0 },
-    animate: { scale: 1, borderRadius: "12px", opacity: 1 },
-    transition: { duration: 1.3, ease: "easeOut" },
-  },
-  // 5. Fall from top
-  {
-    initial: { y: -600, opacity: 0, rotate: -15 },
-    animate: { y: 0, opacity: 1, rotate: 0 },
-    transition: { type: "spring", damping: 15, stiffness: 80 },
-  },
-  // 6. Slide from right
-  {
-    initial: { x: 600, opacity: 0 },
-    animate: { x: 0, opacity: 1 },
-    transition: { type: "spring", damping: 20, stiffness: 100 },
-  },
-  // 7. Slide from left
-  {
-    initial: { x: -600, opacity: 0 },
-    animate: { x: 0, opacity: 1 },
-    transition: { type: "spring", damping: 20, stiffness: 100 },
-  },
-  // 8. Rotate in
-  {
-    initial: { rotate: 180, scale: 0, opacity: 0 },
-    animate: { rotate: 0, scale: 1, opacity: 1 },
-    transition: { duration: 1.2, ease: "easeOut" },
-  },
-  // 9. Flip in
-  {
-    initial: { rotateY: 90, opacity: 0 },
-    animate: { rotateY: 0, opacity: 1 },
-    transition: { duration: 1, ease: "easeOut" },
-  },
-  // 10. Rise from bottom with bounce
-  {
-    initial: { y: 500, opacity: 0 },
-    animate: { y: 0, opacity: 1 },
-    transition: { type: "spring", damping: 10, stiffness: 100 },
-  },
-  // 11. Scale + blur combo
-  {
-    initial: { scale: 2, filter: "blur(15px)", opacity: 0 },
-    animate: { scale: 1, filter: "blur(0px)", opacity: 1 },
-    transition: { duration: 1.4, ease: "easeOut" },
-  },
-  // 12. Diagonal slide
-  {
-    initial: { x: -400, y: -400, opacity: 0, rotate: -30 },
-    animate: { x: 0, y: 0, opacity: 1, rotate: 0 },
-    transition: { type: "spring", damping: 18, stiffness: 90 },
-  },
+const GRID_IMAGES = [
+  "/gallery/g1.jpg", 
+  "/gallery/g2.jpg", 
+  "/gallery/g3.jpg",
+  "/gallery/g4.jpg", 
+  "/gallery/g5.jpg"
 ];
+
+const FINAL_IMAGE = "/gallery/final.jpg";
 
 interface GallerySectionProps {
   onComplete: () => void;
 }
 
 const GallerySection = ({ onComplete }: GallerySectionProps) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  const advanceImage = useCallback(() => {
-    if (currentIndex < GALLERY_IMAGES.length - 1) {
-      setCurrentIndex((prev) => prev + 1);
-    } else {
-      setTimeout(onComplete, 1500);
-    }
-  }, [currentIndex, onComplete]);
+  const [gridStep, setGridStep] = useState(0); // 0 to 9
+  const [isFinal, setIsFinal] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(advanceImage, 3000);
-    return () => clearTimeout(timer);
-  }, [currentIndex, advanceImage]);
+    if (gridStep < 9) {
+      const timer = setTimeout(() => {
+        setGridStep((prev) => prev + 1);
+      }, 1000); // 1 second per image reveal
+      return () => clearTimeout(timer);
+    } else {
+      // All grid images revealed, wait a bit then show final image
+      const timer = setTimeout(() => {
+        setIsFinal(true);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [gridStep]);
 
-  const effect = effects[currentIndex % effects.length];
-  const image = GALLERY_IMAGES[currentIndex];
+  useEffect(() => {
+    if (isFinal) {
+      const timer = setTimeout(() => {
+        onComplete();
+      }, 5000); // Show final image for 5 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [isFinal, onComplete]);
 
   return (
     <div
       className="fixed inset-0 flex items-center justify-center overflow-hidden"
       style={{ background: "var(--gradient-romantic)" }}
     >
-      {/* Decorative border frame */}
-      <div
-        className="absolute inset-8 sm:inset-16 border rounded-lg pointer-events-none z-10"
-        style={{ borderColor: "hsl(342, 82%, 56%, 0.15)" }}
-      />
+      <div className="relative w-full max-w-4xl px-4 aspect-square sm:aspect-video flex items-center justify-center">
+        <AnimatePresence mode="wait">
+          {!isFinal ? (
+            <motion.div
+              key="grid"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.1 }}
+              className="grid grid-cols-3 grid-rows-3 gap-2 w-full h-full"
+            >
+              {[...Array(9)].map((_, index) => {
+                const src = GRID_IMAGES[index % GRID_IMAGES.length];
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0 }}
+                    animate={{ 
+                      opacity: index < gridStep ? 1 : 0,
+                      backgroundColor: index < gridStep ? "transparent" : "rgba(0,0,0,1)"
+                    }}
+                    className="relative rounded-md overflow-hidden aspect-square border border-white/10"
+                  >
+                    {index < gridStep && (
+                      <motion.img
+                        initial={{ scale: 1.2, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        src={src}
+                        alt={`Memory ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    )}
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          ) : (
+            <motion.div
+              key="final"
+              initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              transition={{ type: "spring", damping: 15, stiffness: 100 }}
+              className="relative w-full h-full rounded-xl overflow-hidden shadow-2xl border-4 border-white/20"
+              style={{ boxShadow: "var(--glow-pink)" }}
+            >
+              <img
+                src={FINAL_IMAGE}
+                alt="Final Memory"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+              <motion.div 
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 1 }}
+                className="absolute bottom-8 left-0 right-0 text-center"
+              >
+                <p className="text-white font-cursive text-2xl sm:text-4xl drop-shadow-lg">
+                  Every moment with you is a treasure...
+                </p>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={image.id}
-          initial={effect.initial as any}
-          animate={effect.animate as any}
-          exit={{ opacity: 0, scale: 0.9 }}
-          transition={effect.transition as any}
-          className="relative w-[80vw] h-[60vh] sm:w-[60vw] sm:h-[70vh] max-w-2xl rounded-xl overflow-hidden"
-          style={{
-            boxShadow: "var(--glow-pink)",
-            ...effect.style,
-          }}
-        >
-          <img
-            src={image.src}
-            alt={image.alt}
-            className="w-full h-full object-cover"
-          />
-          {/* Overlay gradient */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(to top, hsl(340, 30%, 8%, 0.5) 0%, transparent 40%)",
-            }}
-          />
-        </motion.div>
-      </AnimatePresence>
+      {/* Decorative floating petals/sparkles could be added here if needed */}
     </div>
   );
 };
 
-export default GallerySection;
+export default GallerySection;

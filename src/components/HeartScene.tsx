@@ -21,6 +21,8 @@ type FallingItem = {
   color: string;
 };
 
+const HEART_CLIP_PATH = "M0.5,0.9 L0.45,0.85 C0.2,0.6,0.1,0.45,0.1,0.3 C0.1,0.15,0.2,0.05,0.35,0.05 C0.45,0.05,0.5,0.1,0.5,0.15 C0.5,0.1,0.55,0.05,0.65,0.05 C0.8,0.05,0.9,0.15,0.9,0.3 C0.9,0.45,0.8,0.6,0.55,0.85 L0.5,0.9 Z";
+
 const PETAL_COLORS   = ["hsl(342,82%,70%)", "hsl(350,90%,75%)", "hsl(330,80%,65%)", "hsl(355,85%,72%)"];
 const HEART_COLORS   = ["hsl(342,82%,60%)", "hsl(38,70%,60%)",  "hsl(350,90%,70%)", "hsl(320,75%,65%)"];
 const SPARKLE_COLORS = ["hsl(38,90%,65%)",  "hsl(50,95%,70%)",  "hsl(38,70%,55%)",  "hsl(55,100%,75%)"];
@@ -115,11 +117,10 @@ const HeartScene = () => {
       size:     3,
     });
 
+    geometry.center();
     const particles = new THREE.Points(geometry, material);
-    // Shift so heart is centred on screen and scale it up
-    particles.position.x = -600 / 2;
-    particles.position.y =  552 / 2;
-    particles.scale.set(1.4, 1.4, 1.4); // Increased heart size by 40%
+    // After centering geometry, we don't need to shift by 600/2
+    particles.scale.set(1.4, 1.4, 1.4); 
     scene.add(particles);
 
     // Gentle left-right sway
@@ -146,7 +147,14 @@ const HeartScene = () => {
     window.addEventListener("resize", onResize);
 
     // Show portrait image after 8s
-    const closingTimer = setTimeout(() => setShowClosing(true), 8000);
+    const closingTimer = setTimeout(() => {
+      setShowClosing(true);
+      // Animate the portrait scaling up
+      gsap.fromTo("#portrait-container", 
+        { scale: 0, opacity: 0 }, 
+        { scale: 1, opacity: 1, duration: 3, ease: "power2.out" }
+      );
+    }, 8000);
     
     // Show text after an additional 4s (12s total)
     const textTimer = setTimeout(() => setShowText(true), 12000);
@@ -280,16 +288,18 @@ const HeartScene = () => {
       {showClosing && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
           <div
-            className="w-[320px] h-[320px] sm:w-[450px] sm:h-[450px] md:w-[600px] md:h-[600px] animate-heartbeat relative"
+            id="portrait-container"
+            className="w-[350px] h-[350px] sm:w-[500px] sm:h-[500px] md:w-[650px] md:h-[650px] relative"
             style={{
-              filter: "drop-shadow(0 0 30px hsla(342, 82%, 56%, 0.5))",
+              filter: "drop-shadow(0 0 40px hsla(342, 82%, 56%, 0.6))",
+              transformOrigin: "center center",
             }}
           >
             {/* SVG definition for the clipPath */}
             <svg width="0" height="0" className="absolute">
               <defs>
                 <clipPath id="heart-clip" clipPathUnits="objectBoundingBox">
-                  <path d="M0.5,0.89 L0.44,0.83 C0.22,0.64,0.08,0.51,0.08,0.35 C0.08,0.22,0.18,0.12,0.31,0.12 C0.38,0.12,0.45,0.16,0.5,0.21 C0.55,0.16,0.62,0.12,0.69,0.12 C0.82,0.12,0.92,0.22,0.92,0.35 C0.92,0.51,0.78,0.64,0.56,0.83 L0.5,0.89 Z" />
+                  <path d={HEART_CLIP_PATH} />
                 </clipPath>
               </defs>
             </svg>
@@ -297,10 +307,11 @@ const HeartScene = () => {
             <img 
               src={PORTRAIT_IMAGE} 
               alt="Nanna" 
-              className="w-full h-full object-contain bg-black/10"
+              className="w-full h-full object-contain"
               style={{
                 clipPath: "url(#heart-clip)",
                 WebkitClipPath: "url(#heart-clip)",
+                transform: "scale(1.1)", // Slightly scale up the image to fill more of the heart
               }}
             />
           </div>

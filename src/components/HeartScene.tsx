@@ -28,6 +28,7 @@ const SPARKLE_COLORS = ["hsl(38,90%,65%)",  "hsl(50,95%,70%)",  "hsl(38,70%,55%)
 const HeartScene = () => {
   const mountRef = useRef<HTMLDivElement>(null);
   const [showClosing, setShowClosing] = useState(false);
+  const [showText, setShowText] = useState(false);
 
   // Pre-generate falling items once
   const fallingItems = useMemo<FallingItem[]>(() =>
@@ -143,8 +144,11 @@ const HeartScene = () => {
     };
     window.addEventListener("resize", onResize);
 
-    // Show closing text + falling elements after 8s
+    // Show portrait image after 8s
     const closingTimer = setTimeout(() => setShowClosing(true), 8000);
+    
+    // Show text after an additional 4s (12s total)
+    const textTimer = setTimeout(() => setShowText(true), 12000);
 
     document.body.removeChild(svg);
 
@@ -152,6 +156,7 @@ const HeartScene = () => {
       window.removeEventListener("resize", onResize);
       cancelAnimationFrame(animId);
       clearTimeout(closingTimer);
+      clearTimeout(textTimer);
       tl.kill();
       renderer.dispose();
       geometry.dispose();
@@ -301,18 +306,19 @@ const HeartScene = () => {
         </div>
       )}
 
-      {/* Closing text */}
-      {showClosing && (
+      {/* Closing text - moved below the heart */}
+      {showText && (
         <div
-          className="absolute inset-0 flex items-center justify-center z-20"
+          className="absolute inset-0 flex items-end justify-center z-20 pb-12 sm:pb-20 px-4"
           style={{ animation: "heartbeat 2s ease-in-out infinite" }}
         >
           <h1
-            className="font-cursive text-5xl sm:text-7xl md:text-9xl text-center px-4 glow-gold"
+            className="font-cursive text-4xl sm:text-6xl md:text-8xl text-center glow-gold"
             style={{
               color: "hsl(38, 70%, 55%)",
               opacity: 0,
-              animation: "hs-fadein 2s ease forwards",
+              animation: "hs-fadein 1.5s ease forwards",
+              textShadow: "0 0 20px rgba(0,0,0,0.5)",
             }}
           >
             Happy 21st Nanna 💝

@@ -91,7 +91,7 @@ const HeartScene = () => {
 
     for (let i = 0; i < length; i += 0.15) {
       const point = path.getPointAtLength(i);
-      const vector = new THREE.Vector3(point.x, -point.y, 0);
+      const vector = new THREE.Vector3(point.x - 300, -(point.y - 276), 0);
       vector.x += (Math.random() - 0.5) * 30;
       vector.y += (Math.random() - 0.5) * 30;
       vector.z += (Math.random() - 0.5) * 70;
@@ -117,9 +117,8 @@ const HeartScene = () => {
       size:     3,
     });
 
-    geometry.center();
     const particles = new THREE.Points(geometry, material);
-    // After centering geometry, we don't need to shift by 600/2
+    // Centered via vertex shift above, now just scale it up
     particles.scale.set(1.4, 1.4, 1.4); 
     scene.add(particles);
 
@@ -311,7 +310,7 @@ const HeartScene = () => {
               style={{
                 clipPath: "url(#heart-clip)",
                 WebkitClipPath: "url(#heart-clip)",
-                transform: "scale(1.1)", // Slightly scale up the image to fill more of the heart
+                transform: "scale(0.85)", // Shrunk slightly to fit within the heart without cropping
               }}
             />
           </div>

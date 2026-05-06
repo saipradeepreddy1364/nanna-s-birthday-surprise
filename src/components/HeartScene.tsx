@@ -118,14 +118,16 @@ const HeartScene = () => {
     });
 
     const particles = new THREE.Points(geometry, material);
-    // Shift heart to center of the screen
-    particles.position.x = -300;
-    particles.position.y = 276;
+    // Shift heart to center of the screen, accounting for the 1.4x scale
+    // (Center of 600x552 SVG is 300, 276)
+    const scale = 1.4;
+    particles.position.x = -300 * scale;
+    particles.position.y = 276 * scale;
     particles.scale.set(0, 0, 0); // Start at 0 for synced growth
     scene.add(particles);
 
     // Sync scaling of heart particles
-    gsap.to(particles.scale, { x: 1.4, y: 1.4, z: 1.4, duration: 4, ease: "power2.out", delay: 0.5 });
+    gsap.to(particles.scale, { x: scale, y: scale, z: scale, duration: 4, ease: "power2.out", delay: 0.5 });
 
     // Gentle left-right sway
     gsap.fromTo(
@@ -150,14 +152,15 @@ const HeartScene = () => {
     };
     window.addEventListener("resize", onResize);
 
-    // Show portrait image after 8s
+    // Show portrait image after 0.5s
     const closingTimer = setTimeout(() => {
+      setShowClosing(true);
       // Animate the portrait scaling up
-      gsap.fromTo("#portrait-container", 
+      gsap.fromTo("#portrait-reveal-container", 
         { scale: 0, opacity: 0 }, 
         { scale: 1, opacity: 1, duration: 4, ease: "power2.out" }
       );
-    }, 500); // Start growth almost immediately to sync with particles
+    }, 500); 
     
     // Show text after an additional 4s (12s total)
     const textTimer = setTimeout(() => setShowText(true), 12000);
@@ -299,6 +302,7 @@ const HeartScene = () => {
 
       {/* Portrait centered in heart, expanding from start */}
       <div 
+        id="portrait-reveal-container"
         className="fixed z-10 pointer-events-none"
         style={{
           top: "50%",
@@ -309,7 +313,6 @@ const HeartScene = () => {
         }}
       >
         <div
-          id="portrait-container"
           className="w-[300px] h-[300px] sm:w-[450px] sm:h-[450px] md:w-[600px] md:h-[600px] relative flex items-center justify-center overflow-hidden"
           style={{
             filter: "drop-shadow(0 0 50px hsla(342, 82%, 56%, 0.5))",

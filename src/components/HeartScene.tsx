@@ -83,11 +83,11 @@ const HeartScene = () => {
     mountRef.current.appendChild(renderer.domElement);
 
     // ── Dense particles with GSAP per-particle timeline (exact match) ─────
-    // i += 0.1 → ~18,000 particles animated individually — same as reference
+    // i += 0.05 → ~36,000 particles (doubled density)
     const tl = gsap.timeline({ repeat: -1, yoyo: true });
     const vertices: THREE.Vector3[] = [];
 
-    for (let i = 0; i < length; i += 0.1) {
+    for (let i = 0; i < length; i += 0.05) {
       const point = path.getPointAtLength(i);
       const vector = new THREE.Vector3(point.x, -point.y, 0);
       vector.x += (Math.random() - 0.5) * 30;
@@ -116,9 +116,10 @@ const HeartScene = () => {
     });
 
     const particles = new THREE.Points(geometry, material);
-    // Shift so heart is centred on screen
+    // Shift so heart is centred on screen and scale it up
     particles.position.x = -600 / 2;
     particles.position.y =  552 / 2;
+    particles.scale.set(1.4, 1.4, 1.4); // Increased heart size by 40%
     scene.add(particles);
 
     // Gentle left-right sway
@@ -279,9 +280,9 @@ const HeartScene = () => {
       {showClosing && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
           <div
-            className="w-64 h-64 sm:w-80 sm:h-80 md:w-[400px] md:h-[400px] animate-heartbeat relative"
+            className="w-[320px] h-[320px] sm:w-[450px] sm:h-[450px] md:w-[600px] md:h-[600px] animate-heartbeat relative"
             style={{
-              filter: "drop-shadow(0 0 20px hsla(342, 82%, 56%, 0.4))",
+              filter: "drop-shadow(0 0 30px hsla(342, 82%, 56%, 0.5))",
             }}
           >
             {/* SVG definition for the clipPath */}

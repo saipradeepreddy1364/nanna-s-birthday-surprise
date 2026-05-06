@@ -21,7 +21,7 @@ type FallingItem = {
   color: string;
 };
 
-const HEART_CLIP_PATH = "M0.5,0.9 L0.45,0.85 C0.2,0.6,0.1,0.45,0.1,0.3 C0.1,0.15,0.2,0.05,0.35,0.05 C0.45,0.05,0.5,0.1,0.5,0.15 C0.5,0.1,0.55,0.05,0.65,0.05 C0.8,0.05,0.9,0.15,0.9,0.3 C0.9,0.45,0.8,0.6,0.55,0.85 L0.5,0.9 Z";
+const HEART_CLIP_PATH = "M0.5,0.95 L0.42,0.88 C0.15,0.65,0,0.48,0,0.3 C0,0.15,0.1,0.05,0.25,0.05 C0.35,0.05,0.45,0.1,0.5,0.2 C0.55,0.1,0.65,0.05,0.75,0.05 C0.9,0.05,1,0.15,1,0.3 C1,0.48,0.85,0.65,0.58,0.88 L0.5,0.95 Z";
 
 const PETAL_COLORS   = ["hsl(342,82%,70%)", "hsl(350,90%,75%)", "hsl(330,80%,65%)", "hsl(355,85%,72%)"];
 const HEART_COLORS   = ["hsl(342,82%,60%)", "hsl(38,70%,60%)",  "hsl(350,90%,70%)", "hsl(320,75%,65%)"];
@@ -85,12 +85,13 @@ const HeartScene = () => {
     mountRef.current.appendChild(renderer.domElement);
 
     // ── Dense particles with GSAP per-particle timeline (exact match) ─────
-    // i += 0.15 → ~12,000 particles (Faster initialization)
+    // i += 0.08 → ~22,500 particles (Rich density)
     const tl = gsap.timeline({ repeat: -1, yoyo: true });
     const vertices: THREE.Vector3[] = [];
 
-    for (let i = 0; i < length; i += 0.15) {
+    for (let i = 0; i < length; i += 0.08) {
       const point = path.getPointAtLength(i);
+      // Shift vertices to center (600/2, 552/2)
       const vector = new THREE.Vector3(point.x - 300, -(point.y - 276), 0);
       vector.x += (Math.random() - 0.5) * 30;
       vector.y += (Math.random() - 0.5) * 30;
@@ -301,8 +302,8 @@ const HeartScene = () => {
           left: "50%",
           transform: "translate(-50%, -50%)",
           transformOrigin: "center center",
-          animation: "heartGrow 2s ease-out forwards",
-          animationDelay: "0.5s", // Slight delay to let particles start first
+          animation: "heartGrow 5s cubic-bezier(0.2, 0, 0.2, 1) forwards",
+          animationDelay: "0.2s",
         }}
       >
         <div

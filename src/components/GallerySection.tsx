@@ -38,12 +38,22 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
 
   useEffect(() => {
     if (isFinal) {
-      const timer = setTimeout(() => {
+      // Start scrolling after 8s
+      const scrollTimer = setTimeout(() => {
         setIsScrolling(true);
-      }, 8000); // Wait 8 seconds at the top
-      return () => clearTimeout(timer);
+      }, 8000);
+      
+      // Navigate to next scene after scroll finishes (8s + 60s + 2s buffer)
+      const completeTimer = setTimeout(() => {
+        onComplete();
+      }, 70000); 
+
+      return () => {
+        clearTimeout(scrollTimer);
+        clearTimeout(completeTimer);
+      };
     }
-  }, [isFinal]);
+  }, [isFinal, onComplete]);
 
   const TEXT_GROUPS = [
     [
@@ -149,10 +159,9 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                   <motion.div 
                     animate={isScrolling ? { y: "-100%" } : { y: "0%" }}
                     transition={{ 
-                      duration: 90, 
+                      duration: 60, 
                       ease: "linear" 
                     }}
-                    onAnimationComplete={onComplete}
                     className="w-full"
                   >
                     <div className="flex flex-col items-center justify-start pt-12 space-y-12 text-center px-4">

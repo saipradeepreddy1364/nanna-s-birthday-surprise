@@ -38,7 +38,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
     if (isFinal) {
       const timer = setTimeout(() => {
         onComplete();
-      }, 15000); // Show final image for 15 seconds
+      }, 85000); // Show final view for 85 seconds to allow full text scroll
       return () => clearTimeout(timer);
     }
   }, [isFinal, onComplete]);
@@ -129,7 +129,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                     animate={{ y: "-100%" }}
                     transition={{ 
                       repeat: Infinity, 
-                      duration: 45, 
+                      duration: 80, 
                       ease: "linear" 
                     }}
                     className="space-y-8 text-center"

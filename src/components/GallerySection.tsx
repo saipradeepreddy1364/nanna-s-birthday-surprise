@@ -36,12 +36,10 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
 
   useEffect(() => {
     if (isFinal) {
-      const timer = setTimeout(() => {
-        onComplete();
-      }, 85000); // Show final view for 85 seconds to allow full text scroll
-      return () => clearTimeout(timer);
+      // The transition is now handled by onAnimationComplete in the scroll container
+      return;
     }
-  }, [isFinal, onComplete]);
+  }, [isFinal]);
 
   return (
     <div
@@ -111,7 +109,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
               <motion.div 
                 initial={{ x: 50, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.8, duration: 0.8 }}
+                transition={{ duration: 0.8 }} // Removed delay to start immediately
                 className="w-full lg:w-1/2 relative aspect-square lg:aspect-[4/5] flex items-center justify-center rounded-2xl overflow-hidden shadow-2xl"
               >
                 {/* Background Card Image */}
@@ -128,10 +126,10 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                     initial={{ y: "100%" }}
                     animate={{ y: "-100%" }}
                     transition={{ 
-                      repeat: Infinity, 
-                      duration: 80, 
+                      duration: 100, // Even slower
                       ease: "linear" 
                     }}
+                    onAnimationComplete={onComplete} // Navigate immediately after scroll
                     className="space-y-8 text-center"
                   >
                     {[

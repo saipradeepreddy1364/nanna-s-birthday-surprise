@@ -353,12 +353,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
         }}
       >
         <div
-          className="w-[310px] h-[310px] sm:w-[465px] sm:h-[465px] md:w-[620px] md:h-[620px] relative flex items-center justify-center"
-          style={{
-            background: "transparent",
-            clipPath: "url(#heart-clip)",
-            WebkitClipPath: "url(#heart-clip)",
-          }}
+          className="relative flex items-center justify-center border-none bg-transparent"
         >
           {/* SVG definition for the clipPath */}
           <svg width="0" height="0" className="absolute">
@@ -372,7 +367,12 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
           <img 
             src={PORTRAIT_IMAGE} 
             alt="Nanna" 
-            className="w-full h-full object-cover object-center"
+            className="w-[310px] h-[310px] sm:w-[465px] sm:h-[465px] md:w-[620px] md:h-[620px] object-cover object-center"
+            style={{
+              clipPath: "url(#heart-clip)",
+              WebkitClipPath: "url(#heart-clip)",
+              background: "transparent",
+            }}
           />
         </div>
       </div>

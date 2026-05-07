@@ -21,10 +21,45 @@ const Index = () => {
     <div className="min-h-screen" style={{ background: "var(--gradient-romantic)" }}>
       <BackgroundMusic />
       <AnimatePresence mode="wait">
-        {section === "opening" && <OpeningPage onComplete={goToGallery} />}
-        {section === "gallery" && <GallerySection onComplete={goToText} />}
-        {section === "text" && <ScrollingText onComplete={goToHeart} />}
-        {section === "final" && <FinalPage />}
+        {section === "opening" && (
+          <motion.div
+            key="opening"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <OpeningPage onComplete={goToGallery} />
+          </motion.div>
+        )}
+        {section === "gallery" && (
+          <motion.div
+            key="gallery"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <GallerySection onComplete={goToText} />
+          </motion.div>
+        )}
+        {section === "text" && (
+          <motion.div
+            key="text"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <ScrollingText onComplete={goToHeart} />
+          </motion.div>
+        )}
+        {section === "final" && (
+          <motion.div
+            key="final"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            <FinalPage />
+          </motion.div>
+        )}
       </AnimatePresence>
 
       {/* Background preloaded HeartScene - starts after opening page */}

@@ -72,19 +72,20 @@ const HeartScene = ({ onComplete, active = true }: HeartSceneProps) => {
     }, 100);
 
     let animId: number;
-    let renderer: THREE.WebGLRenderer;
-    let geometry: THREE.BufferGeometry;
-    let material: THREE.PointsMaterial;
-    let tl: gsap.core.Timeline;
-    let onResize: () => void;
-    let closingTimer: NodeJS.Timeout;
-    let textTimer: NodeJS.Timeout;
+    let renderer: THREE.WebGLRenderer | null = null;
+    let geometry: THREE.BufferGeometry | null = null;
+    let material: THREE.PointsMaterial | null = null;
+    let tl: gsap.core.Timeline | null = null;
+    let onResize: (() => void) | null = null;
+    let closingTimer: any = null;
+    let textTimer: any = null;
+    let svg: any = null;
 
     const initScene = () => {
       // ── Hidden SVG to sample path ─────────────────────────────────────────
-    const svgNS = "http://www.w3.org/2000/svg";
-    const svg   = document.createElementNS(svgNS, "svg");
-    svg.setAttribute("viewBox", "0 0 600 552");
+      const svgNS = "http://www.w3.org/2000/svg";
+      svg = document.createElementNS(svgNS, "svg");
+      svg.setAttribute("viewBox", "0 0 600 552");
     svg.style.cssText = "position:absolute;display:none;";
     const path  = document.createElementNS(svgNS, "path");
     path.setAttribute("d", HEART_SVG_PATH);
@@ -188,14 +189,14 @@ const HeartScene = ({ onComplete, active = true }: HeartSceneProps) => {
     // Show text after an additional 4s (12s total)
     textTimer = setTimeout(() => setShowText(true), 12000);
 
-    if (document.body.contains(svg)) {
+    if (svg && document.body.contains(svg)) {
       document.body.removeChild(svg);
     }
     }; // End of initScene
 
     return () => {
       clearTimeout(initTimer);
-      window.removeEventListener("resize", onResize);
+      if (onResize) window.removeEventListener("resize", onResize);
       if (animId) cancelAnimationFrame(animId);
       if (tl) tl.kill();
       if (closingTimer) clearTimeout(closingTimer);

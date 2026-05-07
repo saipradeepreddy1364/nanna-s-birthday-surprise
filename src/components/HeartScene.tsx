@@ -353,7 +353,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
         }}
       >
         <div
-          className="w-[310px] h-[310px] sm:w-[465px] sm:h-[465px] md:w-[620px] md:h-[620px] relative flex items-center justify-center overflow-hidden"
+          className="w-[310px] h-[310px] sm:w-[465px] sm:h-[465px] md:w-[620px] md:h-[620px] relative flex items-center justify-center overflow-hidden border-none"
           style={{
             background: "transparent",
           }}

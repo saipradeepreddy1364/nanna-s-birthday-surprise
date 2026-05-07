@@ -99,7 +99,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                 transition={{ delay: 0.5, duration: 0.8 }}
                 className="w-full lg:w-1/2 flex justify-center"
               >
-                <div className="relative w-full max-w-md aspect-[4/5] rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/10">
+                <div className="relative w-full max-w-md aspect-[4/5] rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.4)]">
                   <img
                     src={FINAL_IMAGE}
                     alt="Final Memory"
@@ -108,48 +108,56 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                 </div>
               </motion.div>
 
-              {/* Right Side: Butterfly Background with Animated Text */}
+              {/* Right Side: Card with Scrolling Text */}
               <motion.div 
                 initial={{ x: 50, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ delay: 0.8, duration: 0.8 }}
-                className="w-full lg:w-1/2 relative aspect-square lg:aspect-[4/5] flex items-center justify-center p-8 rounded-2xl overflow-hidden shadow-2xl"
+                className="w-full lg:w-1/2 relative aspect-square lg:aspect-[4/5] flex items-center justify-center rounded-2xl overflow-hidden shadow-2xl"
               >
-                {/* Background Image */}
+                {/* Background Card Image */}
                 <img 
-                  src="/gallery/image.png" 
-                  alt="Message Background" 
-                  className="absolute inset-0 w-full h-full object-cover opacity-60"
+                  src="/gallery/card.png" 
+                  alt="Message Card" 
+                  className="absolute inset-0 w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-black/40" />
 
-                {/* Animated Text Lines */}
-                <div className="relative z-10 space-y-4 max-w-lg">
-                  {[
-                    "I honestly don’t know what my presence means to you or how important this connection is in your life.",
-                    "But I know one thing for certain…",
-                    "When you entered my life, you brought back the smiles, trust, and happiness I had once lost.",
-                    "A world I thought had disappeared somehow came back just through knowing you.",
-                    "So even if this may be just a normal acquaintance to you, to me it is something very special—something that brought life back into my world.",
-                    "---",
-                    "In a time where many girls cross all boundaries without restraint,",
-                    "she is like a moonlight beauty who has gracefully set her own limits —",
-                    "soft, serene, and rare… a soul that shines with quiet dignity and self-respect",
-                    "Forever grateful to you Nanna"
-                  ].map((line, idx) => (
-                    <motion.p
-                      key={idx}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 1.5 + idx * 0.8, duration: 0.6 }}
-                      className={`text-white font-cursive leading-relaxed drop-shadow-md ${
-                        line === "---" ? "opacity-0 h-2" : 
-                        idx < 5 ? "text-lg sm:text-xl text-pink-100" : "text-lg sm:text-xl text-yellow-100 italic"
-                      }`}
-                    >
-                      {line === "---" ? "" : line}
-                    </motion.p>
-                  ))}
+                {/* Auto-scrolling Text Container */}
+                <div className="relative z-10 w-full h-full flex items-center justify-center p-8 sm:p-12 overflow-hidden">
+                  <motion.div 
+                    initial={{ y: "100%" }}
+                    animate={{ y: "-100%" }}
+                    transition={{ 
+                      repeat: Infinity, 
+                      duration: 30, 
+                      ease: "linear" 
+                    }}
+                    className="space-y-8 text-center"
+                  >
+                    {[
+                      "I honestly don’t know what my presence means to you or how important this connection is in your life.",
+                      "But I know one thing for certain…",
+                      "When you entered my life, you brought back the smiles, trust, and happiness I had once lost.",
+                      "A world I thought had disappeared somehow came back just through knowing you.",
+                      "So even if this may be just a normal acquaintance to you, to me it is something very special—something that brought life back into my world.",
+                      "---",
+                      "In a time where many girls cross all boundaries without restraint,",
+                      "she is like a moonlight beauty who has gracefully set her own limits —",
+                      "soft, serene, and rare… a soul that shines with quiet dignity and self-respect",
+                      "Forever grateful to you Nanna"
+                    ].map((line, idx) => (
+                      <p
+                        key={idx}
+                        className={`text-white font-elegant leading-relaxed drop-shadow-lg ${
+                          line === "---" ? "opacity-0 h-4" : 
+                          idx < 5 ? "text-xl sm:text-2xl md:text-3xl text-pink-50" : "text-xl sm:text-2xl md:text-3xl text-yellow-50 italic"
+                        }`}
+                      >
+                        {line === "---" ? "" : line}
+                      </p>
+                    ))}
+                  </motion.div>
                 </div>
               </motion.div>
             </motion.div>

@@ -2,11 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const GRID_IMAGES = [
-  "/nanna-potrait.jpeg",
-  "/gallery/final.jpeg",
-  "/gallery/card.png",
-  "/nanna-potrait.jpeg",
-  "/gallery/final.jpeg"
+  "/placeholder.svg"
 ];
 
 const FINAL_IMAGE = "/gallery/final.jpeg";

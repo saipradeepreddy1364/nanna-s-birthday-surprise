@@ -99,67 +99,54 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     renderer.setClearColor(0x000000, 0);
     mountRef.current.appendChild(renderer.domElement);
 
-    // ── Dense particles with GSAP per-particle timeline (exact match) ─────
-    // i += 0.8 → ~2,200 particles (Fast loading, smooth animation)
-    tl = gsap.timeline();
+    // ── Particles ─────
     const vertices: THREE.Vector3[] = [];
+    const particleCount = 3500;
 
-    // Faster initialization
-    for (let i = 0; i < length; i += 0.8) {
-      const point = path.getPointAtLength(i);
-      const vector = new THREE.Vector3(point.x - 300, -(point.y - 276), 0);
+    for (let i = 0; i < particleCount; i++) {
+      const t = Math.random() * Math.PI * 2;
+      // Heart equation
+      const x = 16 * Math.pow(Math.sin(t), 3);
+      const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
+      
+      const vector = new THREE.Vector3(x * 12, y * 12, 0);
       vector.x += (Math.random() - 0.5) * 20;
       vector.y += (Math.random() - 0.5) * 20;
-      vector.z += (Math.random() - 0.5) * 50;
+      vector.z += (Math.random() - 0.5) * 100;
       vertices.push(vector);
-
-      // Only animate 1 in every 3 particles to save performance
-      if (Math.random() > 0.6) {
-        tl.from(vector, {
-          x: 0, y: 0, z: 0,
-          duration: 1 + Math.random(),
-          ease: "power2.out"
-        }, i * 0.0002);
-      }
     }
 
-    const finalizeScene = () => {
-      geometry = new THREE.BufferGeometry().setFromPoints(vertices);
-      material = new THREE.PointsMaterial({
-        color:    0xee5282,
-        blending: THREE.AdditiveBlending,
-        size:     3,
-      });
+    geometry = new THREE.BufferGeometry().setFromPoints(vertices);
+    material = new THREE.PointsMaterial({
+      color: 0xff4d8d,
+      size: 4,
+      transparent: true,
+      opacity: 0.8,
+      blending: THREE.AdditiveBlending,
+    });
 
-      const particles = new THREE.Points(geometry, material);
-      const scale = 1.15;
-      particles.scale.set(0, 0, 0); 
-      scene.add(particles);
+    const particles = new THREE.Points(geometry, material);
+    particles.scale.set(0, 0, 0);
+    scene.add(particles);
 
-      gsap.to(particles.scale, { x: scale, y: scale, z: scale, duration: 2, ease: "back.out(1.2)", delay: 0.2 });
+    // Animations
+    gsap.to(particles.scale, { 
+      x: 1, y: 1, z: 1, 
+      duration: 3, 
+      ease: "back.out(1.2)", 
+      delay: 0.5 
+    });
 
-      // Gentle left-right sway
-      gsap.fromTo(scene.rotation,
-        { y: -0.15 },
-        { y: 0.15, repeat: -1, yoyo: true, ease: "power1.inOut", duration: 4 }
-      );
-
-      // ── Render loop ───────────────────────────────────────────────────────
-      const render = () => {
-        animId = requestAnimationFrame(render);
-        geometry.setFromPoints(vertices);
-        renderer.render(scene, camera);
-      };
-      render();
-    };
-
-    // Gentle left-right sway
-    gsap.fromTo(
-      scene.rotation,
+    gsap.fromTo(scene.rotation,
       { y: -0.2 },
-      { y: 0.2, repeat: -1, yoyo: true, ease: "power2.inOut", duration: 3 }
+      { y: 0.2, repeat: -1, yoyo: true, ease: "power1.inOut", duration: 4 }
     );
 
+    const render = () => {
+      animId = requestAnimationFrame(render);
+      renderer.render(scene, camera);
+    };
+    render();
 
     onResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
@@ -168,20 +155,17 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     };
     window.addEventListener("resize", onResize);
 
-    // Show portrait image quickly
+    // Show portrait image after particles have started
     closingTimer = setTimeout(() => {
       setShowClosing(true);
       gsap.fromTo("#portrait-reveal", 
         { scale: 0, opacity: 0 }, 
-        { scale: 1, opacity: 1, duration: 2.5, ease: "back.out(1.1)" }
+        { scale: 1, opacity: 1, duration: 3, ease: "power2.out" }
       );
-    }, 300); 
+    }, 800); 
     
-    // Show text after 4s
-    textTimer = setTimeout(() => setShowText(true), 4000);
-
-    // Final navigation after 14s total in this scene
-    const finalTimer = setTimeout(onComplete, 14000);
+    // Final navigation after 25s
+    const finalTimer = setTimeout(onComplete, 25000);
 
     if (svg && document.body.contains(svg)) {
       document.body.removeChild(svg);
@@ -190,9 +174,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     return () => {
       if (onResize) window.removeEventListener("resize", onResize);
       if (animId) cancelAnimationFrame(animId);
-      if (tl) tl.kill();
       if (closingTimer) clearTimeout(closingTimer);
-      if (textTimer) clearTimeout(textTimer);
       if (finalTimer) clearTimeout(finalTimer);
       if (renderer) renderer.dispose();
       if (geometry) geometry.dispose();
@@ -327,46 +309,26 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
 
       {/* Portrait centered in heart, expanding from start */}
       <motion.img 
-          id="portrait-reveal"
-          src={PORTRAIT_IMAGE} 
-          alt="Nanna"
-          className="fixed z-10 pointer-events-none w-[310px] h-[310px] sm:w-[465px] sm:h-[465px] md:w-[620px] md:h-[620px] object-cover object-center !bg-transparent !border-none"
-          style={{
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%) scale(0)",
-            opacity: 0,
-            transformOrigin: "center center",
-            maskImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 552'%3E%3Cpath fill='black' d='M300,107.77C284.68,55.67,239.76,0,162.31,0,64.83,0,0,82.08,0,171.71c0,.48,0,.95,0,1.43-.52,19.5,0,217.94,299.87,379.69C600,391.08,600.48,192.64,600,173.14c0-.48,0-.95,0-1.43C600,82.08,535.17,0,437.69,0,360.24,0,315.32,55.67,300,107.77'/%3E%3C/svg%3E")`,
-            maskSize: 'contain',
-            maskRepeat: 'no-repeat',
-            maskPosition: 'center',
-            WebkitMaskImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 552'%3E%3Cpath fill='black' d='M300,107.77C284.68,55.67,239.76,0,162.31,0,64.83,0,0,82.08,0,171.71c0,.48,0,.95,0,1.43-.52,19.5,0,217.94,299.87,379.69C600,391.08,600.48,192.64,600,173.14c0-.48,0-.95,0-1.43C600,82.08,535.17,0,437.69,0,360.24,0,315.32,55.67,300,107.77'/%3E%3C/svg%3E")`,
-            WebkitMaskSize: 'contain',
-            WebkitMaskRepeat: 'no-repeat',
-            WebkitMaskPosition: 'center',
-          }}
-        />
-
-      {/* Closing text - moved below the heart */}
-      {showText && (
-        <div
-          className="absolute bottom-0 left-0 right-0 flex items-center justify-center z-20 pb-10 sm:pb-16 px-4"
-          style={{ animation: "heartbeat 2s ease-in-out infinite" }}
-        >
-          <h1
-            className="font-cursive text-4xl sm:text-6xl md:text-8xl text-center glow-gold"
-            style={{
-              color: "hsl(38, 70%, 55%)",
-              opacity: 0,
-              animation: "hs-fadein 1.5s ease forwards",
-              textShadow: "0 0 20px rgba(0,0,0,0.5)",
-            }}
-          >
-            Happy 21st Nanna 💝
-          </h1>
-        </div>
-      )}
+        id="portrait-reveal"
+        src={PORTRAIT_IMAGE} 
+        alt="Nanna"
+        className="fixed z-10 pointer-events-none w-[310px] h-[310px] sm:w-[465px] sm:h-[465px] md:w-[620px] md:h-[620px] object-cover object-center !bg-transparent !border-none"
+        style={{
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%) scale(0)",
+          opacity: 0,
+          transformOrigin: "center center",
+          maskImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 552'%3E%3Cpath fill='black' d='M300,107.77C284.68,55.67,239.76,0,162.31,0,64.83,0,0,82.08,0,171.71c0,.48,0,.95,0,1.43-.52,19.5,0,217.94,299.87,379.69C600,391.08,600.48,192.64,600,173.14c0-.48,0-.95,0-1.43C600,82.08,535.17,0,437.69,0,360.24,0,315.32,55.67,300,107.77'/%3E%3C/svg%3E")`,
+          maskSize: 'contain',
+          maskRepeat: 'no-repeat',
+          maskPosition: 'center',
+          WebkitMaskImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 552'%3E%3Cpath fill='black' d='M300,107.77C284.68,55.67,239.76,0,162.31,0,64.83,0,0,82.08,0,171.71c0,.48,0,.95,0,1.43-.52,19.5,0,217.94,299.87,379.69C600,391.08,600.48,192.64,600,173.14c0-.48,0-.95,0-1.43C600,82.08,535.17,0,437.69,0,360.24,0,315.32,55.67,300,107.77'/%3E%3C/svg%3E")`,
+          WebkitMaskSize: 'contain',
+          WebkitMaskRepeat: 'no-repeat',
+          WebkitMaskPosition: 'center',
+        }}
+      />
     </div>
   );
 };

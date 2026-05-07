@@ -2,18 +2,16 @@ import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import OpeningPage from "@/components/OpeningPage";
 import GallerySection from "@/components/GallerySection";
-import ScrollingText from "@/components/ScrollingText";
 import HeartScene from "@/components/HeartScene";
 import BackgroundMusic from "@/components/BackgroundMusic";
 import FinalPage from "@/components/FinalPage";
 
-type Section = "opening" | "gallery" | "text" | "heart" | "final";
+type Section = "opening" | "gallery" | "heart" | "final";
 
 const Index = () => {
   const [section, setSection] = useState<Section>("opening");
 
   const goToGallery = useCallback(() => setSection("gallery"), []);
-  const goToText = useCallback(() => setSection("text"), []);
   const goToHeart = useCallback(() => setSection("heart"), []);
   const goToFinal = useCallback(() => setSection("final"), []);
 
@@ -38,17 +36,7 @@ const Index = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <GallerySection onComplete={goToText} />
-          </motion.div>
-        )}
-        {section === "text" && (
-          <motion.div
-            key="text"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <ScrollingText onComplete={goToHeart} />
+            <GallerySection onComplete={goToHeart} />
           </motion.div>
         )}
         {section === "heart" && (

@@ -6,7 +6,8 @@ const GRID_IMAGES = [
   "/gallery/g2.jpg",
   "/gallery/g3.jpg",
   "/gallery/g4.jpg",
-  "/gallery/g5.jpg"
+  "/gallery/g5.jpg",
+  "/gallery/image.png"
 ];
 
 const FINAL_IMAGE = "/gallery/final.jpeg";
@@ -38,7 +39,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
     if (isFinal) {
       const timer = setTimeout(() => {
         onComplete();
-      }, 5000); // Show final image for 5 seconds
+      }, 15000); // Show final image for 15 seconds
       return () => clearTimeout(timer);
     }
   }, [isFinal, onComplete]);
@@ -133,7 +134,8 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                     "---",
                     "In a time where many girls cross all boundaries without restraint,",
                     "she is like a moonlight beauty who has gracefully set her own limits —",
-                    "soft, serene, and rare… a soul that shines with quiet dignity and self-respect"
+                    "soft, serene, and rare… a soul that shines with quiet dignity and self-respect",
+                    "Forever grateful to you Nanna"
                   ].map((line, idx) => (
                     <motion.p
                       key={idx}

@@ -99,47 +99,81 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     mountRef.current.appendChild(renderer.domElement);
 
     // ── Dense particles with GSAP per-particle timeline (exact match) ─────
-    // i += 0.05 → ~36,000 particles (High density)
+    // i += 0.075 → ~24,000 particles (High density, fast loading)
     tl = gsap.timeline({ repeat: -1, yoyo: true });
     const vertices: THREE.Vector3[] = [];
 
-    for (let i = 0; i < length; i += 0.05) {
-      const point = path.getPointAtLength(i);
-      // Center the heart by subtracting the midpoint (300, 276)
-      const vector = new THREE.Vector3(point.x - 300, -(point.y - 276), 0);
-      vector.x += (Math.random() - 0.5) * 30;
-      vector.y += (Math.random() - 0.5) * 30;
-      vector.z += (Math.random() - 0.5) * 70;
-      vertices.push(vector);
+    // Chunked initialization to prevent browser freeze
+    let currentIndex = 0;
+    const chunkSize = 1000;
+    
+    const processChunk = () => {
+      const end = Math.min(currentIndex + chunkSize, length);
+      for (let i = currentIndex; i < end; i += 0.05) {
+        const point = path.getPointAtLength(i);
+        // Center the heart by subtracting the midpoint (300, 276)
+        const vector = new THREE.Vector3(point.x - 300, -(point.y - 276), 0);
+        vector.x += (Math.random() - 0.5) * 30;
+        vector.y += (Math.random() - 0.5) * 30;
+        vector.z += (Math.random() - 0.5) * 70;
+        vertices.push(vector);
 
-      tl.from(
-        vector,
-        {
-          x: 0,
-          y: 0,
-          z: 0,
-          ease: "power2.inOut",
-          duration: 1.2 + Math.random() * 1.5,
-        },
-        i * 0.0001
+        tl.from(
+          vector,
+          {
+            x: 0,
+            y: 0,
+            z: 0,
+            ease: "power2.inOut",
+            duration: 1.2 + Math.random() * 1.5,
+          },
+          i * 0.0001
+        );
+      }
+      
+      currentIndex = end;
+      if (currentIndex < length) {
+        // Fast recursion
+        setTimeout(processChunk, 10);
+      } else {
+        finalizeScene();
+      }
+    };
+
+    processChunk();
+
+    const finalizeScene = () => {
+      geometry = new THREE.BufferGeometry().setFromPoints(vertices);
+      material = new THREE.PointsMaterial({
+        color:    0xee5282,
+        blending: THREE.AdditiveBlending,
+        size:     3,
+      });
+
+      const particles = new THREE.Points(geometry, material);
+      // Since we centered the vertices, the container can stay at 0,0
+      const scale = 1.15;
+      particles.position.set(0, 0, 0);
+      particles.scale.set(0, 0, 0); 
+      scene.add(particles);
+
+      gsap.to(particles.scale, { x: scale, y: scale, z: scale, duration: 4, ease: "power2.out", delay: 0.5 });
+
+      // Gentle left-right sway
+      gsap.fromTo(
+        scene.rotation,
+        { y: -0.2 },
+        { y: 0.2, repeat: -1, yoyo: true, ease: "power2.inOut", duration: 3 }
       );
-    }
 
-    geometry = new THREE.BufferGeometry().setFromPoints(vertices);
-    material = new THREE.PointsMaterial({
-      color:    0xee5282,
-      blending: THREE.AdditiveBlending,
-      size:     3,
-    });
-
-    const particles = new THREE.Points(geometry, material);
-    // Since we centered the vertices, the container can stay at 0,0
-    const scale = 1.15;
-    particles.position.set(0, 0, 0);
-    particles.scale.set(0, 0, 0); 
-    scene.add(particles);
-
-    gsap.to(particles.scale, { x: scale, y: scale, z: scale, duration: 4, ease: "power2.out", delay: 0.5 });
+      // ── Render loop ───────────────────────────────────────────────────────
+      const render = () => {
+        animId = requestAnimationFrame(render);
+        geometry.setFromPoints(vertices);
+        renderer.render(scene, camera);
+      };
+      render();
+    };
 
     // Gentle left-right sway
     gsap.fromTo(
@@ -148,13 +182,6 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       { y: 0.2, repeat: -1, yoyo: true, ease: "power2.inOut", duration: 3 }
     );
 
-    // ── Render loop ───────────────────────────────────────────────────────
-    const render = () => {
-      animId = requestAnimationFrame(render);
-      geometry.setFromPoints(vertices);
-      renderer.render(scene, camera);
-    };
-    render();
 
     onResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
@@ -329,7 +356,6 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
           className="w-[310px] h-[310px] sm:w-[465px] sm:h-[465px] md:w-[620px] md:h-[620px] relative flex items-center justify-center overflow-hidden"
           style={{
             background: "transparent",
-            filter: "drop-shadow(0 0 50px hsla(342, 82%, 56%, 0.5))",
           }}
         >
           {/* SVG definition for the clipPath */}

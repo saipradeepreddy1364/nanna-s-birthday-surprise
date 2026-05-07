@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import OpeningPage from "@/components/OpeningPage";
 import GallerySection from "@/components/GallerySection";
 import ScrollingText from "@/components/ScrollingText";

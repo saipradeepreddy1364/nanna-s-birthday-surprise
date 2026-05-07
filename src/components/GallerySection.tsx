@@ -34,12 +34,40 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
     }
   }, [gridStep]);
 
+  const [scrollStep, setScrollStep] = useState(0);
+  const totalSteps = 4;
+
   useEffect(() => {
-    if (isFinal) {
-      // The transition is now handled by onAnimationComplete in the scroll container
-      return;
+    if (isFinal && scrollStep < totalSteps) {
+      const timer = setTimeout(() => {
+        setScrollStep(prev => prev + 1);
+      }, scrollStep === 0 ? 8000 : 10000); // 8s for first group, then 10s
+      return () => clearTimeout(timer);
+    } else if (isFinal && scrollStep === totalSteps) {
+      const timer = setTimeout(onComplete, 6000); // Final delay before transition
+      return () => clearTimeout(timer);
     }
-  }, [isFinal]);
+  }, [isFinal, scrollStep, onComplete]);
+
+  const TEXT_GROUPS = [
+    [
+      "I honestly don’t know what my presence means to you or how important this connection is in your life.",
+      "But I know one thing for certain…"
+    ],
+    [
+      "When you entered my life, you brought back the smiles, trust, and happiness I had once lost.",
+      "A world I thought had disappeared somehow came back just through knowing you."
+    ],
+    [
+      "So even if this may be just a normal acquaintance to you, to me it is something very special—something that brought life back into my world."
+    ],
+    [
+      "In a time where many girls cross all boundaries without restraint,",
+      "she is like a moonlight beauty who has gracefully set her own limits —",
+      "soft, serene, and rare… a soul that shines with quiet dignity and self-respect",
+      "Forever grateful to you Nanna"
+    ]
+  ];
 
   return (
     <div
@@ -109,7 +137,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
               <motion.div 
                 initial={{ x: 50, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
-                transition={{ duration: 0.8 }} // Removed delay to start immediately
+                transition={{ duration: 0.8 }}
                 className="w-full lg:w-1/2 relative aspect-square lg:aspect-[4/5] flex items-center justify-center rounded-2xl overflow-hidden shadow-2xl"
               >
                 {/* Background Card Image */}
@@ -120,39 +148,30 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                 />
                 <div className="absolute inset-0 bg-black/40" />
 
-                {/* Auto-scrolling Text Container */}
-                <div className="relative z-10 w-full h-full flex items-center justify-center p-8 sm:p-12 overflow-hidden">
+                {/* Step-wise Scrolling Text Container */}
+                <div className="relative z-10 w-full h-full flex items-start justify-center p-8 sm:p-12 overflow-hidden">
                   <motion.div 
-                    initial={{ y: "100%" }}
-                    animate={{ y: "-100%" }}
+                    animate={{ y: `-${scrollStep * 100}%` }}
                     transition={{ 
-                      duration: 100, // Even slower
-                      ease: "linear" 
+                      duration: 2.5, 
+                      ease: "easeInOut" 
                     }}
-                    onAnimationComplete={onComplete} // Navigate immediately after scroll
-                    className="space-y-8 text-center"
+                    className="w-full h-full"
                   >
-                    {[
-                      "I honestly don’t know what my presence means to you or how important this connection is in your life.",
-                      "But I know one thing for certain…",
-                      "When you entered my life, you brought back the smiles, trust, and happiness I had once lost.",
-                      "A world I thought had disappeared somehow came back just through knowing you.",
-                      "So even if this may be just a normal acquaintance to you, to me it is something very special—something that brought life back into my world.",
-                      "---",
-                      "In a time where many girls cross all boundaries without restraint,",
-                      "she is like a moonlight beauty who has gracefully set her own limits —",
-                      "soft, serene, and rare… a soul that shines with quiet dignity and self-respect",
-                      "Forever grateful to you Nanna"
-                    ].map((line, idx) => (
-                      <p
-                        key={idx}
-                        className={`text-white font-elegant leading-relaxed drop-shadow-lg ${
-                          line === "---" ? "opacity-0 h-4" : 
-                          idx < 5 ? "text-xl sm:text-2xl md:text-3xl text-pink-50" : "text-xl sm:text-2xl md:text-3xl text-yellow-50 italic"
-                        }`}
-                      >
-                        {line === "---" ? "" : line}
-                      </p>
+                    {[...TEXT_GROUPS, ["---"]].map((group, groupIdx) => (
+                      <div key={groupIdx} className="h-full w-full flex flex-col items-center justify-start pt-12 space-y-6 sm:space-y-8 text-center px-4">
+                        {group.map((line, lineIdx) => (
+                          <p
+                            key={lineIdx}
+                            className={`text-white font-elegant leading-relaxed drop-shadow-lg ${
+                              line === "---" ? "opacity-0" : 
+                              groupIdx < 3 ? "text-xl sm:text-2xl md:text-3xl text-pink-50" : "text-xl sm:text-2xl md:text-3xl text-yellow-50 italic"
+                            }`}
+                          >
+                            {line === "---" ? "" : line}
+                          </p>
+                        ))}
+                      </div>
                     ))}
                   </motion.div>
                 </div>

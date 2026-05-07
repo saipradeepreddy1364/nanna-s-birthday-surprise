@@ -352,29 +352,24 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
           transformOrigin: "center center",
         }}
       >
-        <div
-          className="relative flex items-center justify-center border-none bg-transparent"
+        <svg 
+          viewBox="0 0 100 100" 
+          className="w-[310px] h-[310px] sm:w-[465px] sm:h-[465px] md:w-[620px] md:h-[620px] drop-shadow-[0_0_30px_rgba(238,82,130,0.3)]"
+          style={{ background: "transparent" }}
         >
-          {/* SVG definition for the clipPath */}
-          <svg width="0" height="0" className="absolute">
-            <defs>
-              <clipPath id="heart-clip" clipPathUnits="objectBoundingBox">
-                <path d={HEART_CLIP_PATH} />
-              </clipPath>
-            </defs>
-          </svg>
-          
-          <img 
-            src={PORTRAIT_IMAGE} 
-            alt="Nanna" 
-            className="w-[310px] h-[310px] sm:w-[465px] sm:h-[465px] md:w-[620px] md:h-[620px] object-cover object-center"
-            style={{
-              clipPath: "url(#heart-clip)",
-              WebkitClipPath: "url(#heart-clip)",
-              background: "transparent",
-            }}
+          <defs>
+            <clipPath id="heart-clip-svg" clipPathUnits="objectBoundingBox">
+              <path d="M0.5,1 C0.5,1 0,0.7 0,0.35 C0,0.15 0.15,0 0.35,0 C0.45,0 0.5,0.05 0.5,0.05 C0.5,0.05 0.55,0 0.65,0 C0.85,0 1,0.15 1,0.35 C1,0.7 0.5,1 0.5,1 Z" />
+            </clipPath>
+          </defs>
+          <image 
+            href={PORTRAIT_IMAGE} 
+            width="100" 
+            height="100" 
+            preserveAspectRatio="xMidYMid slice"
+            clipPath="url(#heart-clip-svg)"
           />
-        </div>
+        </svg>
       </div>
 
       {/* Closing text - moved below the heart */}

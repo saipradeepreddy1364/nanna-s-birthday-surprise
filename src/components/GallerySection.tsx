@@ -2,10 +2,10 @@ import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const GRID_IMAGES = [
-  "/gallery/g1.jpg", 
-  "/gallery/g2.jpg", 
+  "/gallery/g1.jpg",
+  "/gallery/g2.jpg",
   "/gallery/g3.jpg",
-  "/gallery/g4.jpg", 
+  "/gallery/g4.jpg",
   "/gallery/g5.jpg"
 ];
 
@@ -64,9 +64,9 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                   <motion.div
                     key={index}
                     initial={{ opacity: 0 }}
-                    animate={{ 
+                    animate={{
                       opacity: index < gridStep ? 1 : 0,
-                      backgroundColor: index < gridStep ? "transparent" : "rgba(0,0,0,1)"
+                      backgroundColor: "transparent"
                     }}
                     className="relative rounded-md overflow-hidden aspect-square"
                   >
@@ -96,15 +96,14 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                 alt="Final Memory"
                 className="w-full h-full object-contain"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-              <motion.div 
+              <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 1 }}
                 className="absolute bottom-8 left-0 right-0 text-center"
               >
                 <p className="text-white font-cursive text-2xl sm:text-4xl drop-shadow-lg">
-                  Every moment with you is a treasure...
+                  Every moment with you is a treasure Nanna...
                 </p>
               </motion.div>
             </motion.div>
@@ -117,4 +116,4 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
   );
 };
 
-export default GallerySection;
+export default GallerySection;

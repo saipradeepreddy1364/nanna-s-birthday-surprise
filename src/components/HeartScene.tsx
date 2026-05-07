@@ -29,10 +29,9 @@ const SPARKLE_COLORS = ["hsl(38,90%,65%)",  "hsl(50,95%,70%)",  "hsl(38,70%,55%)
 
 interface HeartSceneProps {
   onComplete: () => void;
-  active?: boolean;
 }
 
-const HeartScene = ({ onComplete, active = true }: HeartSceneProps) => {
+const HeartScene = ({ onComplete }: HeartSceneProps) => {
   const mountRef = useRef<HTMLDivElement>(null);
   const [showClosing, setShowClosing] = useState(false);
   const [showText, setShowText] = useState(false);
@@ -66,26 +65,19 @@ const HeartScene = ({ onComplete, active = true }: HeartSceneProps) => {
   useEffect(() => {
     if (!mountRef.current) return;
 
-    // Small delay to prevent blocking the initial render of the parent page
-    const initTimer = setTimeout(() => {
-      initScene();
-    }, 100);
-
     let animId: number;
-    let renderer: THREE.WebGLRenderer | null = null;
-    let geometry: THREE.BufferGeometry | null = null;
-    let material: THREE.PointsMaterial | null = null;
-    let tl: gsap.core.Timeline | null = null;
-    let onResize: (() => void) | null = null;
-    let closingTimer: any = null;
-    let textTimer: any = null;
-    let svg: any = null;
+    let renderer: THREE.WebGLRenderer;
+    let geometry: THREE.BufferGeometry;
+    let material: THREE.PointsMaterial;
+    let tl: gsap.core.Timeline;
+    let onResize: () => void;
+    let closingTimer: any;
+    let textTimer: any;
+    let svg: any;
 
-    const initScene = () => {
-      // ── Hidden SVG to sample path ─────────────────────────────────────────
-      const svgNS = "http://www.w3.org/2000/svg";
-      svg = document.createElementNS(svgNS, "svg");
-      svg.setAttribute("viewBox", "0 0 600 552");
+    const svgNS = "http://www.w3.org/2000/svg";
+    svg = document.createElementNS(svgNS, "svg");
+    svg.setAttribute("viewBox", "0 0 600 552");
     svg.style.cssText = "position:absolute;display:none;";
     const path  = document.createElementNS(svgNS, "path");
     path.setAttribute("d", HEART_SVG_PATH);
@@ -99,87 +91,69 @@ const HeartScene = ({ onComplete, active = true }: HeartSceneProps) => {
     const camera   = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
     camera.position.z = 500;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x000000, 0);
     mountRef.current.appendChild(renderer.domElement);
 
     // ── Dense particles with GSAP per-particle timeline (exact match) ─────
-    // i += 0.09 → ~20,000 particles (High density, safe for mobile)
+    // i += 0.05 → ~36,000 particles (High density)
     tl = gsap.timeline({ repeat: -1, yoyo: true });
     const vertices: THREE.Vector3[] = [];
 
-    // Chunked initialization to prevent browser freeze
-    let currentIndex = 0;
-    const chunkSize = 1000;
-    
-    const processChunk = () => {
-      const end = Math.min(currentIndex + chunkSize, length);
-      for (let i = currentIndex; i < end; i += 0.09) {
-        const point = path.getPointAtLength(i);
-        const vector = new THREE.Vector3(point.x, -point.y, 0);
-        vector.x += (Math.random() - 0.5) * 30;
-        vector.y += (Math.random() - 0.5) * 30;
-        vector.z += (Math.random() - 0.5) * 70;
-        vertices.push(vector);
+    for (let i = 0; i < length; i += 0.05) {
+      const point = path.getPointAtLength(i);
+      const vector = new THREE.Vector3(point.x, -point.y, 0);
+      vector.x += (Math.random() - 0.5) * 30;
+      vector.y += (Math.random() - 0.5) * 30;
+      vector.z += (Math.random() - 0.5) * 70;
+      vertices.push(vector);
 
-        tl!.from(
-          vector,
-          {
-            x: 300,
-            y: -276,
-            z: 0,
-            ease: "power2.inOut",
-            duration: 2 + Math.random() * 3,
-          },
-          i * 0.002
-        );
-      }
-      
-      currentIndex = end;
-      if (currentIndex < length) {
-        setTimeout(processChunk, 10);
-      } else {
-        finalizeScene();
-      }
-    };
-
-    processChunk();
-
-    const finalizeScene = () => {
-      geometry = new THREE.BufferGeometry().setFromPoints(vertices);
-      material = new THREE.PointsMaterial({
-        color:    0xee5282,
-        blending: THREE.AdditiveBlending,
-        size:     3,
-      });
-
-      const particles = new THREE.Points(geometry, material);
-      // Shift heart to center of the screen, accounting for the 1.4x scale
-      const scale = 1.4;
-      particles.position.x = -300 * scale;
-      particles.position.y = 276 * scale;
-      particles.scale.set(0, 0, 0); 
-      scene.add(particles);
-
-      gsap.to(particles.scale, { x: scale, y: scale, z: scale, duration: 4, ease: "power2.out", delay: 0.5 });
-
-      // Gentle left-right sway
-      gsap.fromTo(
-        scene.rotation,
-        { y: -0.2 },
-        { y: 0.2, repeat: -1, yoyo: true, ease: "power2.inOut", duration: 3 }
+      tl.from(
+        vector,
+        {
+          x: 300,
+          y: -276,
+          z: 0,
+          ease: "power2.inOut",
+          duration: 2 + Math.random() * 3,
+        },
+        i * 0.002
       );
+    }
 
-      // ── Render loop ───────────────────────────────────────────────────────
-      const render = () => {
-        animId = requestAnimationFrame(render);
-        if (geometry) geometry.setFromPoints(vertices);
-        renderer.render(scene, camera);
-      };
-      render();
+    geometry = new THREE.BufferGeometry().setFromPoints(vertices);
+    material = new THREE.PointsMaterial({
+      color:    0xee5282,
+      blending: THREE.AdditiveBlending,
+      size:     3,
+    });
+
+    const particles = new THREE.Points(geometry, material);
+    // Shift heart to center of the screen, accounting for the 1.4x scale
+    const scale = 1.4;
+    particles.position.x = -300 * scale;
+    particles.position.y = 276 * scale;
+    particles.scale.set(0, 0, 0); 
+    scene.add(particles);
+
+    gsap.to(particles.scale, { x: scale, y: scale, z: scale, duration: 4, ease: "power2.out", delay: 0.5 });
+
+    // Gentle left-right sway
+    gsap.fromTo(
+      scene.rotation,
+      { y: -0.2 },
+      { y: 0.2, repeat: -1, yoyo: true, ease: "power2.inOut", duration: 3 }
+    );
+
+    // ── Render loop ───────────────────────────────────────────────────────
+    const render = () => {
+      animId = requestAnimationFrame(render);
+      geometry.setFromPoints(vertices);
+      renderer.render(scene, camera);
     };
+    render();
 
     onResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
@@ -187,9 +161,6 @@ const HeartScene = ({ onComplete, active = true }: HeartSceneProps) => {
       renderer.setSize(window.innerWidth, window.innerHeight);
     };
     window.addEventListener("resize", onResize);
-
-    // Only start sequences when active
-    if (!active) return;
 
     // Show portrait image after 0.5s
     closingTimer = setTimeout(() => {
@@ -207,10 +178,8 @@ const HeartScene = ({ onComplete, active = true }: HeartSceneProps) => {
     if (svg && document.body.contains(svg)) {
       document.body.removeChild(svg);
     }
-    }; // End of initScene
 
     return () => {
-      clearTimeout(initTimer);
       if (onResize) window.removeEventListener("resize", onResize);
       if (animId) cancelAnimationFrame(animId);
       if (tl) tl.kill();
@@ -223,7 +192,7 @@ const HeartScene = ({ onComplete, active = true }: HeartSceneProps) => {
         mountRef.current.removeChild(renderer.domElement);
       }
     };
-  }, [active]);
+  }, []);
 
   return (
     <div

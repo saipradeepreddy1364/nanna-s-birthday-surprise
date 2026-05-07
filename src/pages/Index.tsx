@@ -51,6 +51,16 @@ const Index = () => {
             <ScrollingText onComplete={goToHeart} />
           </motion.div>
         )}
+        {section === "heart" && (
+          <motion.div
+            key="heart"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <HeartScene onComplete={goToFinal} />
+          </motion.div>
+        )}
         {section === "final" && (
           <motion.div
             key="final"
@@ -61,13 +71,6 @@ const Index = () => {
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Background preloaded HeartScene - starts after opening page */}
-      {section !== "opening" && (
-        <div className={section === "heart" ? "block" : "hidden"}>
-          <HeartScene onComplete={goToFinal} active={section === "heart"} />
-        </div>
-      )}
     </div>
   );
 };

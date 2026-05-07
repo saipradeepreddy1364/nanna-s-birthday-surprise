@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useMemo } from "react";
 import * as THREE from "three";
 import gsap from "gsap";
 
-const PORTRAIT_IMAGE = "/nanna-portrait.jpeg"; // Reverted to .jpeg per user's latest update
+const PORTRAIT_IMAGE = "/nanna-potrait.jpeg"; // Updated to match user's filename (potrait typo)
 
 const HEART_SVG_PATH =
   "M300,107.77C284.68,55.67,239.76,0,162.31,0,64.83,0,0,82.08,0,171.71c0,.48,0,.95,0,1.43-.52,19.5,0,217.94,299.87,379.69v0l0,0,.05,0,0,0,0,0v0C600,391.08,600.48,192.64,600,173.14c0-.48,0-.95,0-1.43C600,82.08,535.17,0,437.69,0,360.24,0,315.32,55.67,300,107.77";

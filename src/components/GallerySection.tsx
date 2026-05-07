@@ -95,7 +95,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
               <img
                 src={FINAL_IMAGE}
                 alt="Final Memory"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
               <motion.div 

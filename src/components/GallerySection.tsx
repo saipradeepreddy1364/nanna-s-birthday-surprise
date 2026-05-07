@@ -9,7 +9,7 @@ const GRID_IMAGES = [
   "/gallery/g5.jpg"
 ];
 
-const FINAL_IMAGE = "/gallery/final.jpg";
+const FINAL_IMAGE = "/gallery/final.jpeg";
 
 interface GallerySectionProps {
   onComplete: () => void;
@@ -68,7 +68,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                       opacity: index < gridStep ? 1 : 0,
                       backgroundColor: index < gridStep ? "transparent" : "rgba(0,0,0,1)"
                     }}
-                    className="relative rounded-md overflow-hidden aspect-square border border-white/10"
+                    className="relative rounded-md overflow-hidden aspect-square"
                   >
                     {index < gridStep && (
                       <motion.img
@@ -89,7 +89,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
               initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
               animate={{ opacity: 1, scale: 1, rotate: 0 }}
               transition={{ type: "spring", damping: 15, stiffness: 100 }}
-              className="relative w-full h-full rounded-xl overflow-hidden shadow-2xl border-4 border-white/20"
+              className="relative w-full h-full rounded-xl overflow-hidden shadow-2xl"
               style={{ boxShadow: "var(--glow-pink)" }}
             >
               <img

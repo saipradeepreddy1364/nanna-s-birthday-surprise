@@ -98,11 +98,11 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     mountRef.current.appendChild(renderer.domElement);
 
     // ── Dense particles with GSAP per-particle timeline (exact match) ─────
-    // i += 0.05 → ~36,000 particles (High density)
+    // i += 0.075 → ~24,000 particles (Great density, very fast)
     tl = gsap.timeline({ repeat: -1, yoyo: true });
     const vertices: THREE.Vector3[] = [];
 
-    for (let i = 0; i < length; i += 0.05) {
+    for (let i = 0; i < length; i += 0.075) {
       const point = path.getPointAtLength(i);
       const vector = new THREE.Vector3(point.x, -point.y, 0);
       vector.x += (Math.random() - 0.5) * 30;
@@ -117,9 +117,9 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
           y: -276,
           z: 0,
           ease: "power2.inOut",
-          duration: 1.5 + Math.random() * 2,
+          duration: 1.2 + Math.random() * 1.5,
         },
-        i * 0.0005
+        i * 0.0001
       );
     }
 
@@ -325,7 +325,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
         }}
       >
         <div
-          className="w-[250px] h-[250px] sm:w-[380px] sm:h-[380px] md:w-[500px] md:h-[500px] relative flex items-center justify-center overflow-hidden"
+          className="w-[345px] h-[345px] sm:w-[517px] sm:h-[517px] md:w-[690px] md:h-[690px] relative flex items-center justify-center overflow-hidden"
           style={{
             filter: "drop-shadow(0 0 50px hsla(342, 82%, 56%, 0.5))",
           }}

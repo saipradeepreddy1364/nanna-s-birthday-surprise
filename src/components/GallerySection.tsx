@@ -86,27 +86,69 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
           ) : (
             <motion.div
               key="final"
-              initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
-              animate={{ opacity: 1, scale: 1, rotate: 0 }}
-              transition={{ type: "spring", damping: 15, stiffness: 100 }}
-              className="flex flex-col items-center gap-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1 }}
+              className="flex flex-col lg:flex-row items-center justify-center gap-8 w-full max-w-7xl px-4"
             >
-              <div className="relative w-full max-w-4xl rounded-xl overflow-hidden shadow-2xl">
-                <img
-                  src={FINAL_IMAGE}
-                  alt="Final Memory"
-                  className="w-full max-h-[70vh] object-contain"
-                />
-              </div>
+              {/* Left Side: Portrait */}
               <motion.div 
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 1 }}
-                className="text-center"
+                initial={{ x: -50, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.8 }}
+                className="w-full lg:w-1/2 flex justify-center"
               >
-                <p className="text-white font-cursive text-2xl sm:text-4xl drop-shadow-lg">
-                  Every moment with you is a treasure Nanna...
-                </p>
+                <div className="relative w-full max-w-md aspect-[4/5] rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/10">
+                  <img
+                    src={FINAL_IMAGE}
+                    alt="Final Memory"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </motion.div>
+
+              {/* Right Side: Butterfly Background with Animated Text */}
+              <motion.div 
+                initial={{ x: 50, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.8, duration: 0.8 }}
+                className="w-full lg:w-1/2 relative aspect-square lg:aspect-[4/5] flex items-center justify-center p-8 rounded-2xl overflow-hidden shadow-2xl"
+              >
+                {/* Background Image */}
+                <img 
+                  src="/butterfly-msg.jpg" 
+                  alt="Message Background" 
+                  className="absolute inset-0 w-full h-full object-cover opacity-60"
+                />
+                <div className="absolute inset-0 bg-black/40" />
+
+                {/* Animated Text Lines */}
+                <div className="relative z-10 space-y-4 max-w-lg">
+                  {[
+                    "I honestly don’t know what my presence means to you or how important this connection is in your life.",
+                    "But I know one thing for certain…",
+                    "When you entered my life, you brought back the smiles, trust, and happiness I had once lost.",
+                    "A world I thought had disappeared somehow came back just through knowing you.",
+                    "So even if this may be just a normal acquaintance to you, to me it is something very special—something that brought life back into my world.",
+                    "---",
+                    "In a time where many girls cross all boundaries without restraint,",
+                    "she is like a moonlight beauty who has gracefully set her own limits —",
+                    "soft, serene, and rare… a soul that shines with quiet dignity and self-respect"
+                  ].map((line, idx) => (
+                    <motion.p
+                      key={idx}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 1.5 + idx * 0.8, duration: 0.6 }}
+                      className={`text-white font-cursive leading-relaxed drop-shadow-md ${
+                        line === "---" ? "opacity-0 h-2" : 
+                        idx < 5 ? "text-lg sm:text-xl text-pink-100" : "text-lg sm:text-xl text-yellow-100 italic"
+                      }`}
+                    >
+                      {line === "---" ? "" : line}
+                    </motion.p>
+                  ))}
+                </div>
               </motion.div>
             </motion.div>
           )}

@@ -89,15 +89,15 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                     key={index}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: index < gridStep ? 1 : 0 }}
-                    className="relative rounded-md overflow-hidden aspect-square"
+                    className="relative rounded-md overflow-hidden aspect-square bg-pink-900/10 flex items-center justify-center border border-pink-500/20"
                   >
                     {index < gridStep && (
-                      <motion.img
-                        initial={{ scale: 1.2, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        src={src}
-                        className="w-full h-full object-cover"
-                      />
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                         <div className="w-8 h-8 bg-pink-500/30 rotate-45 transform origin-center">
+                            <div className="absolute top-0 left-0 w-full h-full bg-pink-500/30 -translate-x-1/2 rounded-full" />
+                            <div className="absolute top-0 left-0 w-full h-full bg-pink-500/30 -translate-y-1/2 rounded-full" />
+                         </div>
+                      </div>
                     )}
                   </motion.div>
                 );
@@ -117,7 +117,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                 animate={{ x: 0, opacity: 1 }}
                 className="w-full lg:w-1/2 flex justify-center"
               >
-                <div className="relative w-full max-w-md aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl">
+                <div className="relative w-full max-w-md aspect-[4/5] rounded-2xl overflow-hidden !shadow-none !border-none">
                   <img
                     src={FINAL_IMAGE}
                     alt="Final Memory"

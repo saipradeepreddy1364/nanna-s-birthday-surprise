@@ -101,7 +101,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
 
     // ── Particles ─────
     const vertices: THREE.Vector3[] = [];
-    const particleCount = 3500;
+    const particleCount = 20000;
 
     for (let i = 0; i < particleCount; i++) {
       const t = Math.random() * Math.PI * 2;
@@ -109,19 +109,19 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       const x = 16 * Math.pow(Math.sin(t), 3);
       const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
       
-      const vector = new THREE.Vector3(x * 12, y * 12, 0);
-      vector.x += (Math.random() - 0.5) * 20;
-      vector.y += (Math.random() - 0.5) * 20;
-      vector.z += (Math.random() - 0.5) * 100;
+      const vector = new THREE.Vector3(x * 18, y * 18, 0);
+      vector.x += (Math.random() - 0.5) * 30;
+      vector.y += (Math.random() - 0.5) * 30;
+      vector.z += (Math.random() - 0.5) * 150;
       vertices.push(vector);
     }
 
     geometry = new THREE.BufferGeometry().setFromPoints(vertices);
     material = new THREE.PointsMaterial({
       color: 0xff4d8d,
-      size: 4,
+      size: 6,
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.9,
       blending: THREE.AdditiveBlending,
     });
 

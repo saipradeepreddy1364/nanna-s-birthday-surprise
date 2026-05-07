@@ -89,8 +89,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
               initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
               animate={{ opacity: 1, scale: 1, rotate: 0 }}
               transition={{ type: "spring", damping: 15, stiffness: 100 }}
-              className="relative w-full h-full rounded-xl overflow-hidden shadow-2xl"
-              style={{ boxShadow: "var(--glow-pink)" }}
+              className="relative w-full h-full"
             >
               <img
                 src={FINAL_IMAGE}

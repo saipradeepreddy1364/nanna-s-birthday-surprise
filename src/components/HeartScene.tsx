@@ -27,7 +27,12 @@ const PETAL_COLORS   = ["hsl(342,82%,70%)", "hsl(350,90%,75%)", "hsl(330,80%,65%
 const HEART_COLORS   = ["hsl(342,82%,60%)", "hsl(38,70%,60%)",  "hsl(350,90%,70%)", "hsl(320,75%,65%)"];
 const SPARKLE_COLORS = ["hsl(38,90%,65%)",  "hsl(50,95%,70%)",  "hsl(38,70%,55%)",  "hsl(55,100%,75%)"];
 
-const HeartScene = () => {
+interface HeartSceneProps {
+  onComplete: () => void;
+  active?: boolean;
+}
+
+const HeartScene = ({ onComplete, active = true }: HeartSceneProps) => {
   const mountRef = useRef<HTMLDivElement>(null);
   const [showClosing, setShowClosing] = useState(false);
   const [showText, setShowText] = useState(false);
@@ -85,11 +90,11 @@ const HeartScene = () => {
     mountRef.current.appendChild(renderer.domElement);
 
     // ── Dense particles with GSAP per-particle timeline (exact match) ─────
-    // i += 0.08 → ~22,500 particles (Rich density)
+    // i += 0.035 → ~51,000 particles (Ultra-High Density)
     const tl = gsap.timeline({ repeat: -1, yoyo: true });
     const vertices: THREE.Vector3[] = [];
 
-    for (let i = 0; i < length; i += 0.08) {
+    for (let i = 0; i < length; i += 0.035) {
       const point = path.getPointAtLength(i);
       const vector = new THREE.Vector3(point.x, -point.y, 0);
       vector.x += (Math.random() - 0.5) * 30;
@@ -152,6 +157,9 @@ const HeartScene = () => {
     };
     window.addEventListener("resize", onResize);
 
+    // Only start sequences when active
+    if (!active) return;
+
     // Show portrait image after 0.5s
     const closingTimer = setTimeout(() => {
       setShowClosing(true);
@@ -180,7 +188,7 @@ const HeartScene = () => {
         mountRef.current.removeChild(renderer.domElement);
       }
     };
-  }, []);
+  }, [active]);
 
   return (
     <div

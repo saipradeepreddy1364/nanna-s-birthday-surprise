@@ -24,9 +24,13 @@ const Index = () => {
         {section === "opening" && <OpeningPage onComplete={goToGallery} />}
         {section === "gallery" && <GallerySection onComplete={goToText} />}
         {section === "text" && <ScrollingText onComplete={goToHeart} />}
-        {section === "heart" && <HeartScene onComplete={goToFinal} />}
         {section === "final" && <FinalPage />}
       </AnimatePresence>
+
+      {/* Background preloaded HeartScene */}
+      <div className={section === "heart" ? "block" : "hidden"}>
+        <HeartScene onComplete={goToFinal} active={section === "heart"} />
+      </div>
     </div>
   );
 };

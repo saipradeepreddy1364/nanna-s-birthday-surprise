@@ -106,65 +106,80 @@ const HeartScene = ({ onComplete, active = true }: HeartSceneProps) => {
     mountRef.current.appendChild(renderer.domElement);
 
     // ── Dense particles with GSAP per-particle timeline (exact match) ─────
-    // i += 0.035 → ~51,000 particles (Ultra-High Density)
-    const tl = gsap.timeline({ repeat: -1, yoyo: true });
+    // i += 0.09 → ~20,000 particles (High density, safe for mobile)
+    tl = gsap.timeline({ repeat: -1, yoyo: true });
     const vertices: THREE.Vector3[] = [];
 
-    for (let i = 0; i < length; i += 0.035) {
-      const point = path.getPointAtLength(i);
-      const vector = new THREE.Vector3(point.x, -point.y, 0);
-      vector.x += (Math.random() - 0.5) * 30;
-      vector.y += (Math.random() - 0.5) * 30;
-      vector.z += (Math.random() - 0.5) * 70;
-      vertices.push(vector);
+    // Chunked initialization to prevent browser freeze
+    let currentIndex = 0;
+    const chunkSize = 1000;
+    
+    const processChunk = () => {
+      const end = Math.min(currentIndex + chunkSize, length);
+      for (let i = currentIndex; i < end; i += 0.09) {
+        const point = path.getPointAtLength(i);
+        const vector = new THREE.Vector3(point.x, -point.y, 0);
+        vector.x += (Math.random() - 0.5) * 30;
+        vector.y += (Math.random() - 0.5) * 30;
+        vector.z += (Math.random() - 0.5) * 70;
+        vertices.push(vector);
 
-      tl.from(
-        vector,
-        {
-          x: 300,
-          y: -276,
-          z: 0,
-          ease: "power2.inOut",
-          duration: 2 + Math.random() * 3,
-        },
-        i * 0.002
-      );
-    }
-
-    const geometry = new THREE.BufferGeometry().setFromPoints(vertices);
-    const material = new THREE.PointsMaterial({
-      color:    0xee5282,
-      blending: THREE.AdditiveBlending,
-      size:     3,
-    });
-
-    const particles = new THREE.Points(geometry, material);
-    // Shift heart to center of the screen, accounting for the 1.4x scale
-    // (Center of 600x552 SVG is 300, 276)
-    const scale = 1.4;
-    particles.position.x = -300 * scale;
-    particles.position.y = 276 * scale;
-    particles.scale.set(0, 0, 0); // Start at 0 for synced growth
-    scene.add(particles);
-
-    // Sync scaling of heart particles
-    gsap.to(particles.scale, { x: scale, y: scale, z: scale, duration: 4, ease: "power2.out", delay: 0.5 });
-
-    // Gentle left-right sway
-    gsap.fromTo(
-      scene.rotation,
-      { y: -0.2 },
-      { y: 0.2, repeat: -1, yoyo: true, ease: "power2.inOut", duration: 3 }
-    );
-
-    // ── Render loop ───────────────────────────────────────────────────────
-    let animId: number;
-    const render = () => {
-      animId = requestAnimationFrame(render);
-      geometry.setFromPoints(vertices);
-      renderer.render(scene, camera);
+        tl!.from(
+          vector,
+          {
+            x: 300,
+            y: -276,
+            z: 0,
+            ease: "power2.inOut",
+            duration: 2 + Math.random() * 3,
+          },
+          i * 0.002
+        );
+      }
+      
+      currentIndex = end;
+      if (currentIndex < length) {
+        setTimeout(processChunk, 10);
+      } else {
+        finalizeScene();
+      }
     };
-    render();
+
+    processChunk();
+
+    const finalizeScene = () => {
+      geometry = new THREE.BufferGeometry().setFromPoints(vertices);
+      material = new THREE.PointsMaterial({
+        color:    0xee5282,
+        blending: THREE.AdditiveBlending,
+        size:     3,
+      });
+
+      const particles = new THREE.Points(geometry, material);
+      // Shift heart to center of the screen, accounting for the 1.4x scale
+      const scale = 1.4;
+      particles.position.x = -300 * scale;
+      particles.position.y = 276 * scale;
+      particles.scale.set(0, 0, 0); 
+      scene.add(particles);
+
+      gsap.to(particles.scale, { x: scale, y: scale, z: scale, duration: 4, ease: "power2.out", delay: 0.5 });
+
+      // Gentle left-right sway
+      gsap.fromTo(
+        scene.rotation,
+        { y: -0.2 },
+        { y: 0.2, repeat: -1, yoyo: true, ease: "power2.inOut", duration: 3 }
+      );
+
+      // ── Render loop ───────────────────────────────────────────────────────
+      const render = () => {
+        animId = requestAnimationFrame(render);
+        if (geometry) geometry.setFromPoints(vertices);
+        renderer.render(scene, camera);
+      };
+      render();
+    };
 
     onResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;

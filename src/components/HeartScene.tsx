@@ -327,6 +327,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
         <div
           className="w-[345px] h-[345px] sm:w-[517px] sm:h-[517px] md:w-[690px] md:h-[690px] relative flex items-center justify-center overflow-hidden"
           style={{
+            background: "linear-gradient(135deg, hsl(340, 30%, 8%) 0%, hsl(342, 40%, 12%) 100%)",
             filter: "drop-shadow(0 0 50px hsla(342, 82%, 56%, 0.5))",
           }}
         >
@@ -342,7 +343,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
           <img 
             src={PORTRAIT_IMAGE} 
             alt="Nanna" 
-            className="w-full h-full object-contain object-center"
+            className="w-full h-full object-cover object-center"
             style={{
               clipPath: "url(#heart-clip)",
               WebkitClipPath: "url(#heart-clip)",

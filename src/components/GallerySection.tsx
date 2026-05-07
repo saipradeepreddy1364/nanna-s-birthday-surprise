@@ -7,7 +7,7 @@ const GRID_IMAGES = [
   "/gallery/g3.jpg",
   "/gallery/g4.jpg",
   "/gallery/g5.jpg",
-  "/gallery/image.png"
+  "/gallery/card.png"
 ];
 
 const FINAL_IMAGE = "/gallery/final.jpeg";
@@ -117,7 +117,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
               >
                 {/* Background Image */}
                 <img 
-                  src="/butterfly-msg.jpg" 
+                  src="/gallery/image.png" 
                   alt="Message Background" 
                   className="absolute inset-0 w-full h-full object-cover opacity-60"
                 />

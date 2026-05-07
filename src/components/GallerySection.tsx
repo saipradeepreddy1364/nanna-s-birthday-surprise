@@ -165,7 +165,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                             key={lineIdx}
                             className={`text-white font-elegant leading-relaxed drop-shadow-lg ${
                               line === "---" ? "opacity-0" : 
-                              groupIdx < 3 ? "text-xl sm:text-2xl md:text-3xl text-pink-50" : "text-xl sm:text-2xl md:text-3xl text-yellow-50 italic"
+                              groupIdx < 3 ? "text-lg sm:text-xl md:text-2xl text-pink-50" : "text-lg sm:text-xl md:text-2xl text-yellow-50 italic"
                             }`}
                           >
                             {line === "---" ? "" : line}

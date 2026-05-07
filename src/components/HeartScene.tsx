@@ -94,17 +94,19 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(window.innerWidth, window.innerHeight);
+    // Explicitly set alpha to 0 for full transparency
     renderer.setClearColor(0x000000, 0);
     mountRef.current.appendChild(renderer.domElement);
 
     // ── Dense particles with GSAP per-particle timeline (exact match) ─────
-    // i += 0.075 → ~24,000 particles (Great density, very fast)
+    // i += 0.05 → ~36,000 particles (High density)
     tl = gsap.timeline({ repeat: -1, yoyo: true });
     const vertices: THREE.Vector3[] = [];
 
-    for (let i = 0; i < length; i += 0.075) {
+    for (let i = 0; i < length; i += 0.05) {
       const point = path.getPointAtLength(i);
-      const vector = new THREE.Vector3(point.x, -point.y, 0);
+      // Center the heart by subtracting the midpoint (300, 276)
+      const vector = new THREE.Vector3(point.x - 300, -(point.y - 276), 0);
       vector.x += (Math.random() - 0.5) * 30;
       vector.y += (Math.random() - 0.5) * 30;
       vector.z += (Math.random() - 0.5) * 70;
@@ -113,8 +115,8 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       tl.from(
         vector,
         {
-          x: 300,
-          y: -276,
+          x: 0,
+          y: 0,
           z: 0,
           ease: "power2.inOut",
           duration: 1.2 + Math.random() * 1.5,
@@ -131,10 +133,9 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     });
 
     const particles = new THREE.Points(geometry, material);
-    // Shift heart to center of the screen, accounting for the 1.15x scale
+    // Since we centered the vertices, the container can stay at 0,0
     const scale = 1.15;
-    particles.position.x = -300 * scale;
-    particles.position.y = 276 * scale;
+    particles.position.set(0, 0, 0);
     particles.scale.set(0, 0, 0); 
     scene.add(particles);
 
@@ -234,7 +235,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       `}</style>
 
       {/* Three.js canvas */}
-      <div ref={mountRef} className="absolute inset-0" />
+      <div ref={mountRef} className="absolute inset-0 bg-transparent" />
 
       {/* ── Beautiful falling elements (after 8s) ── */}
       {showClosing && fallingItems.map((item) => (
@@ -325,9 +326,9 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
         }}
       >
         <div
-          className="w-[345px] h-[345px] sm:w-[517px] sm:h-[517px] md:w-[690px] md:h-[690px] relative flex items-center justify-center overflow-hidden"
+          className="w-[310px] h-[310px] sm:w-[465px] sm:h-[465px] md:w-[620px] md:h-[620px] relative flex items-center justify-center overflow-hidden"
           style={{
-            background: "linear-gradient(135deg, hsl(340, 30%, 8%) 0%, hsl(342, 40%, 12%) 100%)",
+            background: "transparent",
             filter: "drop-shadow(0 0 50px hsla(342, 82%, 56%, 0.5))",
           }}
         >

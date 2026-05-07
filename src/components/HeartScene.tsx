@@ -66,7 +66,22 @@ const HeartScene = ({ onComplete, active = true }: HeartSceneProps) => {
   useEffect(() => {
     if (!mountRef.current) return;
 
-    // ── Hidden SVG to sample path ─────────────────────────────────────────
+    // Small delay to prevent blocking the initial render of the parent page
+    const initTimer = setTimeout(() => {
+      initScene();
+    }, 100);
+
+    let animId: number;
+    let renderer: THREE.WebGLRenderer;
+    let geometry: THREE.BufferGeometry;
+    let material: THREE.PointsMaterial;
+    let tl: gsap.core.Timeline;
+    let onResize: () => void;
+    let closingTimer: NodeJS.Timeout;
+    let textTimer: NodeJS.Timeout;
+
+    const initScene = () => {
+      // ── Hidden SVG to sample path ─────────────────────────────────────────
     const svgNS = "http://www.w3.org/2000/svg";
     const svg   = document.createElementNS(svgNS, "svg");
     svg.setAttribute("viewBox", "0 0 600 552");
@@ -150,7 +165,7 @@ const HeartScene = ({ onComplete, active = true }: HeartSceneProps) => {
     };
     render();
 
-    const onResize = () => {
+    onResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
@@ -161,7 +176,7 @@ const HeartScene = ({ onComplete, active = true }: HeartSceneProps) => {
     if (!active) return;
 
     // Show portrait image after 0.5s
-    const closingTimer = setTimeout(() => {
+    closingTimer = setTimeout(() => {
       setShowClosing(true);
       // Animate the portrait scaling up
       gsap.fromTo("#portrait-reveal-container", 
@@ -171,20 +186,24 @@ const HeartScene = ({ onComplete, active = true }: HeartSceneProps) => {
     }, 500); 
     
     // Show text after an additional 4s (12s total)
-    const textTimer = setTimeout(() => setShowText(true), 12000);
+    textTimer = setTimeout(() => setShowText(true), 12000);
 
-    document.body.removeChild(svg);
+    if (document.body.contains(svg)) {
+      document.body.removeChild(svg);
+    }
+    }; // End of initScene
 
     return () => {
+      clearTimeout(initTimer);
       window.removeEventListener("resize", onResize);
-      cancelAnimationFrame(animId);
-      clearTimeout(closingTimer);
-      clearTimeout(textTimer);
-      tl.kill();
-      renderer.dispose();
-      geometry.dispose();
-      material.dispose();
-      if (mountRef.current?.contains(renderer.domElement)) {
+      if (animId) cancelAnimationFrame(animId);
+      if (tl) tl.kill();
+      if (closingTimer) clearTimeout(closingTimer);
+      if (textTimer) clearTimeout(textTimer);
+      if (renderer) renderer.dispose();
+      if (geometry) geometry.dispose();
+      if (material) material.dispose();
+      if (mountRef.current && renderer?.domElement && mountRef.current.contains(renderer.domElement)) {
         mountRef.current.removeChild(renderer.domElement);
       }
     };

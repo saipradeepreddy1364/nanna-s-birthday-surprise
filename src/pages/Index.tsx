@@ -27,10 +27,12 @@ const Index = () => {
         {section === "final" && <FinalPage />}
       </AnimatePresence>
 
-      {/* Background preloaded HeartScene */}
-      <div className={section === "heart" ? "block" : "hidden"}>
-        <HeartScene onComplete={goToFinal} active={section === "heart"} />
-      </div>
+      {/* Background preloaded HeartScene - starts after opening page */}
+      {section !== "opening" && (
+        <div className={section === "heart" ? "block" : "hidden"}>
+          <HeartScene onComplete={goToFinal} active={section === "heart"} />
+        </div>
+      )}
     </div>
   );
 };

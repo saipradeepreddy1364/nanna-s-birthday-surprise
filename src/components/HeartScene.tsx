@@ -194,7 +194,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     closingTimer = setTimeout(() => {
       setShowClosing(true);
       // Animate the portrait scaling up
-      gsap.fromTo("#portrait-reveal-container", 
+      gsap.fromTo("#portrait-reveal", 
         { scale: 0, opacity: 0 }, 
         { scale: 1, opacity: 1, duration: 4, ease: "power2.out" }
       );
@@ -261,8 +261,12 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
         }
       `}</style>
 
-      {/* Three.js canvas */}
-      <div ref={mountRef} className="absolute inset-0 bg-transparent" />
+      {/* Three.js canvas - moved to higher z-index to avoid being blocked by portrait */}
+      <div 
+        ref={mountRef} 
+        className="absolute inset-0 bg-transparent" 
+        style={{ zIndex: 15, pointerEvents: "none" }}
+      />
 
       {/* ── Beautiful falling elements (after 8s) ── */}
       {showClosing && fallingItems.map((item) => (
@@ -341,36 +345,27 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       ))}
 
       {/* Portrait centered in heart, expanding from start */}
-      <div 
-        id="portrait-reveal-container"
-        className="fixed z-10 pointer-events-none"
-        style={{
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%) scale(0)",
-          opacity: 0,
-          transformOrigin: "center center",
-        }}
-      >
-        <svg 
-          viewBox="0 0 100 100" 
-          className="w-[310px] h-[310px] sm:w-[465px] sm:h-[465px] md:w-[620px] md:h-[620px] drop-shadow-[0_0_30px_rgba(238,82,130,0.3)]"
-          style={{ background: "transparent" }}
-        >
-          <defs>
-            <clipPath id="heart-clip-svg" clipPathUnits="objectBoundingBox">
-              <path d="M0.5,1 C0.5,1 0,0.7 0,0.35 C0,0.15 0.15,0 0.35,0 C0.45,0 0.5,0.05 0.5,0.05 C0.5,0.05 0.55,0 0.65,0 C0.85,0 1,0.15 1,0.35 C1,0.7 0.5,1 0.5,1 Z" />
-            </clipPath>
-          </defs>
-          <image 
-            href={PORTRAIT_IMAGE} 
-            width="100" 
-            height="100" 
-            preserveAspectRatio="xMidYMid slice"
-            clipPath="url(#heart-clip-svg)"
-          />
-        </svg>
-      </div>
+      <motion.img 
+          id="portrait-reveal"
+          src={PORTRAIT_IMAGE} 
+          alt="Nanna"
+          className="fixed z-10 pointer-events-none w-[310px] h-[310px] sm:w-[465px] sm:h-[465px] md:w-[620px] md:h-[620px] object-cover object-center bg-transparent border-none"
+          style={{
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%) scale(0)",
+            opacity: 0,
+            transformOrigin: "center center",
+            maskImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 552'%3E%3Cpath d='M300,107.77C284.68,55.67,239.76,0,162.31,0,64.83,0,0,82.08,0,171.71c0,.48,0,.95,0,1.43-.52,19.5,0,217.94,299.87,379.69C600,391.08,600.48,192.64,600,173.14c0-.48,0-.95,0-1.43C600,82.08,535.17,0,437.69,0,360.24,0,315.32,55.67,300,107.77'/%3E%3C/svg%3E")`,
+            maskSize: 'contain',
+            maskRepeat: 'no-repeat',
+            maskPosition: 'center',
+            WebkitMaskImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 552'%3E%3Cpath d='M300,107.77C284.68,55.67,239.76,0,162.31,0,64.83,0,0,82.08,0,171.71c0,.48,0,.95,0,1.43-.52,19.5,0,217.94,299.87,379.69C600,391.08,600.48,192.64,600,173.14c0-.48,0-.95,0-1.43C600,82.08,535.17,0,437.69,0,360.24,0,315.32,55.67,300,107.77'/%3E%3C/svg%3E")`,
+            WebkitMaskSize: 'contain',
+            WebkitMaskRepeat: 'no-repeat',
+            WebkitMaskPosition: 'center',
+          }}
+        />
 
       {/* Closing text - moved below the heart */}
       {showText && (

@@ -89,18 +89,20 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
               initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
               animate={{ opacity: 1, scale: 1, rotate: 0 }}
               transition={{ type: "spring", damping: 15, stiffness: 100 }}
-              className="relative w-full h-full"
+              className="flex flex-col items-center gap-6"
             >
-              <img
-                src={FINAL_IMAGE}
-                alt="Final Memory"
-                className="w-full h-full object-contain"
-              />
-              <motion.div
+              <div className="relative w-full max-w-4xl rounded-xl overflow-hidden shadow-2xl">
+                <img
+                  src={FINAL_IMAGE}
+                  alt="Final Memory"
+                  className="w-full max-h-[70vh] object-contain"
+                />
+              </div>
+              <motion.div 
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 1 }}
-                className="absolute bottom-8 left-0 right-0 text-center"
+                className="text-center"
               >
                 <p className="text-white font-cursive text-2xl sm:text-4xl drop-shadow-lg">
                   Every moment with you is a treasure Nanna...

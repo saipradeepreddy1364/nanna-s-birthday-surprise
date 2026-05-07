@@ -354,7 +354,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       {/* Closing text - moved below the heart */}
       {showText && (
         <div
-          className="absolute inset-0 flex items-end justify-center z-20 pb-12 sm:pb-20 px-4"
+          className="absolute bottom-0 left-0 right-0 flex items-center justify-center z-20 pb-10 sm:pb-16 px-4"
           style={{ animation: "heartbeat 2s ease-in-out infinite" }}
         >
           <h1

@@ -34,20 +34,16 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
     }
   }, [gridStep]);
 
-  const [scrollStep, setScrollStep] = useState(0);
-  const totalSteps = 4;
+  const [isScrolling, setIsScrolling] = useState(false);
 
   useEffect(() => {
-    if (isFinal && scrollStep < totalSteps) {
+    if (isFinal) {
       const timer = setTimeout(() => {
-        setScrollStep(prev => prev + 1);
-      }, scrollStep === 0 ? 8000 : 10000); // 8s for first group, then 10s
-      return () => clearTimeout(timer);
-    } else if (isFinal && scrollStep === totalSteps) {
-      const timer = setTimeout(onComplete, 6000); // Final delay before transition
+        setIsScrolling(true);
+      }, 8000); // Wait 8 seconds at the top
       return () => clearTimeout(timer);
     }
-  }, [isFinal, scrollStep, onComplete]);
+  }, [isFinal]);
 
   const TEXT_GROUPS = [
     [
@@ -148,31 +144,30 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                 />
                 <div className="absolute inset-0 bg-black/40" />
 
-                {/* Step-wise Scrolling Text Container */}
+                {/* Continuous Scrolling Text Container */}
                 <div className="relative z-10 w-full h-full flex items-start justify-center p-8 sm:p-12 overflow-hidden">
                   <motion.div 
-                    animate={{ y: `-${scrollStep * 100}%` }}
+                    animate={isScrolling ? { y: "-100%" } : { y: "0%" }}
                     transition={{ 
-                      duration: 2.5, 
-                      ease: "easeInOut" 
+                      duration: 90, 
+                      ease: "linear" 
                     }}
-                    className="w-full h-full"
+                    onAnimationComplete={onComplete}
+                    className="w-full"
                   >
-                    {[...TEXT_GROUPS, ["---"]].map((group, groupIdx) => (
-                      <div key={groupIdx} className="h-full w-full flex flex-col items-center justify-start pt-12 space-y-6 sm:space-y-8 text-center px-4">
-                        {group.map((line, lineIdx) => (
-                          <p
-                            key={lineIdx}
-                            className={`text-white font-elegant leading-relaxed drop-shadow-lg ${
-                              line === "---" ? "opacity-0" : 
-                              groupIdx < 3 ? "text-lg sm:text-xl md:text-2xl text-pink-50" : "text-lg sm:text-xl md:text-2xl text-yellow-50 italic"
-                            }`}
-                          >
-                            {line === "---" ? "" : line}
-                          </p>
-                        ))}
-                      </div>
-                    ))}
+                    <div className="flex flex-col items-center justify-start pt-12 space-y-12 text-center px-4">
+                      {TEXT_GROUPS.flat().map((line, idx) => (
+                        <p
+                          key={idx}
+                          className={`text-white font-elegant leading-relaxed drop-shadow-lg ${
+                            idx < 5 ? "text-lg sm:text-xl md:text-2xl text-pink-50" : "text-lg sm:text-xl md:text-2xl text-yellow-50 italic"
+                          }`}
+                        >
+                          {line}
+                        </p>
+                      ))}
+                      <div className="h-64" /> {/* Extra space at the end */}
+                    </div>
                   </motion.div>
                 </div>
               </motion.div>

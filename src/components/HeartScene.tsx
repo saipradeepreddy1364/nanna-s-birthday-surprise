@@ -21,7 +21,7 @@ type FallingItem = {
   color: string;
 };
 
-const HEART_CLIP_PATH = "M0.5,1 C0.5,1 0,0.7 0,0.35 C0,0.15 0.15,0 0.35,0 C0.5,0 0.5,0.15 0.5,0.15 C0.5,0.15 0.5,0 0.65,0 C0.85,0 1,0.15 1,0.35 C1,0.7 0.5,1 0.5,1 Z";
+const HEART_CLIP_PATH = "M0.5,1 C0.5,1 0,0.7 0,0.35 C0,0.15 0.15,0 0.35,0 C0.45,0 0.5,0.05 0.5,0.05 C0.5,0.05 0.55,0 0.65,0 C0.85,0 1,0.15 1,0.35 C1,0.7 0.5,1 0.5,1 Z";
 
 const PETAL_COLORS   = ["hsl(342,82%,70%)", "hsl(350,90%,75%)", "hsl(330,80%,65%)", "hsl(355,85%,72%)"];
 const HEART_COLORS   = ["hsl(342,82%,60%)", "hsl(38,70%,60%)",  "hsl(350,90%,70%)", "hsl(320,75%,65%)"];
@@ -117,9 +117,9 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
           y: -276,
           z: 0,
           ease: "power2.inOut",
-          duration: 2 + Math.random() * 3,
+          duration: 1.5 + Math.random() * 2,
         },
-        i * 0.002
+        i * 0.0005
       );
     }
 
@@ -131,8 +131,8 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     });
 
     const particles = new THREE.Points(geometry, material);
-    // Shift heart to center of the screen, accounting for the 1.4x scale
-    const scale = 1.4;
+    // Shift heart to center of the screen, accounting for the 1.15x scale
+    const scale = 1.15;
     particles.position.x = -300 * scale;
     particles.position.y = 276 * scale;
     particles.scale.set(0, 0, 0); 
@@ -325,7 +325,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
         }}
       >
         <div
-          className="w-[300px] h-[300px] sm:w-[450px] sm:h-[450px] md:w-[600px] md:h-[600px] relative flex items-center justify-center overflow-hidden"
+          className="w-[250px] h-[250px] sm:w-[380px] sm:h-[380px] md:w-[500px] md:h-[500px] relative flex items-center justify-center overflow-hidden"
           style={{
             filter: "drop-shadow(0 0 50px hsla(342, 82%, 56%, 0.5))",
           }}

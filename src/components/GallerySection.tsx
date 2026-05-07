@@ -6,8 +6,7 @@ const GRID_IMAGES = [
   "/gallery/g2.jpg",
   "/gallery/g3.jpg",
   "/gallery/g4.jpg",
-  "/gallery/g5.jpg",
-  "/gallery/card.png"
+  "/gallery/g5.jpg"
 ];
 
 const FINAL_IMAGE = "/gallery/final.jpeg";
@@ -130,7 +129,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                     animate={{ y: "-100%" }}
                     transition={{ 
                       repeat: Infinity, 
-                      duration: 30, 
+                      duration: 45, 
                       ease: "linear" 
                     }}
                     className="space-y-8 text-center"

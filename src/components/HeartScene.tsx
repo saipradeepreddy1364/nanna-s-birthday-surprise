@@ -109,7 +109,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     
     const processChunk = () => {
       const end = Math.min(currentIndex + chunkSize, length);
-      for (let i = currentIndex; i < end; i += 0.05) {
+      for (let i = currentIndex; i < end; i += 0.15) {
         const point = path.getPointAtLength(i);
         // Center the heart by subtracting the midpoint (300, 276)
         const vector = new THREE.Vector3(point.x - 300, -(point.y - 276), 0);

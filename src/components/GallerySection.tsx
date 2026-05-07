@@ -2,11 +2,11 @@ import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const GRID_IMAGES = [
-  "/gallery/g1.jpg",
-  "/gallery/g2.jpg",
-  "/gallery/g3.jpg",
-  "/gallery/g4.jpg",
-  "/gallery/g5.jpg"
+  "/nanna-potrait.jpeg",
+  "/gallery/final.jpeg",
+  "/gallery/card.png",
+  "/nanna-potrait.jpeg",
+  "/gallery/final.jpeg"
 ];
 
 const FINAL_IMAGE = "/gallery/final.jpeg";
@@ -16,44 +16,40 @@ interface GallerySectionProps {
 }
 
 const GallerySection = ({ onComplete }: GallerySectionProps) => {
-  const [gridStep, setGridStep] = useState(0); // 0 to 9
+  const [gridStep, setGridStep] = useState(0);
   const [isFinal, setIsFinal] = useState(false);
+  const [scrollStep, setScrollStep] = useState(0);
+  const totalSteps = 4;
 
+  // Grid reveal logic
   useEffect(() => {
-    if (gridStep < 9) {
+    if (!isFinal) {
+      const timer = setInterval(() => {
+        setGridStep(prev => {
+          if (prev >= 9) {
+            clearInterval(timer);
+            setTimeout(() => setIsFinal(true), 1500);
+            return 9;
+          }
+          return prev + 1;
+        });
+      }, 1200);
+      return () => clearInterval(timer);
+    }
+  }, [isFinal]);
+
+  // Step-wise scroll logic
+  useEffect(() => {
+    if (isFinal && scrollStep < totalSteps) {
       const timer = setTimeout(() => {
-        setGridStep((prev) => prev + 1);
-      }, 1000); // 1 second per image reveal
+        setScrollStep(prev => prev + 1);
+      }, scrollStep === 0 ? 8000 : 7000); // 8s first pause, then 7s
       return () => clearTimeout(timer);
-    } else {
-      // All grid images revealed, wait a bit then show final image
-      const timer = setTimeout(() => {
-        setIsFinal(true);
-      }, 2000);
+    } else if (isFinal && scrollStep === totalSteps) {
+      const timer = setTimeout(onComplete, 5000);
       return () => clearTimeout(timer);
     }
-  }, [gridStep]);
-
-  const [isScrolling, setIsScrolling] = useState(false);
-
-  useEffect(() => {
-    if (isFinal) {
-      // Start scrolling after 8s
-      const scrollTimer = setTimeout(() => {
-        setIsScrolling(true);
-      }, 8000);
-      
-      // Navigate to next scene after scroll finishes (8s + 60s + 2s buffer)
-      const completeTimer = setTimeout(() => {
-        onComplete();
-      }, 70000); 
-
-      return () => {
-        clearTimeout(scrollTimer);
-        clearTimeout(completeTimer);
-      };
-    }
-  }, [isFinal, onComplete]);
+  }, [isFinal, scrollStep, onComplete]);
 
   const TEXT_GROUPS = [
     [
@@ -96,10 +92,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                   <motion.div
                     key={index}
                     initial={{ opacity: 0 }}
-                    animate={{
-                      opacity: index < gridStep ? 1 : 0,
-                      backgroundColor: "transparent"
-                    }}
+                    animate={{ opacity: index < gridStep ? 1 : 0 }}
                     className="relative rounded-md overflow-hidden aspect-square"
                   >
                     {index < gridStep && (
@@ -107,7 +100,6 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                         initial={{ scale: 1.2, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         src={src}
-                        alt={`Memory ${index + 1}`}
                         className="w-full h-full object-cover"
                       />
                     )}
@@ -127,10 +119,9 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
               <motion.div 
                 initial={{ x: -50, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.5, duration: 0.8 }}
                 className="w-full lg:w-1/2 flex justify-center"
               >
-                <div className="relative w-full max-w-md aspect-[4/5] rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.4)]">
+                <div className="relative w-full max-w-md aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl">
                   <img
                     src={FINAL_IMAGE}
                     alt="Final Memory"
@@ -143,7 +134,6 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
               <motion.div 
                 initial={{ x: 50, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
-                transition={{ duration: 0.8 }}
                 className="w-full lg:w-1/2 relative aspect-square lg:aspect-[4/5] flex items-center justify-center rounded-2xl overflow-hidden shadow-2xl"
               >
                 {/* Background Card Image */}
@@ -154,29 +144,31 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                 />
                 <div className="absolute inset-0 bg-black/40" />
 
-                {/* Continuous Scrolling Text Container */}
+                {/* Step-wise Scrolling Text Container */}
                 <div className="relative z-10 w-full h-full flex items-start justify-center p-8 sm:p-12 overflow-hidden">
                   <motion.div 
-                    animate={isScrolling ? { y: "-100%" } : { y: "0%" }}
+                    animate={{ y: `-${scrollStep * 100}%` }}
                     transition={{ 
-                      duration: 60, 
-                      ease: "linear" 
+                      duration: 2, 
+                      ease: "easeInOut" 
                     }}
-                    className="w-full"
+                    className="w-full h-full"
                   >
-                    <div className="flex flex-col items-center justify-start pt-12 space-y-12 text-center px-4">
-                      {TEXT_GROUPS.flat().map((line, idx) => (
-                        <p
-                          key={idx}
-                          className={`text-white font-elegant leading-relaxed drop-shadow-lg ${
-                            idx < 5 ? "text-lg sm:text-xl md:text-2xl text-pink-50" : "text-lg sm:text-xl md:text-2xl text-yellow-50 italic"
-                          }`}
-                        >
-                          {line}
-                        </p>
-                      ))}
-                      <div className="h-64" /> {/* Extra space at the end */}
-                    </div>
+                    {[...TEXT_GROUPS, ["---"]].map((group, groupIdx) => (
+                      <div key={groupIdx} className="h-full w-full flex flex-col items-center justify-center space-y-6 sm:space-y-8 text-center px-4">
+                        {group.map((line, lineIdx) => (
+                          <p
+                            key={lineIdx}
+                            className={`text-white font-elegant leading-relaxed drop-shadow-lg ${
+                              line === "---" ? "opacity-0" : 
+                              groupIdx < 3 ? "text-lg sm:text-xl md:text-2xl text-pink-50" : "text-lg sm:text-xl md:text-2xl text-yellow-50 italic"
+                            }`}
+                          >
+                            {line === "---" ? "" : line}
+                          </p>
+                        ))}
+                      </div>
+                    ))}
                   </motion.div>
                 </div>
               </motion.div>

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useMemo } from "react";
+import { motion } from "framer-motion";
 import * as THREE from "three";
 import gsap from "gsap";
 
@@ -99,48 +100,28 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     mountRef.current.appendChild(renderer.domElement);
 
     // ── Dense particles with GSAP per-particle timeline (exact match) ─────
-    // i += 0.075 → ~24,000 particles (High density, fast loading)
-    tl = gsap.timeline({ repeat: -1, yoyo: true });
+    // i += 0.8 → ~2,200 particles (Fast loading, smooth animation)
+    tl = gsap.timeline();
     const vertices: THREE.Vector3[] = [];
 
-    // Chunked initialization to prevent browser freeze
-    let currentIndex = 0;
-    const chunkSize = 1000;
-    
-    const processChunk = () => {
-      const end = Math.min(currentIndex + chunkSize, length);
-      for (let i = currentIndex; i < end; i += 0.15) {
-        const point = path.getPointAtLength(i);
-        // Center the heart by subtracting the midpoint (300, 276)
-        const vector = new THREE.Vector3(point.x - 300, -(point.y - 276), 0);
-        vector.x += (Math.random() - 0.5) * 30;
-        vector.y += (Math.random() - 0.5) * 30;
-        vector.z += (Math.random() - 0.5) * 70;
-        vertices.push(vector);
+    // Faster initialization
+    for (let i = 0; i < length; i += 0.8) {
+      const point = path.getPointAtLength(i);
+      const vector = new THREE.Vector3(point.x - 300, -(point.y - 276), 0);
+      vector.x += (Math.random() - 0.5) * 20;
+      vector.y += (Math.random() - 0.5) * 20;
+      vector.z += (Math.random() - 0.5) * 50;
+      vertices.push(vector);
 
-        tl.from(
-          vector,
-          {
-            x: 0,
-            y: 0,
-            z: 0,
-            ease: "power2.inOut",
-            duration: 1.2 + Math.random() * 1.5,
-          },
-          i * 0.0001
-        );
+      // Only animate 1 in every 3 particles to save performance
+      if (Math.random() > 0.6) {
+        tl.from(vector, {
+          x: 0, y: 0, z: 0,
+          duration: 1 + Math.random(),
+          ease: "power2.out"
+        }, i * 0.0002);
       }
-      
-      currentIndex = end;
-      if (currentIndex < length) {
-        // Fast recursion
-        setTimeout(processChunk, 10);
-      } else {
-        finalizeScene();
-      }
-    };
-
-    processChunk();
+    }
 
     const finalizeScene = () => {
       geometry = new THREE.BufferGeometry().setFromPoints(vertices);
@@ -151,19 +132,16 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       });
 
       const particles = new THREE.Points(geometry, material);
-      // Since we centered the vertices, the container can stay at 0,0
       const scale = 1.15;
-      particles.position.set(0, 0, 0);
       particles.scale.set(0, 0, 0); 
       scene.add(particles);
 
-      gsap.to(particles.scale, { x: scale, y: scale, z: scale, duration: 4, ease: "power2.out", delay: 0.5 });
+      gsap.to(particles.scale, { x: scale, y: scale, z: scale, duration: 2, ease: "back.out(1.2)", delay: 0.2 });
 
       // Gentle left-right sway
-      gsap.fromTo(
-        scene.rotation,
-        { y: -0.2 },
-        { y: 0.2, repeat: -1, yoyo: true, ease: "power2.inOut", duration: 3 }
+      gsap.fromTo(scene.rotation,
+        { y: -0.15 },
+        { y: 0.15, repeat: -1, yoyo: true, ease: "power1.inOut", duration: 4 }
       );
 
       // ── Render loop ───────────────────────────────────────────────────────
@@ -190,18 +168,20 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     };
     window.addEventListener("resize", onResize);
 
-    // Show portrait image after 0.5s
+    // Show portrait image quickly
     closingTimer = setTimeout(() => {
       setShowClosing(true);
-      // Animate the portrait scaling up
       gsap.fromTo("#portrait-reveal", 
         { scale: 0, opacity: 0 }, 
-        { scale: 1, opacity: 1, duration: 4, ease: "power2.out" }
+        { scale: 1, opacity: 1, duration: 2.5, ease: "back.out(1.1)" }
       );
-    }, 500); 
+    }, 300); 
     
-    // Show text after an additional 4s (12s total)
-    textTimer = setTimeout(() => setShowText(true), 12000);
+    // Show text after 4s
+    textTimer = setTimeout(() => setShowText(true), 4000);
+
+    // Final navigation after 14s total in this scene
+    const finalTimer = setTimeout(onComplete, 14000);
 
     if (svg && document.body.contains(svg)) {
       document.body.removeChild(svg);
@@ -213,6 +193,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       if (tl) tl.kill();
       if (closingTimer) clearTimeout(closingTimer);
       if (textTimer) clearTimeout(textTimer);
+      if (finalTimer) clearTimeout(finalTimer);
       if (renderer) renderer.dispose();
       if (geometry) geometry.dispose();
       if (material) material.dispose();
@@ -349,18 +330,18 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
           id="portrait-reveal"
           src={PORTRAIT_IMAGE} 
           alt="Nanna"
-          className="fixed z-10 pointer-events-none w-[310px] h-[310px] sm:w-[465px] sm:h-[465px] md:w-[620px] md:h-[620px] object-cover object-center bg-transparent border-none"
+          className="fixed z-10 pointer-events-none w-[310px] h-[310px] sm:w-[465px] sm:h-[465px] md:w-[620px] md:h-[620px] object-cover object-center !bg-transparent !border-none"
           style={{
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%) scale(0)",
             opacity: 0,
             transformOrigin: "center center",
-            maskImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 552'%3E%3Cpath d='M300,107.77C284.68,55.67,239.76,0,162.31,0,64.83,0,0,82.08,0,171.71c0,.48,0,.95,0,1.43-.52,19.5,0,217.94,299.87,379.69C600,391.08,600.48,192.64,600,173.14c0-.48,0-.95,0-1.43C600,82.08,535.17,0,437.69,0,360.24,0,315.32,55.67,300,107.77'/%3E%3C/svg%3E")`,
+            maskImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 552'%3E%3Cpath fill='black' d='M300,107.77C284.68,55.67,239.76,0,162.31,0,64.83,0,0,82.08,0,171.71c0,.48,0,.95,0,1.43-.52,19.5,0,217.94,299.87,379.69C600,391.08,600.48,192.64,600,173.14c0-.48,0-.95,0-1.43C600,82.08,535.17,0,437.69,0,360.24,0,315.32,55.67,300,107.77'/%3E%3C/svg%3E")`,
             maskSize: 'contain',
             maskRepeat: 'no-repeat',
             maskPosition: 'center',
-            WebkitMaskImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 552'%3E%3Cpath d='M300,107.77C284.68,55.67,239.76,0,162.31,0,64.83,0,0,82.08,0,171.71c0,.48,0,.95,0,1.43-.52,19.5,0,217.94,299.87,379.69C600,391.08,600.48,192.64,600,173.14c0-.48,0-.95,0-1.43C600,82.08,535.17,0,437.69,0,360.24,0,315.32,55.67,300,107.77'/%3E%3C/svg%3E")`,
+            WebkitMaskImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 552'%3E%3Cpath fill='black' d='M300,107.77C284.68,55.67,239.76,0,162.31,0,64.83,0,0,82.08,0,171.71c0,.48,0,.95,0,1.43-.52,19.5,0,217.94,299.87,379.69C600,391.08,600.48,192.64,600,173.14c0-.48,0-.95,0-1.43C600,82.08,535.17,0,437.69,0,360.24,0,315.32,55.67,300,107.77'/%3E%3C/svg%3E")`,
             WebkitMaskSize: 'contain',
             WebkitMaskRepeat: 'no-repeat',
             WebkitMaskPosition: 'center',

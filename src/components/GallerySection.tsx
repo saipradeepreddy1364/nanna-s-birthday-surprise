@@ -78,7 +78,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 1.1 }}
-              className="grid grid-cols-3 grid-rows-3 gap-3 w-full max-w-lg aspect-square"
+              className="grid grid-cols-3 grid-rows-3 gap-4 w-full max-w-2xl aspect-square"
             >
               {[...Array(9)].map((_, index) => (
                 <motion.div

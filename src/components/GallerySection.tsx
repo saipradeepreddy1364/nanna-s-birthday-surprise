@@ -72,20 +72,28 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 1.5, ease: "easeInOut" }}
-              className="w-full max-w-4xl px-4 flex items-center justify-center"
+              className="w-full max-w-4xl px-4 flex flex-col items-center justify-center"
             >
-              {/* Centered Large 3x3 Grid Reveal */}
-              <div className="grid grid-cols-3 gap-2 w-full max-w-3xl mx-auto">
-                {[...Array(9)].map((_, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: index < gridStep ? 1 : 0 }}
-                    className="relative overflow-hidden aspect-square bg-pink-900/15 flex items-center justify-center border border-pink-500/20 shadow-2xl"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 to-transparent" />
-                  </motion.div>
-                ))}
+              {/* Centered Large 3x3 Grid Reveal with 5% overlap */}
+              <div className="w-full max-w-3xl mx-auto flex flex-col">
+                {/* Row 1 */}
+                <div className="grid grid-cols-3 gap-0 w-full relative z-0">
+                  {[...Array(3)].map((_, i) => (
+                    <motion.div key={i} animate={{ opacity: i < gridStep ? 1 : 0 }} className="aspect-square bg-pink-900/15 border border-pink-500/10" />
+                  ))}
+                </div>
+                {/* Row 2 - 5% overlap */}
+                <div className="grid grid-cols-3 gap-0 w-full relative z-10 -mt-[5%]">
+                  {[...Array(3)].map((_, i) => (
+                    <motion.div key={i+3} animate={{ opacity: (i+3) < gridStep ? 1 : 0 }} className="aspect-square bg-pink-900/15 border border-pink-500/10" />
+                  ))}
+                </div>
+                {/* Row 3 - 5% overlap */}
+                <div className="grid grid-cols-3 gap-0 w-full relative z-20 -mt-[5%]">
+                  {[...Array(3)].map((_, i) => (
+                    <motion.div key={i+6} animate={{ opacity: (i+6) < gridStep ? 1 : 0 }} className="aspect-square bg-pink-900/15 border border-pink-500/10" />
+                  ))}
+                </div>
               </div>
             </motion.div>
           ) : (

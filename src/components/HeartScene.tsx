@@ -32,6 +32,7 @@ interface HeartSceneProps {
 
 const HeartScene = ({ onComplete }: HeartSceneProps) => {
   const mountRef = useRef<HTMLDivElement>(null);
+  const portraitRef = useRef<HTMLImageElement>(null);
   const [showClosing, setShowClosing] = useState(false);
   const [showText, setShowText] = useState(false);
 
@@ -131,7 +132,15 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     };
     window.addEventListener("resize", onResize);
 
-    const closingTimer = setTimeout(() => setShowClosing(true), 1500);
+    const closingTimer = setTimeout(() => {
+      setShowClosing(true);
+      if (portraitRef.current) {
+        gsap.fromTo(portraitRef.current, 
+          { scale: 0, opacity: 0 }, 
+          { scale: 1, opacity: 1, duration: 2.5, ease: "power2.out" }
+        );
+      }
+    }, 1500); 
     const textTimer = setTimeout(() => setShowText(true), 4000);
 
     return () => {
@@ -173,8 +182,8 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
         }
       `}</style>
 
-      {/* Three.js canvas */}
-      <div ref={mountRef} className="absolute inset-0 z-20" />
+      {/* Three.js canvas for particles */}
+      <div ref={mountRef} className="absolute inset-0 z-10 pointer-events-none" />
 
       {/* Falling elements */}
       {showClosing && fallingItems.map((item) => (
@@ -186,12 +195,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
             left: `${item.left}%`,
             zIndex: 25,
             pointerEvents: "none",
-            animationName: "hs-fall",
-            animationDuration: `${item.duration}s`,
-            animationDelay: `${item.delay}s`,
-            animationTimingFunction: "linear",
-            animationIterationCount: "infinite",
-            animationFillMode: "both",
+            animation: `hs-fall ${item.duration}s ${item.delay}s linear infinite`,
             ["--hs-drift" as string]: `${item.drift}px`,
             ["--hs-spin"  as string]: `${item.rotate * (Math.random() > 0.5 ? 1 : -1)}deg`,
             ["--hs-color" as string]: item.color,
@@ -211,15 +215,16 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       ))}
 
       {/* Portrait - Perfectly sized to be INSIDE the particle ring */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-        <div className="relative" style={{ transform: "translateY(-40px)" }}>
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-30">
+        <div className="relative !bg-transparent" style={{ transform: "translateY(-40px)" }}>
           <motion.img 
-            id="portrait-reveal"
+            ref={portraitRef}
             src={PORTRAIT_IMAGE} 
             alt="Nanna"
-            className="w-[280px] h-[256px] sm:w-[420px] sm:h-[385px] md:w-[560px] md:h-[513px] object-cover !bg-transparent !border-none !shadow-none"
+            className="w-[280px] h-[256px] sm:w-[420px] sm:h-[385px] md:w-[560px] md:h-[513px] object-cover !bg-transparent !border-none !outline-none !shadow-none !p-0 !m-0"
             style={{
               opacity: 0,
+              scale: 0,
               maskImage: maskUrl,
               WebkitMaskImage: maskUrl,
               maskSize: '100% 100%',

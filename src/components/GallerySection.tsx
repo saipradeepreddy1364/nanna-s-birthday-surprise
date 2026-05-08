@@ -78,14 +78,14 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 1.1 }}
-              className="grid grid-cols-3 grid-rows-3 gap-4 w-full max-w-2xl aspect-square"
+              className="grid grid-cols-3 gap-0 w-full max-w-2xl"
             >
               {[...Array(9)].map((_, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: index < gridStep ? 1 : 0 }}
-                  className="relative rounded-md overflow-hidden aspect-square bg-pink-900/10 flex items-center justify-center border border-pink-500/20"
+                  className="relative overflow-hidden aspect-square bg-pink-900/10 flex items-center justify-center border-[0.5px] border-pink-500/10"
                 >
                   {index < gridStep && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">

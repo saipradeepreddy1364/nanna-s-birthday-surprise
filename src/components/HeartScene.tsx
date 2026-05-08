@@ -25,14 +25,14 @@ type FallingItem = {
   color: string;
 };
 
-const PETAL_COLORS   = ["hsl(342,82%,70%)", "hsl(350,90%,75%)", "hsl(330,80%,65%)", "hsl(355,85%,72%)"];
-const HEART_COLORS   = ["hsl(342,82%,60%)", "hsl(38,70%,60%)",  "hsl(350,90%,70%)", "hsl(320,75%,65%)"];
-const SPARKLE_COLORS = ["hsl(38,90%,65%)",  "hsl(50,95%,70%)",  "hsl(38,70%,55%)",  "hsl(55,100%,75%)"];
+const PETAL_COLORS = ["hsl(342,82%,70%)", "hsl(350,90%,75%)", "hsl(330,80%,65%)", "hsl(355,85%,72%)"];
+const HEART_COLORS = ["hsl(342,82%,60%)", "hsl(38,70%,60%)", "hsl(350,90%,70%)", "hsl(320,75%,65%)"];
+const SPARKLE_COLORS = ["hsl(38,90%,65%)", "hsl(50,95%,70%)", "hsl(38,70%,55%)", "hsl(55,100%,75%)"];
 
 const HeartScene = ({ onComplete }: HeartSceneProps) => {
-  const mountRef    = useRef<HTMLDivElement>(null);
+  const mountRef = useRef<HTMLDivElement>(null);
   const portraitRef = useRef<SVGImageElement>(null);
-  const [showText, setShowText]       = useState(false);
+  const [showText, setShowText] = useState(false);
   const [showFalling, setShowFalling] = useState(false);
 
   const fallingItems = useMemo<FallingItem[]>(() =>
@@ -40,40 +40,40 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       const type: FallingItem["type"] =
         i < 22 ? "petal" : i < 42 ? "heart" : "sparkle";
       const colors =
-        type === "petal"   ? PETAL_COLORS :
-        type === "heart"   ? HEART_COLORS : SPARKLE_COLORS;
+        type === "petal" ? PETAL_COLORS :
+          type === "heart" ? HEART_COLORS : SPARKLE_COLORS;
       return {
         id: i,
         type,
-        left:     Math.random() * 100,
-        delay:    Math.random() * 4,
+        left: Math.random() * 100,
+        delay: Math.random() * 4,
         duration: 4 + Math.random() * 5,
         size:
           type === "sparkle" ? 4 + Math.random() * 6 :
-          type === "heart"   ? 10 + Math.random() * 14 :
-                               12 + Math.random() * 16,
-        opacity:  0.5 + Math.random() * 0.5,
-        drift:    (Math.random() - 0.5) * 100,
-        rotate:   Math.random() * 360,
-        color:    colors[Math.floor(Math.random() * colors.length)],
+            type === "heart" ? 10 + Math.random() * 14 :
+              12 + Math.random() * 16,
+        opacity: 0.5 + Math.random() * 0.5,
+        drift: (Math.random() - 0.5) * 100,
+        rotate: Math.random() * 360,
+        color: colors[Math.floor(Math.random() * colors.length)],
       };
     }),
-  []);
+    []);
 
   useEffect(() => {
     if (!mountRef.current) return;
 
     const svgNS = "http://www.w3.org/2000/svg";
-    const svg   = document.createElementNS(svgNS, "svg");
-    const path  = document.createElementNS(svgNS, "path");
+    const svg = document.createElementNS(svgNS, "svg");
+    const path = document.createElementNS(svgNS, "path");
     path.setAttribute("d", HEART_SVG_PATH);
     svg.appendChild(path);
     document.body.appendChild(svg);
     const length = path.getTotalLength();
     document.body.removeChild(svg);
 
-    const scene    = new THREE.Scene();
-    const camera   = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
     camera.position.z = 500;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -88,7 +88,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
 
     for (let i = 0; i < particleCount; i++) {
       const distance = (i / particleCount) * length;
-      const point    = path.getPointAtLength(distance);
+      const point = path.getPointAtLength(distance);
       const x = (point.x - 300) * 1.18;
       const y = (-(point.y - 255)) * 1.18 + 40;
       const vector = new THREE.Vector3(x, y, (Math.random() - 0.5) * 50);
@@ -137,7 +137,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       }
     }, 1500);
 
-    const textTimer    = setTimeout(() => setShowText(true),    4000);
+    const textTimer = setTimeout(() => setShowText(true), 4000);
     const fallingTimer = setTimeout(() => setShowFalling(true), 4500);
 
     return () => {
@@ -185,18 +185,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
           100% { opacity: 1; transform: translateY(0); }
         }
         @keyframes heart-maroon-pulse {
-          0%, 100% {
-            filter:
-              drop-shadow(0 0 6px rgba(120,0,40,0.7))
-              drop-shadow(0 0 18px rgba(90,0,30,0.5))
-              drop-shadow(0 0 36px rgba(60,0,20,0.35));
-          }
-          50% {
-            filter:
-              drop-shadow(0 0 10px rgba(158,0,50,0.85))
-              drop-shadow(0 0 26px rgba(120,0,40,0.6))
-              drop-shadow(0 0 52px rgba(80,0,25,0.4));
-          }
+          0%, 100% { filter: none; }
         }
         @keyframes heartbeat-scale {
           0%, 100% { transform: translateY(-20px) scale(1);     }
@@ -215,11 +204,8 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
         <div style={{ animation: "heartbeat-scale 2.5s ease-in-out infinite" }}>
           <svg
             viewBox="0 0 600 510"
-            className="w-[300px] h-[255px] sm:w-[440px] sm:h-[374px] md:w-[560px] md:h-[476px]"
-            style={{
-              overflow: "visible",
-              animation: "heart-maroon-pulse 3s ease-in-out infinite",
-            }}
+            className="w-[230px] h-[196px] sm:w-[340px] sm:h-[289px] md:w-[430px] md:h-[366px]"
+            style={{ overflow: "hidden" }}
           >
             <defs>
               <clipPath id="heart-clip-main">
@@ -260,7 +246,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
             animationIterationCount: "infinite",
             animationFillMode: "both",
             ["--hs-drift" as string]: `${item.drift}px`,
-            ["--hs-spin"  as string]: `${item.rotate * (Math.random() > 0.5 ? 1 : -1)}deg`,
+            ["--hs-spin" as string]: `${item.rotate * (Math.random() > 0.5 ? 1 : -1)}deg`,
             ["--hs-color" as string]: item.color,
           }}
         >

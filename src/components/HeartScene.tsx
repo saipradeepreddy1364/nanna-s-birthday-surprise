@@ -76,44 +76,32 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     let textTimer: any;
     let svg: any;
 
-    const svgNS = "http://www.w3.org/2000/svg";
-    svg = document.createElementNS(svgNS, "svg");
-    svg.setAttribute("viewBox", "0 0 600 552");
-    svg.style.cssText = "position:absolute;display:none;";
-    const path  = document.createElementNS(svgNS, "path");
-    path.setAttribute("d", HEART_SVG_PATH);
-    svg.appendChild(path);
-    document.body.appendChild(svg);
 
-    const length = path.getTotalLength(); // ~1800 units
-
-    // ── Three.js setup ────────────────────────────────────────────────────
     const scene    = new THREE.Scene();
-    const camera   = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
-    camera.position.z = 500;
+    const camera   = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
+    camera.position.z = 600;
 
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(window.innerWidth, window.innerHeight);
-    // Explicitly set alpha to 0 for full transparency
     renderer.setClearColor(0x000000, 0);
     mountRef.current.appendChild(renderer.domElement);
 
-    // ── Particles ─────
     const vertices: THREE.Vector3[] = [];
+    const originalPositions: THREE.Vector3[] = [];
     const particleCount = 20000;
 
     for (let i = 0; i < particleCount; i++) {
       const t = Math.random() * Math.PI * 2;
-      // Heart equation
       const x = 16 * Math.pow(Math.sin(t), 3);
       const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
       
-      const vector = new THREE.Vector3(x * 18, y * 18, 0);
-      vector.x += (Math.random() - 0.5) * 30;
-      vector.y += (Math.random() - 0.5) * 30;
-      vector.z += (Math.random() - 0.5) * 150;
+      const vector = new THREE.Vector3(x * 26, y * 26, 0);
+      vector.x += (Math.random() - 0.5) * 40;
+      vector.y += (Math.random() - 0.5) * 40;
+      vector.z += (Math.random() - 0.5) * 200;
       vertices.push(vector);
+      originalPositions.push(vector.clone());
     }
 
     geometry = new THREE.BufferGeometry().setFromPoints(vertices);
@@ -129,24 +117,33 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     particles.scale.set(0, 0, 0);
     scene.add(particles);
 
-    // Animations
     gsap.to(particles.scale, { 
       x: 1, y: 1, z: 1, 
-      duration: 3, 
-      ease: "back.out(1.2)", 
+      duration: 4, 
+      ease: "power2.out", 
       delay: 0.5 
     });
 
     gsap.fromTo(scene.rotation,
-      { y: -0.2 },
-      { y: 0.2, repeat: -1, yoyo: true, ease: "power1.inOut", duration: 4 }
+      { y: -0.1 },
+      { y: 0.1, repeat: -1, yoyo: true, ease: "sine.inOut", duration: 5 }
     );
 
-    const render = () => {
+    const render = (time: number) => {
       animId = requestAnimationFrame(render);
+      
+      const positions = geometry.attributes.position.array as Float32Array;
+      for (let i = 0; i < particleCount; i++) {
+        const i3 = i * 3;
+        const orig = originalPositions[i];
+        positions[i3] = orig.x + Math.sin(time * 0.001 + i) * 5;
+        positions[i3 + 1] = orig.y + Math.cos(time * 0.001 + i) * 5;
+      }
+      geometry.attributes.position.needsUpdate = true;
+      
       renderer.render(scene, camera);
     };
-    render();
+    requestAnimationFrame(render);
 
     onResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
@@ -155,27 +152,21 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     };
     window.addEventListener("resize", onResize);
 
-    // Show portrait image after particles have started
     closingTimer = setTimeout(() => {
       setShowClosing(true);
       gsap.fromTo("#portrait-reveal", 
         { scale: 0, opacity: 0 }, 
-        { scale: 1, opacity: 1, duration: 3, ease: "power2.out" }
+        { scale: 1, opacity: 1, duration: 3.5, ease: "power2.out" }
       );
-    }, 800); 
+    }, 1200); 
+
+    textTimer = setTimeout(() => setShowText(true), 4000);
     
-    // Final navigation after 25s
-    const finalTimer = setTimeout(onComplete, 25000);
-
-    if (svg && document.body.contains(svg)) {
-      document.body.removeChild(svg);
-    }
-
     return () => {
-      if (onResize) window.removeEventListener("resize", onResize);
+      window.removeEventListener("resize", onResize);
       if (animId) cancelAnimationFrame(animId);
       if (closingTimer) clearTimeout(closingTimer);
-      if (finalTimer) clearTimeout(finalTimer);
+      if (textTimer) clearTimeout(textTimer);
       if (renderer) renderer.dispose();
       if (geometry) geometry.dispose();
       if (material) material.dispose();
@@ -190,7 +181,6 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       className="fixed inset-0 z-40"
       style={{ background: "linear-gradient(135deg, hsl(340, 30%, 8%) 0%, hsl(342, 40%, 12%) 100%)" }}
     >
-      {/* ── Keyframes ── */}
       <style>{`
         @keyframes hs-fall {
           0%   { transform: translateY(-30px) translateX(0) rotate(0deg) scale(1); opacity: 0; }
@@ -212,26 +202,14 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
           0%   { opacity: 0; transform: scale(0.85); }
           100% { opacity: 1; transform: scale(1); }
         }
-        @keyframes heartGrow {
-          0% {
-            transform: translate(-50%, -50%) scale(0);
-            opacity: 0;
-          }
-          100% {
-            transform: translate(-50%, -50%) scale(1);
-            opacity: 1;
-          }
-        }
       `}</style>
 
-      {/* Three.js canvas - moved to higher z-index to avoid being blocked by portrait */}
       <div 
         ref={mountRef} 
         className="absolute inset-0 bg-transparent" 
         style={{ zIndex: 15, pointerEvents: "none" }}
       />
 
-      {/* ── Beautiful falling elements (after 8s) ── */}
       {showClosing && fallingItems.map((item) => (
         <div
           key={item.id}
@@ -244,7 +222,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
             animationName: item.type === "sparkle" ? "hs-sparkle-fall" : "hs-fall",
             animationDuration: `${item.duration}s`,
             animationDelay: `${item.delay}s`,
-            animationTimingFunction: item.type === "petal" ? "ease-in" : "linear",
+            animationTimingFunction: "linear",
             animationIterationCount: "infinite",
             animationFillMode: "both",
             ["--hs-drift" as string]: `${item.drift}px`,
@@ -262,10 +240,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
                 animationTimingFunction: "ease-in-out",
               }}
             >
-              <ellipse cx="12" cy="11" rx="7" ry="10"
-                fill={item.color} opacity="0.9" transform="rotate(15 12 11)" />
-              <ellipse cx="12" cy="11" rx="4" ry="7"
-                fill="hsl(350,100%,88%)" opacity="0.45" transform="rotate(15 12 11)" />
+              <ellipse cx="12" cy="11" rx="7" ry="10" fill={item.color} opacity="0.9" transform="rotate(15 12 11)" />
             </svg>
           )}
 
@@ -279,40 +254,23 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
                 animationTimingFunction: "ease-in-out",
               }}
             >
-              <path
-                d="M12 21C12 21 3 14 3 8.5C3 5.42 5.42 3 8.5 3C10.24 3 11.91 3.81 12 5C12.09 3.81 13.76 3 15.5 3C18.58 3 21 5.42 21 8.5C21 14 12 21 12 21Z"
-                fill={item.color} opacity="0.95"
-              />
-              <path
-                d="M12 18C12 18 5 12.5 5 8.5C5 6.57 6.57 5 8.5 5C10.07 5 11 6 12 7C13 6 13.93 5 15.5 5C17.43 5 19 6.57 19 8.5C19 12.5 12 18 12 18Z"
-                fill="hsl(350,100%,85%)" opacity="0.3"
-              />
+              <path d="M12 21C12 21 3 14 3 8.5C3 5.42 5.42 3 8.5 3C10.24 3 11.91 3.81 12 5C12.09 3.81 13.76 3 15.5 3C18.58 3 21 5.42 21 8.5C21 14 12 21 12 21Z" fill={item.color} opacity="0.95" />
             </svg>
           )}
 
           {item.type === "sparkle" && (
-            <svg width={item.size} height={item.size} viewBox="0 0 24 24"
-              style={{ opacity: item.opacity }}
-            >
-              <path
-                d="M12 2L13.5 10.5L22 12L13.5 13.5L12 22L10.5 13.5L2 12L10.5 10.5Z"
-                fill={item.color} opacity="0.95"
-              />
-              <path
-                d="M12 5L13 10.5L19 12L13 13.5L12 19L11 13.5L5 12L11 10.5Z"
-                fill="hsl(50,100%,90%)" opacity="0.5"
-              />
+            <svg width={item.size} height={item.size} viewBox="0 0 24 24" style={{ opacity: item.opacity }}>
+              <path d="M12 2L13.5 10.5L22 12L13.5 13.5L12 22L10.5 13.5L2 12L10.5 10.5Z" fill={item.color} opacity="0.95" />
             </svg>
           )}
         </div>
       ))}
 
-      {/* Portrait centered in heart, expanding from start */}
       <motion.img 
         id="portrait-reveal"
         src={PORTRAIT_IMAGE} 
         alt="Nanna"
-        className="fixed z-10 pointer-events-none w-[310px] h-[310px] sm:w-[465px] sm:h-[465px] md:w-[620px] md:h-[620px] object-cover object-center !bg-transparent !border-none"
+        className="fixed z-10 pointer-events-none w-[310px] h-[310px] sm:w-[465px] sm:h-[465px] md:w-[620px] md:h-[620px] object-cover object-center !bg-transparent !border-none !shadow-none"
         style={{
           top: "50%",
           left: "50%",
@@ -329,6 +287,22 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
           WebkitMaskPosition: 'center',
         }}
       />
+
+      {showText && (
+        <div
+          className="absolute bottom-0 left-0 right-0 flex items-center justify-center z-30 pb-12 sm:pb-20 px-4"
+        >
+          <h1
+            className="font-cursive text-5xl sm:text-7xl md:text-9xl text-center animate-hs-fadein"
+            style={{
+              color: "hsl(38, 70%, 55%)",
+              textShadow: "0 0 30px rgba(0,0,0,0.8), 0 0 15px hsl(38, 70%, 55%, 0.4)",
+            }}
+          >
+            Happy 21st Nanna 💝
+          </h1>
+        </div>
+      )}
     </div>
   );
 };

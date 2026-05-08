@@ -188,51 +188,27 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       {/* Three.js Particle Canvas */}
       <div ref={mountRef} className="absolute inset-0 z-10 pointer-events-none" />
 
-      {/* Falling elements (Always rendering, but delay starts later) */}
-      {showClosing && fallingItems.map((item) => (
-        <div
-          key={item.id}
+      {/* Portrait - Using CLIP-PATH for zero-border perfection (Z-50 to be on top) */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
+        <motion.img 
+          ref={portraitRef}
+          src={PORTRAIT_IMAGE} 
+          alt="Nanna"
+          className="w-[280px] h-[256px] sm:w-[420px] sm:h-[385px] md:w-[560px] md:h-[513px] object-cover"
           style={{
-            position: "absolute",
-            top: 0,
-            left: `${item.left}%`,
-            zIndex: 25,
-            pointerEvents: "none",
-            animation: `hs-fall ${item.duration}s ${item.delay}s linear infinite`,
-            ["--hs-drift" as string]: `${item.drift}px`,
-            ["--hs-spin"  as string]: `${item.rotate * (Math.random() > 0.5 ? 1 : -1)}deg`,
-            ["--hs-color" as string]: item.color,
+            opacity: 0,
+            scale: 0,
+            clipPath: "url(#heart-clip)",
+            WebkitClipPath: "url(#heart-clip)",
+            background: "none",
+            backgroundColor: "transparent",
+            border: "none",
+            outline: "none",
+            boxShadow: "none",
+            filter: "none",
+            transform: "translateY(-40px)",
           }}
-        >
-          {item.type === "heart" && (
-            <svg width={item.size} height={item.size} viewBox="0 0 24 24" style={{ animation: "hs-glow-pulse 1.2s infinite" }}>
-              <path d="M12 21C12 21 3 14 3 8.5C3 5.42 5.42 3 8.5 3C10.24 3 11.91 3.81 12 5C12.09 3.81 13.76 3 15.5 3C18.58 3 21 5.42 21 8.5C21 14 12 21 12 21Z" fill={item.color} />
-            </svg>
-          )}
-          {item.type === "petal" && (
-            <svg width={item.size} height={item.size} viewBox="0 0 24 24" style={{ animation: "hs-glow-pulse 1.5s infinite" }}>
-              <ellipse cx="12" cy="11" rx="7" ry="10" fill={item.color} transform="rotate(15 12 11)" />
-            </svg>
-          )}
-        </div>
-      ))}
-
-      {/* Portrait - Using CLIP-PATH for zero-border perfection */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-30">
-        <div className="relative !bg-transparent" style={{ transform: "translateY(-40px)" }}>
-          <motion.img 
-            ref={portraitRef}
-            src={PORTRAIT_IMAGE} 
-            alt="Nanna"
-            className="w-[280px] h-[256px] sm:w-[420px] sm:h-[385px] md:w-[560px] md:h-[513px] object-cover !bg-transparent !border-none !outline-none !shadow-none !p-0 !m-0"
-            style={{
-              opacity: 0,
-              scale: 0,
-              clipPath: "url(#heart-clip)",
-              WebkitClipPath: "url(#heart-clip)",
-            }}
-          />
-        </div>
+        />
       </div>
 
       {showText && (

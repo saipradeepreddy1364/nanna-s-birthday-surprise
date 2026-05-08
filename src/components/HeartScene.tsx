@@ -109,7 +109,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     const geometry = new THREE.BufferGeometry().setFromPoints(vertices);
     const material = new THREE.PointsMaterial({
       color: 0xff4d8a, blending: THREE.AdditiveBlending,
-      size: 2.5, transparent: true, opacity: 1.0,
+      size: 3, transparent: true, opacity: 1.0,
     });
 
     const particles = new THREE.Points(geometry, material);
@@ -266,7 +266,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
               strokeWidth="28"
               opacity="0.55"
               filter="url(#heart-edge-glow)"
-              transform="translate(0, -20)"
+              transform="translate(0, -12)"
             />
             {/* Inner tight glow — hugs the edge cleanly */}
             <path
@@ -275,7 +275,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
               stroke="#ff80aa"
               strokeWidth="10"
               opacity="0.7"
-              transform="translate(0, -20)"
+              transform="translate(0, -12)"
             />
           </svg>
         </div>

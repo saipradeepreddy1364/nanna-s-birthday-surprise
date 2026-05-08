@@ -160,7 +160,8 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     <div
       className="fixed inset-0 z-40 overflow-hidden"
       style={{
-        background: "linear-gradient(135deg, #0F0208 0%, #1A0209 100%)",
+        // FIX: slightly darker background
+        background: "linear-gradient(135deg, #050003 0%, #0d0105 100%)",
       }}
     >
       <style>{`
@@ -184,9 +185,6 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
           0%   { opacity: 0; transform: translateY(10px); }
           100% { opacity: 1; transform: translateY(0); }
         }
-        @keyframes heart-maroon-pulse {
-          0%, 100% { filter: none; }
-        }
         @keyframes heartbeat-scale {
           0%, 100% { transform: translateY(-20px) scale(1);     }
           15%      { transform: translateY(-20px) scale(1.035); }
@@ -196,16 +194,25 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
         }
       `}</style>
 
-      {/* Three.js canvas */}
-      <div ref={mountRef} className="absolute inset-0 z-10 pointer-events-none" />
+      {/*
+        Z-INDEX STACK (low → high):
+          base             → dark background (this div)
+          z-30             → Three.js particle heart (mountRef)
+          z-50             → Heart portrait SVG
+          z-55             → Falling petals / hearts / sparkles  ← FIX: was z-25 (behind particles & portrait)
+          z-60             → Birthday text                        ← FIX: was z-40 (behind portrait)
+      */}
 
-      {/* ── Heart portrait — zero black border, maroon glow only ── */}
+      {/* Three.js canvas — sits behind portrait so particles glow around its edges */}
+      <div ref={mountRef} className="absolute inset-0 z-30 pointer-events-none" />
+
+      {/* Heart portrait */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
         <div style={{ animation: "heartbeat-scale 2.5s ease-in-out infinite" }}>
           <svg
             viewBox="0 0 600 510"
             className="w-[230px] h-[196px] sm:w-[340px] sm:h-[289px] md:w-[430px] md:h-[366px]"
-            style={{ overflow: "hidden" }}
+            style={{ overflow: "visible" }}
           >
             <defs>
               <clipPath id="heart-clip-main">
@@ -213,7 +220,6 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
               </clipPath>
             </defs>
 
-            {/* Portrait — clipped to heart, NO stroke at all */}
             <image
               ref={portraitRef}
               href={PORTRAIT_IMAGE}
@@ -229,7 +235,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
         </div>
       </div>
 
-      {/* ── Falling elements ── */}
+      {/* Falling petals / hearts / sparkles — FIX: z-index 55, in front of portrait */}
       {showFalling && fallingItems.map((item) => (
         <div
           key={item.id}
@@ -237,7 +243,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
             position: "absolute",
             top: 0,
             left: `${item.left}%`,
-            zIndex: 25,
+            zIndex: 55,                          // ← was 25
             pointerEvents: "none",
             animationName: item.type === "sparkle" ? "hs-sparkle-fall" : "hs-fall",
             animationDuration: `${item.duration}s`,
@@ -303,9 +309,9 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
         </div>
       ))}
 
-      {/* ── Birthday text ── */}
+      {/* Birthday text — FIX: z-60, above everything */}
       {showText && (
-        <div className="absolute bottom-8 left-0 right-0 flex items-center justify-center z-40 px-4">
+        <div className="absolute bottom-8 left-0 right-0 flex items-center justify-center z-60 px-4">
           <h1
             className="font-cursive text-4xl sm:text-5xl md:text-6xl text-center"
             style={{

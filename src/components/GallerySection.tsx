@@ -77,17 +77,38 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
               <div className="w-full max-w-3xl mx-auto flex flex-col">
                 <div className="grid grid-cols-3 gap-0 w-full relative z-0">
                   {[...Array(3)].map((_, i) => (
-                    <motion.div key={i} animate={{ opacity: i < gridStep ? 1 : 0 }} className="aspect-square bg-pink-900/15 border border-pink-500/10" />
+                    <motion.div key={i} animate={{ opacity: i < gridStep ? 1 : 0 }} className="aspect-square bg-pink-900/20 border border-pink-500/10 overflow-hidden">
+                      <img 
+                        src={`/gallery/${i + 1}.jpeg`} 
+                        alt="" 
+                        className="w-full h-full object-cover" 
+                        onError={(e) => (e.currentTarget.style.display = 'none')}
+                      />
+                    </motion.div>
                   ))}
                 </div>
                 <div className="grid grid-cols-3 gap-0 w-full relative z-10 -mt-[5%]">
                   {[...Array(3)].map((_, i) => (
-                    <motion.div key={i+3} animate={{ opacity: (i+3) < gridStep ? 1 : 0 }} className="aspect-square bg-pink-900/15 border border-pink-500/10" />
+                    <motion.div key={i+3} animate={{ opacity: (i+3) < gridStep ? 1 : 0 }} className="aspect-square bg-pink-900/20 border border-pink-500/10 overflow-hidden">
+                      <img 
+                        src={`/gallery/${i + 4}.jpeg`} 
+                        alt="" 
+                        className="w-full h-full object-cover" 
+                        onError={(e) => (e.currentTarget.style.display = 'none')}
+                      />
+                    </motion.div>
                   ))}
                 </div>
                 <div className="grid grid-cols-3 gap-0 w-full relative z-20 -mt-[5%]">
                   {[...Array(3)].map((_, i) => (
-                    <motion.div key={i+6} animate={{ opacity: (i+6) < gridStep ? 1 : 0 }} className="aspect-square bg-pink-900/15 border border-pink-500/10" />
+                    <motion.div key={i+6} animate={{ opacity: (i+6) < gridStep ? 1 : 0 }} className="aspect-square bg-pink-900/20 border border-pink-500/10 overflow-hidden">
+                      <img 
+                        src={`/gallery/${i + 7}.jpeg`} 
+                        alt="" 
+                        className="w-full h-full object-cover" 
+                        onError={(e) => (e.currentTarget.style.display = 'none')}
+                      />
+                    </motion.div>
                   ))}
                 </div>
               </div>

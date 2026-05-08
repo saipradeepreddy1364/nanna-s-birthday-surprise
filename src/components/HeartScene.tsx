@@ -238,6 +238,47 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
         </div>
       </div>
 
+      {/* Heart edge glow — z-56, sits just above portrait, soft pink stroke
+          blooms outward from the exact heart boundary to hide the dark ring */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-[56]">
+        <div style={{ animation: "heartbeat-scale 2.5s ease-in-out infinite" }}>
+          <svg
+            viewBox="0 0 600 510"
+            className="w-[230px] h-[196px] sm:w-[340px] sm:h-[289px] md:w-[430px] md:h-[366px]"
+            style={{ overflow: "visible" }}
+          >
+            <defs>
+              <filter id="heart-edge-glow" x="-40%" y="-40%" width="180%" height="180%">
+                <feGaussianBlur stdDeviation="10" result="blur1" />
+                <feGaussianBlur stdDeviation="5" result="blur2" in="SourceGraphic" />
+                <feMerge>
+                  <feMergeNode in="blur1" />
+                  <feMergeNode in="blur1" />
+                  <feMergeNode in="blur2" />
+                </feMerge>
+              </filter>
+            </defs>
+            {/* Outer soft glow — wide bloom */}
+            <path
+              d={HEART_SVG_PATH}
+              fill="none"
+              stroke="#ff4d8a"
+              strokeWidth="28"
+              opacity="0.55"
+              filter="url(#heart-edge-glow)"
+            />
+            {/* Inner tight glow — hugs the edge cleanly */}
+            <path
+              d={HEART_SVG_PATH}
+              fill="none"
+              stroke="#ff80aa"
+              strokeWidth="10"
+              opacity="0.7"
+            />
+          </svg>
+        </div>
+      </div>
+
       {/* Falling petals / hearts / sparkles — z-58, above particle canvas */}
       {showFalling && fallingItems.map((item) => (
         <div

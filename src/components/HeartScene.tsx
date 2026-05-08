@@ -70,16 +70,13 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     let renderer: THREE.WebGLRenderer;
     let geometry: THREE.BufferGeometry;
     let material: THREE.PointsMaterial;
-    let tl: gsap.core.Timeline;
     let onResize: () => void;
     let closingTimer: any;
     let textTimer: any;
-    let svg: any;
-
 
     const scene    = new THREE.Scene();
     const camera   = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
-    camera.position.z = 600;
+    camera.position.z = 700;
 
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -96,7 +93,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       const x = 16 * Math.pow(Math.sin(t), 3);
       const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
       
-      const vector = new THREE.Vector3(x * 26, y * 26, 0);
+      const vector = new THREE.Vector3(x * 34, (y * 34) + 40, 0);
       vector.x += (Math.random() - 0.5) * 40;
       vector.y += (Math.random() - 0.5) * 40;
       vector.z += (Math.random() - 0.5) * 200;
@@ -270,9 +267,9 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
         id="portrait-reveal"
         src={PORTRAIT_IMAGE} 
         alt="Nanna"
-        className="fixed z-10 pointer-events-none w-[310px] h-[310px] sm:w-[465px] sm:h-[465px] md:w-[620px] md:h-[620px] object-cover object-center !bg-transparent !border-none !shadow-none"
+        className="fixed z-10 pointer-events-none w-[240px] h-[240px] sm:w-[360px] sm:h-[360px] md:w-[480px] md:h-[480px] object-cover object-center !bg-transparent !border-none !shadow-none"
         style={{
-          top: "50%",
+          top: "45%",
           left: "50%",
           transform: "translate(-50%, -50%) scale(0)",
           opacity: 0,
@@ -290,13 +287,13 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
 
       {showText && (
         <div
-          className="absolute bottom-0 left-0 right-0 flex items-center justify-center z-30 pb-12 sm:pb-20 px-4"
+          className="absolute bottom-4 sm:bottom-8 left-0 right-0 flex items-center justify-center z-30 px-4"
         >
           <h1
-            className="font-cursive text-5xl sm:text-7xl md:text-9xl text-center animate-hs-fadein"
+            className="font-cursive text-3xl sm:text-5xl md:text-7xl text-center animate-hs-fadein"
             style={{
               color: "hsl(38, 70%, 55%)",
-              textShadow: "0 0 30px rgba(0,0,0,0.8), 0 0 15px hsl(38, 70%, 55%, 0.4)",
+              textShadow: "0 0 20px rgba(0,0,0,0.8), 0 0 10px hsl(38, 70%, 55%, 0.4)",
             }}
           >
             Happy 21st Nanna 💝

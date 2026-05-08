@@ -5,18 +5,14 @@ import gsap from "gsap";
 
 const PORTRAIT_IMAGE = "/nanna-potrait.jpeg";
 
+// Smooth heart path — symmetric, no deep top-cut, fills cleanly
 const HEART_SVG_PATH =
-  "M300,140 C280,100 230,50 160,50 C70,50 0,120 0,210 C0,330 180,450 300,550 C420,450 600,330 600,210 C600,120 530,50 440,50 C370,50 320,100 300,140";
-
-// Slightly inset path for the inner border layer (scaled down ~2%)
-const HEART_INNER_PATH =
-  "M300,148 C281,109 233,58 163,58 C76,58 8,126 8,213 C8,331 185,449 300,543 C415,449 592,331 592,213 C592,126 524,58 437,58 C367,58 319,109 300,148";
+  "M300,480 C150,380 20,280 20,170 C20,90 80,30 160,30 C210,30 255,55 300,100 C345,55 390,30 440,30 C520,30 580,90 580,170 C580,280 450,380 300,480 Z";
 
 interface HeartSceneProps {
   onComplete: () => void;
 }
 
-// ── Falling element types ──────────────────────────────────────────────────────
 type FallingItem = {
   id: number;
   type: "petal" | "heart" | "sparkle";
@@ -30,56 +26,55 @@ type FallingItem = {
   color: string;
 };
 
-const PETAL_COLORS   = ["hsl(342,82%,70%)", "hsl(350,90%,75%)", "hsl(330,80%,65%)", "hsl(355,85%,72%)"];
-const HEART_COLORS   = ["hsl(342,82%,60%)", "hsl(38,70%,60%)",  "hsl(350,90%,70%)", "hsl(320,75%,65%)"];
-const SPARKLE_COLORS = ["hsl(38,90%,65%)",  "hsl(50,95%,70%)",  "hsl(38,70%,55%)",  "hsl(55,100%,75%)"];
+const PETAL_COLORS = ["hsl(342,82%,70%)", "hsl(350,90%,75%)", "hsl(330,80%,65%)", "hsl(355,85%,72%)"];
+const HEART_COLORS = ["hsl(342,82%,60%)", "hsl(38,70%,60%)", "hsl(350,90%,70%)", "hsl(320,75%,65%)"];
+const SPARKLE_COLORS = ["hsl(38,90%,65%)", "hsl(50,95%,70%)", "hsl(38,70%,55%)", "hsl(55,100%,75%)"];
 
 const HeartScene = ({ onComplete }: HeartSceneProps) => {
-  const mountRef    = useRef<HTMLDivElement>(null);
+  const mountRef = useRef<HTMLDivElement>(null);
   const portraitRef = useRef<SVGImageElement>(null);
-  const [showText, setShowText]       = useState(false);
+  const [showText, setShowText] = useState(false);
   const [showFalling, setShowFalling] = useState(false);
 
-  // Pre-generate falling items once
   const fallingItems = useMemo<FallingItem[]>(() =>
     Array.from({ length: 55 }, (_, i) => {
       const type: FallingItem["type"] =
         i < 22 ? "petal" : i < 42 ? "heart" : "sparkle";
       const colors =
-        type === "petal"   ? PETAL_COLORS :
-        type === "heart"   ? HEART_COLORS : SPARKLE_COLORS;
+        type === "petal" ? PETAL_COLORS :
+          type === "heart" ? HEART_COLORS : SPARKLE_COLORS;
       return {
         id: i,
         type,
-        left:     Math.random() * 100,
-        delay:    Math.random() * 4,
+        left: Math.random() * 100,
+        delay: Math.random() * 4,
         duration: 4 + Math.random() * 5,
         size:
           type === "sparkle" ? 4 + Math.random() * 6 :
-          type === "heart"   ? 10 + Math.random() * 14 :
-                               12 + Math.random() * 16,
-        opacity:  0.5 + Math.random() * 0.5,
-        drift:    (Math.random() - 0.5) * 100,
-        rotate:   Math.random() * 360,
-        color:    colors[Math.floor(Math.random() * colors.length)],
+            type === "heart" ? 10 + Math.random() * 14 :
+              12 + Math.random() * 16,
+        opacity: 0.5 + Math.random() * 0.5,
+        drift: (Math.random() - 0.5) * 100,
+        rotate: Math.random() * 360,
+        color: colors[Math.floor(Math.random() * colors.length)],
       };
     }),
-  []);
+    []);
 
   useEffect(() => {
     if (!mountRef.current) return;
 
     const svgNS = "http://www.w3.org/2000/svg";
-    const svg   = document.createElementNS(svgNS, "svg");
-    const path  = document.createElementNS(svgNS, "path");
+    const svg = document.createElementNS(svgNS, "svg");
+    const path = document.createElementNS(svgNS, "path");
     path.setAttribute("d", HEART_SVG_PATH);
     svg.appendChild(path);
     document.body.appendChild(svg);
     const length = path.getTotalLength();
     document.body.removeChild(svg);
 
-    const scene    = new THREE.Scene();
-    const camera   = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
     camera.position.z = 500;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -90,26 +85,20 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
 
     const particleCount = 20000;
     const vertices: THREE.Vector3[] = [];
-
-    // Staggered Timeline for individual expansion + yoyo
     const tl = gsap.timeline({ repeat: -1, yoyo: true });
 
     for (let i = 0; i < particleCount; i++) {
       const distance = (i / particleCount) * length;
-      const point    = path.getPointAtLength(distance);
-
+      const point = path.getPointAtLength(distance);
       const x = (point.x - 300) * 1.18;
-      const y = (-(point.y - 276)) * 1.18 + 40;
-
+      const y = (-(point.y - 255)) * 1.18 + 40;
       const vector = new THREE.Vector3(x, y, (Math.random() - 0.5) * 50);
       vector.x += (Math.random() - 0.5) * 10;
       vector.y += (Math.random() - 0.5) * 10;
       vertices.push(vector);
 
       tl.from(vector, {
-        x: 0,
-        y: 40,
-        z: 0,
+        x: 0, y: 40, z: 0,
         duration: 2 + Math.random() * 2,
         ease: "power2.inOut",
       }, i * 0.0001);
@@ -117,19 +106,14 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
 
     const geometry = new THREE.BufferGeometry().setFromPoints(vertices);
     const material = new THREE.PointsMaterial({
-      color:     0xee5282,
-      blending:  THREE.AdditiveBlending,
-      size:      4,
-      transparent: true,
-      opacity:   0.85,
+      color: 0xee5282, blending: THREE.AdditiveBlending,
+      size: 4, transparent: true, opacity: 0.85,
     });
 
     const particles = new THREE.Points(geometry, material);
     scene.add(particles);
 
-    // Subtle sway
-    gsap.fromTo(
-      scene.rotation,
+    gsap.fromTo(scene.rotation,
       { y: -0.1 },
       { y: 0.1, repeat: -1, yoyo: true, ease: "sine.inOut", duration: 4 }
     );
@@ -149,15 +133,13 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     };
     window.addEventListener("resize", onResize);
 
-    // Reveal portrait
     const revealTimer = setTimeout(() => {
       if (portraitRef.current) {
         gsap.to(portraitRef.current, { opacity: 1, duration: 2.5, ease: "power2.out" });
       }
     }, 1500);
 
-    // Show text + falling elements
-    const textTimer    = setTimeout(() => setShowText(true),    4000);
+    const textTimer = setTimeout(() => setShowText(true), 4000);
     const fallingTimer = setTimeout(() => setShowFalling(true), 4500);
 
     return () => {
@@ -181,7 +163,6 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       className="fixed inset-0 z-40 overflow-hidden"
       style={{ background: "linear-gradient(135deg, #0a0005 0%, #1a0209 50%, #0f0208 100%)" }}
     >
-      {/* ── Keyframes ── */}
       <style>{`
         @keyframes hs-fall {
           0%   { transform: translateY(-30px) translateX(0) rotate(0deg) scale(1); opacity: 0; }
@@ -200,126 +181,130 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
           50%      { filter: drop-shadow(0 0 10px var(--hs-color)) drop-shadow(0 0 20px var(--hs-color)); }
         }
         @keyframes hs-fadein {
-          0%   { opacity: 0; transform: scale(0.85); }
-          100% { opacity: 1; transform: scale(1); }
+          0%   { opacity: 0; transform: translateY(10px); }
+          100% { opacity: 1; transform: translateY(0); }
         }
-        @keyframes heart-border-pulse {
+        @keyframes heart-glow-pulse {
           0%, 100% {
             filter:
-              drop-shadow(0 0 6px #3d0010)
-              drop-shadow(0 0 14px #7a0020)
-              drop-shadow(0 0 28px #4a0015)
-              drop-shadow(0 0 2px #000);
+              drop-shadow(0 0 6px #000)
+              drop-shadow(0 0 16px #3d0010)
+              drop-shadow(0 0 32px #5a0018);
           }
           50% {
             filter:
-              drop-shadow(0 0 10px #5a0018)
-              drop-shadow(0 0 22px #9e0030)
-              drop-shadow(0 0 42px #6b001f)
-              drop-shadow(0 0 4px #000);
+              drop-shadow(0 0 10px #000)
+              drop-shadow(0 0 24px #5a0018)
+              drop-shadow(0 0 50px #7a0022);
           }
         }
-        @keyframes heartbeat {
-          0%, 100% { transform: translateY(-40px) scale(1); }
-          14%      { transform: translateY(-40px) scale(1.04); }
-          28%      { transform: translateY(-40px) scale(1); }
-          42%      { transform: translateY(-40px) scale(1.03); }
-          70%      { transform: translateY(-40px) scale(1); }
+        @keyframes heartbeat-scale {
+          0%, 100% { transform: translateY(-20px) scale(1);    }
+          15%      { transform: translateY(-20px) scale(1.035); }
+          30%      { transform: translateY(-20px) scale(1);    }
+          45%      { transform: translateY(-20px) scale(1.02); }
+          60%      { transform: translateY(-20px) scale(1);    }
         }
       `}</style>
 
       {/* Three.js canvas */}
       <div ref={mountRef} className="absolute inset-0 z-10 pointer-events-none" />
 
-      {/* ── Heart-shaped portrait with black + maroon border layers ── */}
+      {/* ── Heart portrait with black + maroon borders ── */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
-        <svg
-          viewBox="0 0 600 550"
-          className="w-[280px] h-[256px] sm:w-[420px] sm:h-[385px] md:w-[560px] md:h-[513px]"
-          style={{
-            transform: "translateY(-40px)",
-            overflow: "visible",
-            animation: "heart-border-pulse 3s ease-in-out infinite",
-          }}
-        >
-          <defs>
-            <clipPath id="heart-clip">
-              <path d={HEART_SVG_PATH} />
-            </clipPath>
+        <div style={{ animation: "heartbeat-scale 2.5s ease-in-out infinite" }}>
+          <svg
+            viewBox="0 0 600 510"
+            className="w-[300px] h-[255px] sm:w-[440px] sm:h-[374px] md:w-[560px] md:h-[476px]"
+            style={{
+              overflow: "visible",
+              animation: "heart-glow-pulse 3s ease-in-out infinite",
+            }}
+          >
+            <defs>
+              {/* Clip path uses EXACT same path as border — no mismatch */}
+              <clipPath id="heart-clip-main">
+                <path d={HEART_SVG_PATH} />
+              </clipPath>
 
-            {/* Dark maroon gradient fill for outer border glow shape */}
-            <linearGradient id="maroon-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%"   stopColor="#1a0005" />
-              <stop offset="40%"  stopColor="#3d0010" />
-              <stop offset="100%" stopColor="#0a0003" />
-            </linearGradient>
+              <linearGradient id="maroon-border" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#200008" />
+                <stop offset="40%" stopColor="#500018" />
+                <stop offset="100%" stopColor="#120004" />
+              </linearGradient>
 
-            {/* Subtle inner highlight */}
-            <linearGradient id="inner-shine" x1="20%" y1="0%" x2="80%" y2="100%">
-              <stop offset="0%"   stopColor="#7a0020" stopOpacity="0.5" />
-              <stop offset="100%" stopColor="#000000" stopOpacity="0.0" />
-            </linearGradient>
-          </defs>
+              <linearGradient id="maroon-rim" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#7a0022" />
+                <stop offset="50%" stopColor="#a8002e" />
+                <stop offset="100%" stopColor="#5a0018" />
+              </linearGradient>
+            </defs>
 
-          {/* ── Layer 1: outermost black shadow heart (thickest border) ── */}
-          <path
-            d={HEART_SVG_PATH}
-            fill="none"
-            stroke="#000000"
-            strokeWidth="22"
-            strokeLinejoin="round"
-            opacity="0.95"
-          />
+            {/* ── Image first (behind all strokes) ── */}
+            <image
+              ref={portraitRef}
+              href={PORTRAIT_IMAGE}
+              x="0"
+              y="0"
+              width="600"
+              height="510"
+              preserveAspectRatio="xMidYMid slice"
+              clipPath="url(#heart-clip-main)"
+              style={{ opacity: 0 }}
+            />
 
-          {/* ── Layer 2: deep maroon fill border ── */}
-          <path
-            d={HEART_SVG_PATH}
-            fill="none"
-            stroke="url(#maroon-grad)"
-            strokeWidth="16"
-            strokeLinejoin="round"
-            opacity="0.98"
-          />
+            {/* ── Border strokes rendered ON TOP of image ──
+                 Ordered innermost → outermost so black sits outside maroon */}
 
-          {/* ── Layer 3: mid maroon glow stroke ── */}
-          <path
-            d={HEART_SVG_PATH}
-            fill="none"
-            stroke="#5a0018"
-            strokeWidth="9"
-            strokeLinejoin="round"
-            opacity="0.85"
-          />
+            {/* Bright inner maroon highlight — thinnest, closest to image */}
+            <path
+              d={HEART_SVG_PATH}
+              fill="none"
+              stroke="#d0004a"
+              strokeWidth="2"
+              strokeLinejoin="round"
+              opacity="0.55"
+            />
 
-          {/* ── Layer 4: bright maroon inner rim ── */}
-          <path
-            d={HEART_SVG_PATH}
-            fill="none"
-            stroke="#8b0025"
-            strokeWidth="3"
-            strokeLinejoin="round"
-            opacity="0.7"
-          />
+            {/* Inner maroon rim */}
+            <path
+              d={HEART_SVG_PATH}
+              fill="none"
+              stroke="url(#maroon-rim)"
+              strokeWidth="6"
+              strokeLinejoin="round"
+              opacity="0.95"
+            />
 
-          {/* ── The actual portrait image, clipped to heart ── */}
-          <image
-            ref={portraitRef}
-            href={PORTRAIT_IMAGE}
-            width="600"
-            height="550"
-            preserveAspectRatio="xMidYMid slice"
-            clipPath="url(#heart-clip)"
-            style={{ opacity: 0 }}
-          />
+            {/* Mid maroon body */}
+            <path
+              d={HEART_SVG_PATH}
+              fill="none"
+              stroke="url(#maroon-border)"
+              strokeWidth="14"
+              strokeLinejoin="round"
+            />
 
-          {/* ── Layer 5: inner shine overlay on top of image ── */}
-          <path
-            d={HEART_SVG_PATH}
-            fill="url(#inner-shine)"
-            clipPath="url(#heart-clip)"
-            opacity="0.18"
-          />
-        </svg>
+            {/* Deep maroon dark layer */}
+            <path
+              d={HEART_SVG_PATH}
+              fill="none"
+              stroke="#1a0006"
+              strokeWidth="20"
+              strokeLinejoin="round"
+              opacity="0.9"
+            />
+
+            {/* Outermost thick BLACK border */}
+            <path
+              d={HEART_SVG_PATH}
+              fill="none"
+              stroke="#000000"
+              strokeWidth="28"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
       </div>
 
       {/* ── Falling elements ── */}
@@ -339,7 +324,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
             animationIterationCount: "infinite",
             animationFillMode: "both",
             ["--hs-drift" as string]: `${item.drift}px`,
-            ["--hs-spin"  as string]: `${item.rotate * (Math.random() > 0.5 ? 1 : -1)}deg`,
+            ["--hs-spin" as string]: `${item.rotate * (Math.random() > 0.5 ? 1 : -1)}deg`,
             ["--hs-color" as string]: item.color,
           }}
         >
@@ -359,7 +344,6 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
                 fill="hsl(350,100%,88%)" opacity="0.45" transform="rotate(15 12 11)" />
             </svg>
           )}
-
           {item.type === "heart" && (
             <svg width={item.size} height={item.size} viewBox="0 0 24 24"
               style={{
@@ -380,7 +364,6 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
               />
             </svg>
           )}
-
           {item.type === "sparkle" && (
             <svg width={item.size} height={item.size} viewBox="0 0 24 24"
               style={{ opacity: item.opacity }}

@@ -5,7 +5,6 @@ import gsap from "gsap";
 
 const PORTRAIT_IMAGE = "/nanna-potrait.jpeg";
 
-// Smooth heart path — symmetric, no deep top-cut, fills cleanly
 const HEART_SVG_PATH =
   "M300,480 C150,380 20,280 20,170 C20,90 80,30 160,30 C210,30 255,55 300,100 C345,55 390,30 440,30 C520,30 580,90 580,170 C580,280 450,380 300,480 Z";
 
@@ -96,7 +95,6 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       vector.x += (Math.random() - 0.5) * 10;
       vector.y += (Math.random() - 0.5) * 10;
       vertices.push(vector);
-
       tl.from(vector, {
         x: 0, y: 40, z: 0,
         duration: 2 + Math.random() * 2,
@@ -161,7 +159,15 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
   return (
     <div
       className="fixed inset-0 z-40 overflow-hidden"
-      style={{ background: "linear-gradient(135deg, #0a0005 0%, #1a0209 50%, #0f0208 100%)" }}
+      style={{
+        background: `
+          radial-gradient(circle at center,
+            rgba(120, 0, 40, 0.18) 0%,
+            rgba(60, 0, 20, 0.10) 35%,
+            transparent 65%),
+          linear-gradient(135deg, #0F0208 0%, #1A0209 100%)
+        `,
+      }}
     >
       <style>{`
         @keyframes hs-fall {
@@ -184,33 +190,33 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
           0%   { opacity: 0; transform: translateY(10px); }
           100% { opacity: 1; transform: translateY(0); }
         }
-        @keyframes heart-glow-pulse {
+        @keyframes heart-maroon-pulse {
           0%, 100% {
             filter:
-              drop-shadow(0 0 6px #000)
-              drop-shadow(0 0 16px #3d0010)
-              drop-shadow(0 0 32px #5a0018);
+              drop-shadow(0 0 6px rgba(120,0,40,0.7))
+              drop-shadow(0 0 18px rgba(90,0,30,0.5))
+              drop-shadow(0 0 36px rgba(60,0,20,0.35));
           }
           50% {
             filter:
-              drop-shadow(0 0 10px #000)
-              drop-shadow(0 0 24px #5a0018)
-              drop-shadow(0 0 50px #7a0022);
+              drop-shadow(0 0 10px rgba(158,0,50,0.85))
+              drop-shadow(0 0 26px rgba(120,0,40,0.6))
+              drop-shadow(0 0 52px rgba(80,0,25,0.4));
           }
         }
         @keyframes heartbeat-scale {
-          0%, 100% { transform: translateY(-20px) scale(1);    }
+          0%, 100% { transform: translateY(-20px) scale(1);     }
           15%      { transform: translateY(-20px) scale(1.035); }
-          30%      { transform: translateY(-20px) scale(1);    }
-          45%      { transform: translateY(-20px) scale(1.02); }
-          60%      { transform: translateY(-20px) scale(1);    }
+          30%      { transform: translateY(-20px) scale(1);     }
+          45%      { transform: translateY(-20px) scale(1.02);  }
+          60%      { transform: translateY(-20px) scale(1);     }
         }
       `}</style>
 
       {/* Three.js canvas */}
       <div ref={mountRef} className="absolute inset-0 z-10 pointer-events-none" />
 
-      {/* ── Heart portrait with black + maroon borders ── */}
+      {/* ── Heart portrait — zero black border, maroon glow only ── */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
         <div style={{ animation: "heartbeat-scale 2.5s ease-in-out infinite" }}>
           <svg
@@ -218,29 +224,16 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
             className="w-[300px] h-[255px] sm:w-[440px] sm:h-[374px] md:w-[560px] md:h-[476px]"
             style={{
               overflow: "visible",
-              animation: "heart-glow-pulse 3s ease-in-out infinite",
+              animation: "heart-maroon-pulse 3s ease-in-out infinite",
             }}
           >
             <defs>
-              {/* Clip path uses EXACT same path as border — no mismatch */}
               <clipPath id="heart-clip-main">
                 <path d={HEART_SVG_PATH} />
               </clipPath>
-
-              <linearGradient id="maroon-border" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#200008" />
-                <stop offset="40%" stopColor="#500018" />
-                <stop offset="100%" stopColor="#120004" />
-              </linearGradient>
-
-              <linearGradient id="maroon-rim" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#7a0022" />
-                <stop offset="50%" stopColor="#a8002e" />
-                <stop offset="100%" stopColor="#5a0018" />
-              </linearGradient>
             </defs>
 
-            {/* ── Image first (behind all strokes) ── */}
+            {/* Portrait — clipped to heart, NO stroke at all */}
             <image
               ref={portraitRef}
               href={PORTRAIT_IMAGE}
@@ -251,57 +244,6 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
               preserveAspectRatio="xMidYMid slice"
               clipPath="url(#heart-clip-main)"
               style={{ opacity: 0 }}
-            />
-
-            {/* ── Border strokes rendered ON TOP of image ──
-                 Ordered innermost → outermost so black sits outside maroon */}
-
-            {/* Bright inner maroon highlight — thinnest, closest to image */}
-            <path
-              d={HEART_SVG_PATH}
-              fill="none"
-              stroke="#d0004a"
-              strokeWidth="2"
-              strokeLinejoin="round"
-              opacity="0.55"
-            />
-
-            {/* Inner maroon rim */}
-            <path
-              d={HEART_SVG_PATH}
-              fill="none"
-              stroke="url(#maroon-rim)"
-              strokeWidth="6"
-              strokeLinejoin="round"
-              opacity="0.95"
-            />
-
-            {/* Mid maroon body */}
-            <path
-              d={HEART_SVG_PATH}
-              fill="none"
-              stroke="url(#maroon-border)"
-              strokeWidth="14"
-              strokeLinejoin="round"
-            />
-
-            {/* Deep maroon dark layer */}
-            <path
-              d={HEART_SVG_PATH}
-              fill="none"
-              stroke="#1a0006"
-              strokeWidth="20"
-              strokeLinejoin="round"
-              opacity="0.9"
-            />
-
-            {/* Outermost thick BLACK border */}
-            <path
-              d={HEART_SVG_PATH}
-              fill="none"
-              stroke="#000000"
-              strokeWidth="28"
-              strokeLinejoin="round"
             />
           </svg>
         </div>

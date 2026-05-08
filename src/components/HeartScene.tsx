@@ -6,7 +6,7 @@ import gsap from "gsap";
 const PORTRAIT_IMAGE = "/nanna-potrait.jpeg"; // Updated to match user's filename (potrait typo)
 
 const HEART_SVG_PATH =
-  "M300,107.77C284.68,55.67,239.76,0,162.31,0,64.83,0,0,82.08,0,171.71c0,.48,0,.95,0,1.43-.52,19.5,0,217.94,299.87,379.69v0l0,0,.05,0,0,0,0,0v0C600,391.08,600.48,192.64,600,173.14c0-.48,0-.95,0-1.43C600,82.08,535.17,0,437.69,0,360.24,0,315.32,55.67,300,107.77";
+  "M300,140 C280,100 230,50 160,50 C70,50 0,120 0,210 C0,330 180,450 300,550 C420,450 600,330 600,210 C600,120 530,50 440,50 C370,50 320,100 300,140";
 
 // ── Falling element types ─────────────────────────────────────────────────────
 type FallingItem = {
@@ -95,19 +95,16 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     const particleCount = 20000;
 
     for (let i = 0; i < particleCount; i++) {
-      // Sample points along the SVG path
       const distance = Math.random() * pathLength;
       const point = path.getPointAtLength(distance);
       
-      // Center and Scale the points (SVG is 600x552)
-      // Multiplier 1.4 to make it larger than the inside heart
-      const x = (point.x - 300) * 1.4;
-      const y = (-(point.y - 276)) * 1.4;
+      const x = (point.x - 300) * 1.0;
+      const y = (-(point.y - 276)) * 1.0;
       
-      const vector = new THREE.Vector3(x, y + 40, 0); // Shift up slightly
-      vector.x += (Math.random() - 0.5) * 30;
-      vector.y += (Math.random() - 0.5) * 30;
-      vector.z += (Math.random() - 0.5) * 150;
+      const vector = new THREE.Vector3(x, y + 60, 0); 
+      vector.x += (Math.random() - 0.5) * 15;
+      vector.y += (Math.random() - 0.5) * 15;
+      vector.z += (Math.random() - 0.5) * 80;
       
       vertices.push(vector);
       originalPositions.push(vector.clone());
@@ -116,7 +113,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     geometry = new THREE.BufferGeometry().setFromPoints(vertices);
     material = new THREE.PointsMaterial({
       color: 0xff4d8d,
-      size: 6,
+      size: 5,
       transparent: true,
       opacity: 0.9,
       blending: THREE.AdditiveBlending,
@@ -145,8 +142,8 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       for (let i = 0; i < particleCount; i++) {
         const i3 = i * 3;
         const orig = originalPositions[i];
-        positions[i3] = orig.x + Math.sin(time * 0.001 + i) * 5;
-        positions[i3 + 1] = orig.y + Math.cos(time * 0.001 + i) * 5;
+        positions[i3] = orig.x + Math.sin(time * 0.001 + i) * 2;
+        positions[i3 + 1] = orig.y + Math.cos(time * 0.001 + i) * 2;
       }
       geometry.attributes.position.needsUpdate = true;
       
@@ -187,8 +184,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
 
   return (
     <div
-      className="fixed inset-0 z-40"
-      style={{ background: "linear-gradient(135deg, hsl(340, 30%, 8%) 0%, hsl(342, 40%, 12%) 100%)" }}
+      className="fixed inset-0 z-40 bg-black"
     >
       <style>{`
         @keyframes hs-fall {
@@ -275,27 +271,21 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
         </div>
       ))}
 
-      <motion.img 
-        id="portrait-reveal"
-        src={PORTRAIT_IMAGE} 
-        alt="Nanna"
-        className="fixed z-10 pointer-events-none w-[240px] h-[240px] sm:w-[360px] sm:h-[360px] md:w-[480px] md:h-[480px] object-cover object-center !bg-transparent !border-none !shadow-none"
-        style={{
-          top: "45%",
-          left: "50%",
-          transform: "translate(-50%, -50%) scale(0)",
-          opacity: 0,
-          transformOrigin: "center center",
-          maskImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 552'%3E%3Cpath fill='black' d='M300,107.77C284.68,55.67,239.76,0,162.31,0,64.83,0,0,82.08,0,171.71c0,.48,0,.95,0,1.43-.52,19.5,0,217.94,299.87,379.69C600,391.08,600.48,192.64,600,173.14c0-.48,0-.95,0-1.43C600,82.08,535.17,0,437.69,0,360.24,0,315.32,55.67,300,107.77'/%3E%3C/svg%3E")`,
-          maskSize: 'contain',
-          maskRepeat: 'no-repeat',
-          maskPosition: 'center',
-          WebkitMaskImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 552'%3E%3Cpath fill='black' d='M300,107.77C284.68,55.67,239.76,0,162.31,0,64.83,0,0,82.08,0,171.71c0,.48,0,.95,0,1.43-.52,19.5,0,217.94,299.87,379.69C600,391.08,600.48,192.64,600,173.14c0-.48,0-.95,0-1.43C600,82.08,535.17,0,437.69,0,360.24,0,315.32,55.67,300,107.77'/%3E%3C/svg%3E")`,
-          WebkitMaskSize: 'contain',
-          WebkitMaskRepeat: 'no-repeat',
-          WebkitMaskPosition: 'center',
-        }}
-      />
+      <div 
+        className="fixed inset-0 z-10 flex items-center justify-center pointer-events-none"
+        style={{ transform: "translateY(-60px)" }}
+      >
+        <motion.img 
+          id="portrait-reveal"
+          src={PORTRAIT_IMAGE} 
+          alt="Nanna"
+          className="w-[300px] h-[276px] sm:w-[450px] sm:h-[414px] md:w-[600px] md:h-[552px] object-cover !bg-transparent !border-none !shadow-none"
+          style={{
+            opacity: 0,
+            clipPath: `path('${HEART_SVG_PATH}')`,
+          }}
+        />
+      </div>
 
       {showText && (
         <div

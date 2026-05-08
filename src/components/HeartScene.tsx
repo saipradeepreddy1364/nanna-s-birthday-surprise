@@ -214,7 +214,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
         <div style={{ animation: "heartbeat-scale 2.5s ease-in-out infinite" }}>
           <svg
             viewBox="0 0 600 510"
-            className="w-[230px] h-[196px] sm:w-[340px] sm:h-[289px] md:w-[430px] md:h-[366px]"
+            className="w-[245px] h-[196px] sm:w-[360px] sm:h-[289px] md:w-[455px] md:h-[366px]"
             style={{ overflow: "visible" }}
           >
             <defs>

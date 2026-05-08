@@ -109,7 +109,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     const geometry = new THREE.BufferGeometry().setFromPoints(vertices);
     const material = new THREE.PointsMaterial({
       color: 0xff4d8a, blending: THREE.AdditiveBlending,
-      size: 3, transparent: true, opacity: 1.0,
+      size: 3.2, transparent: true, opacity: 1.0,
     });
 
     const particles = new THREE.Points(geometry, material);

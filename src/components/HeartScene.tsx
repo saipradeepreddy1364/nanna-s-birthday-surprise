@@ -25,14 +25,14 @@ type FallingItem = {
   color: string;
 };
 
-const PETAL_COLORS = ["hsl(342,82%,70%)", "hsl(350,90%,75%)", "hsl(330,80%,65%)", "hsl(355,85%,72%)"];
-const HEART_COLORS = ["hsl(342,82%,60%)", "hsl(38,70%,60%)", "hsl(350,90%,70%)", "hsl(320,75%,65%)"];
-const SPARKLE_COLORS = ["hsl(38,90%,65%)", "hsl(50,95%,70%)", "hsl(38,70%,55%)", "hsl(55,100%,75%)"];
+const PETAL_COLORS   = ["hsl(342,82%,70%)", "hsl(350,90%,75%)", "hsl(330,80%,65%)", "hsl(355,85%,72%)"];
+const HEART_COLORS   = ["hsl(342,82%,60%)", "hsl(38,70%,60%)",  "hsl(350,90%,70%)", "hsl(320,75%,65%)"];
+const SPARKLE_COLORS = ["hsl(38,90%,65%)",  "hsl(50,95%,70%)",  "hsl(38,70%,55%)",  "hsl(55,100%,75%)"];
 
 const HeartScene = ({ onComplete }: HeartSceneProps) => {
-  const mountRef = useRef<HTMLDivElement>(null);
+  const mountRef    = useRef<HTMLDivElement>(null);
   const portraitRef = useRef<SVGImageElement>(null);
-  const [showText, setShowText] = useState(false);
+  const [showText, setShowText]       = useState(false);
   const [showFalling, setShowFalling] = useState(false);
 
   const fallingItems = useMemo<FallingItem[]>(() =>
@@ -40,40 +40,40 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       const type: FallingItem["type"] =
         i < 22 ? "petal" : i < 42 ? "heart" : "sparkle";
       const colors =
-        type === "petal" ? PETAL_COLORS :
-          type === "heart" ? HEART_COLORS : SPARKLE_COLORS;
+        type === "petal"   ? PETAL_COLORS :
+        type === "heart"   ? HEART_COLORS : SPARKLE_COLORS;
       return {
         id: i,
         type,
-        left: Math.random() * 100,
-        delay: Math.random() * 4,
+        left:     Math.random() * 100,
+        delay:    Math.random() * 4,
         duration: 4 + Math.random() * 5,
         size:
           type === "sparkle" ? 4 + Math.random() * 6 :
-            type === "heart" ? 10 + Math.random() * 14 :
-              12 + Math.random() * 16,
-        opacity: 0.5 + Math.random() * 0.5,
-        drift: (Math.random() - 0.5) * 100,
-        rotate: Math.random() * 360,
-        color: colors[Math.floor(Math.random() * colors.length)],
+          type === "heart"   ? 10 + Math.random() * 14 :
+                               12 + Math.random() * 16,
+        opacity:  0.5 + Math.random() * 0.5,
+        drift:    (Math.random() - 0.5) * 100,
+        rotate:   Math.random() * 360,
+        color:    colors[Math.floor(Math.random() * colors.length)],
       };
     }),
-    []);
+  []);
 
   useEffect(() => {
     if (!mountRef.current) return;
 
     const svgNS = "http://www.w3.org/2000/svg";
-    const svg = document.createElementNS(svgNS, "svg");
-    const path = document.createElementNS(svgNS, "path");
+    const svg   = document.createElementNS(svgNS, "svg");
+    const path  = document.createElementNS(svgNS, "path");
     path.setAttribute("d", HEART_SVG_PATH);
     svg.appendChild(path);
     document.body.appendChild(svg);
     const length = path.getTotalLength();
     document.body.removeChild(svg);
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
+    const scene    = new THREE.Scene();
+    const camera   = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
     camera.position.z = 500;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -88,12 +88,12 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
 
     for (let i = 0; i < particleCount; i++) {
       const distance = (i / particleCount) * length;
-      const point = path.getPointAtLength(distance);
+      const point    = path.getPointAtLength(distance);
       const x = (point.x - 300) * 0.63;
       const y = (-(point.y - 255)) * 0.63 + 20;
-      const vector = new THREE.Vector3(x, y, (Math.random() - 0.5) * 8);
-      vector.x += (Math.random() - 0.5) * 4;
-      vector.y += (Math.random() - 0.5) * 4;
+      const vector = new THREE.Vector3(x, y, (Math.random() - 0.5) * 14);
+      vector.x += (Math.random() - 0.5) * 10;
+      vector.y += (Math.random() - 0.5) * 10;
       vertices.push(vector);
       tl.from(vector, {
         x: 0, y: 20, z: 0,
@@ -105,7 +105,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     const geometry = new THREE.BufferGeometry().setFromPoints(vertices);
     const material = new THREE.PointsMaterial({
       color: 0xff4d8a, blending: THREE.AdditiveBlending,
-      size: 3, transparent: true, opacity: 0.95,
+      size: 6, transparent: true, opacity: 1.0,
     });
 
     const particles = new THREE.Points(geometry, material);
@@ -137,7 +137,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       }
     }, 1500);
 
-    const textTimer = setTimeout(() => setShowText(true), 4000);
+    const textTimer    = setTimeout(() => setShowText(true),    4000);
     const fallingTimer = setTimeout(() => setShowFalling(true), 4500);
 
     return () => {
@@ -160,8 +160,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     <div
       className="fixed inset-0 z-40 overflow-hidden"
       style={{
-        // FIX: slightly darker background
-        background: "linear-gradient(135deg, #050003 0%, #0d0105 100%)",
+        background: "linear-gradient(135deg, #0d0520 0%, #160830 50%, #0a031a 100%)",
       }}
     >
       <style>{`
@@ -252,7 +251,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
             animationIterationCount: "infinite",
             animationFillMode: "both",
             ["--hs-drift" as string]: `${item.drift}px`,
-            ["--hs-spin" as string]: `${item.rotate * (Math.random() > 0.5 ? 1 : -1)}deg`,
+            ["--hs-spin"  as string]: `${item.rotate * (Math.random() > 0.5 ? 1 : -1)}deg`,
             ["--hs-color" as string]: item.color,
           }}
         >

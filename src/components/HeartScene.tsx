@@ -84,19 +84,31 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     renderer.setClearColor(0x000000, 0);
     mountRef.current.appendChild(renderer.domElement);
 
+    // ── Particles from SVG Path ─────
+    const svgNS = "http://www.w3.org/2000/svg";
+    const path = document.createElementNS(svgNS, "path");
+    path.setAttribute("d", HEART_SVG_PATH);
+    const pathLength = path.getTotalLength();
+
     const vertices: THREE.Vector3[] = [];
     const originalPositions: THREE.Vector3[] = [];
     const particleCount = 20000;
 
     for (let i = 0; i < particleCount; i++) {
-      const t = Math.random() * Math.PI * 2;
-      const x = 16 * Math.pow(Math.sin(t), 3);
-      const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
+      // Sample points along the SVG path
+      const distance = Math.random() * pathLength;
+      const point = path.getPointAtLength(distance);
       
-      const vector = new THREE.Vector3(x * 34, (y * 34) + 40, 0);
-      vector.x += (Math.random() - 0.5) * 40;
-      vector.y += (Math.random() - 0.5) * 40;
-      vector.z += (Math.random() - 0.5) * 200;
+      // Center and Scale the points (SVG is 600x552)
+      // Multiplier 1.4 to make it larger than the inside heart
+      const x = (point.x - 300) * 1.4;
+      const y = (-(point.y - 276)) * 1.4;
+      
+      const vector = new THREE.Vector3(x, y + 40, 0); // Shift up slightly
+      vector.x += (Math.random() - 0.5) * 30;
+      vector.y += (Math.random() - 0.5) * 30;
+      vector.z += (Math.random() - 0.5) * 150;
+      
       vertices.push(vector);
       originalPositions.push(vector.clone());
     }

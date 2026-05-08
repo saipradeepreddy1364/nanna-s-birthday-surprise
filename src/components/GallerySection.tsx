@@ -57,7 +57,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
     if (isFinal && scrollStep < TEXT_GROUPS.length) {
       const timer = setTimeout(() => {
         setScrollStep(prev => prev + 1);
-      }, 7000); // 7s pause per 2 lines
+      }, 12000); // 12s pause per 2 lines
       return () => clearTimeout(timer);
     } else if (isFinal && scrollStep === TEXT_GROUPS.length) {
       const timer = setTimeout(onComplete, 5000);

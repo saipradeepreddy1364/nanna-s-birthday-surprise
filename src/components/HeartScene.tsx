@@ -89,9 +89,9 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     for (let i = 0; i < particleCount; i++) {
       const distance = (i / particleCount) * length;
       const point = path.getPointAtLength(distance);
-      // Random scale from portrait boundary (0.63) → outer ring (1.4)
-      // fills the gap so particles bloom seamlessly from image edge outward
-      const scale = 0.63 + Math.random() * 0.77;
+      // Scale range 0.50 → 1.4: starts from inside portrait so inner particles
+      // overlap the portrait edge — no dark gap/ring visible at the boundary
+      const scale = 0.50 + Math.random() * 0.90;
       const x = (point.x - 300) * scale;
       const y = (-(point.y - 255)) * scale + 20;
       const vector = new THREE.Vector3(x, y, (Math.random() - 0.5) * 8);
@@ -109,7 +109,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     const geometry = new THREE.BufferGeometry().setFromPoints(vertices);
     const material = new THREE.PointsMaterial({
       color: 0xff4d8a, blending: THREE.AdditiveBlending,
-      size: 3.2, transparent: true, opacity: 1.0,
+      size: 2.5, transparent: true, opacity: 1.0,
     });
 
     const particles = new THREE.Points(geometry, material);
@@ -164,7 +164,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     <div
       className="fixed inset-0 z-40 overflow-hidden"
       style={{
-        background: "linear-gradient(135deg, #0d0520 0%, #160830 50%, #0a031a 100%)",
+        background: "radial-gradient(ellipse at 50% 48%, #1a0a35 0%, #110620 40%, #080010 75%, #020005 100%)",
       }}
     >
       <style>{`
@@ -206,11 +206,11 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
           z-60   → Birthday text
       */}
 
-      {/* Three.js canvas — ABOVE portrait so big particle heart is fully visible */}
-      <div ref={mountRef} className="absolute inset-0 z-55 pointer-events-none" />
+      {/* Three.js canvas — behind portrait, particles extend outward from inside it */}
+      <div ref={mountRef} className="absolute inset-0 z-45 pointer-events-none" />
 
-      {/* Heart portrait — behind particles so photo shows through particle heart */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-40">
+      {/* Heart portrait — on top so no clipping or dark border */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-55">
         <div style={{ animation: "heartbeat-scale 2.5s ease-in-out infinite" }}>
           <svg
             viewBox="0 0 600 510"

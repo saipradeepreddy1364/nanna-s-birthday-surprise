@@ -26,8 +26,8 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
   ];
 
   const TEXT_GROUPS: string[][] = [];
-  for (let i = 0; i < ALL_LINES.length; i += 2) {
-    TEXT_GROUPS.push(ALL_LINES.slice(i, i + 2));
+  for (let i = 0; i < ALL_LINES.length; i += 1) {
+    TEXT_GROUPS.push([ALL_LINES[i]]);
   }
 
   useEffect(() => {
@@ -50,7 +50,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
     if (isFinal && scrollStep < TEXT_GROUPS.length) {
       const timer = setTimeout(() => {
         setScrollStep(prev => prev + 1);
-      }, 12000); 
+      }, 8000); 
       return () => clearTimeout(timer);
     } else if (isFinal && scrollStep === TEXT_GROUPS.length) {
       const timer = setTimeout(onComplete, 5000);
@@ -74,21 +74,17 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
               transition={{ duration: 1.5, ease: "easeInOut" }}
               className="w-full max-w-4xl px-4 flex flex-col items-center justify-center"
             >
-              {/* Centered Large 3x3 Grid Reveal with 5% overlap */}
               <div className="w-full max-w-3xl mx-auto flex flex-col">
-                {/* Row 1 */}
                 <div className="grid grid-cols-3 gap-0 w-full relative z-0">
                   {[...Array(3)].map((_, i) => (
                     <motion.div key={i} animate={{ opacity: i < gridStep ? 1 : 0 }} className="aspect-square bg-pink-900/15 border border-pink-500/10" />
                   ))}
                 </div>
-                {/* Row 2 - 5% overlap */}
                 <div className="grid grid-cols-3 gap-0 w-full relative z-10 -mt-[5%]">
                   {[...Array(3)].map((_, i) => (
                     <motion.div key={i+3} animate={{ opacity: (i+3) < gridStep ? 1 : 0 }} className="aspect-square bg-pink-900/15 border border-pink-500/10" />
                   ))}
                 </div>
-                {/* Row 3 - 5% overlap */}
                 <div className="grid grid-cols-3 gap-0 w-full relative z-20 -mt-[5%]">
                   {[...Array(3)].map((_, i) => (
                     <motion.div key={i+6} animate={{ opacity: (i+6) < gridStep ? 1 : 0 }} className="aspect-square bg-pink-900/15 border border-pink-500/10" />
@@ -109,11 +105,11 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                 animate={{ x: 0, opacity: 1 }}
                 className="flex justify-center"
               >
-                <div className="relative w-[240px] sm:w-[280px] md:w-[320px] max-h-[38vh] aspect-[4/5] overflow-hidden">
+                <div className="relative w-[240px] sm:w-[280px] md:w-[320px] shadow-xl overflow-hidden bg-black/20">
                   <img
                     src={FINAL_IMAGE}
                     alt="Final Memory"
-                    className="w-full h-full object-cover"
+                    className="w-full h-auto block"
                   />
                 </div>
               </motion.div>
@@ -121,18 +117,18 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
               <motion.div 
                 initial={{ x: 20, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
-                className="relative w-[240px] sm:w-[280px] md:w-[320px] max-h-[38vh] aspect-[4/5] flex items-center justify-center overflow-hidden shadow-2xl"
+                className="relative w-[240px] sm:w-[280px] md:w-[320px] flex items-center justify-center overflow-hidden shadow-2xl bg-black/20 min-h-[300px] sm:min-h-[350px]"
               >
-                <img 
-                  src="/gallery/card.png" 
-                  alt="Message Card" 
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
+                <div className="absolute inset-0">
+                  <img 
+                    src="/gallery/card.png" 
+                    alt="Message Card" 
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/40" />
+                </div>
 
-
-                <div className="absolute inset-0 bg-black/50" />
-
-                <div className="relative z-10 w-full h-full flex items-center justify-center p-8 text-center overflow-hidden">
+                <div className="relative z-10 w-full flex items-center justify-center p-6 text-center">
                   <AnimatePresence mode="wait">
                     <motion.div 
                       key={scrollStep}
@@ -140,7 +136,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                       animate={{ y: 0, opacity: 1 }}
                       exit={{ y: -20, opacity: 0 }}
                       transition={{ duration: 1 }}
-                      className="space-y-6"
+                      className="py-4"
                     >
                       {TEXT_GROUPS[scrollStep]?.map((line, idx) => (
                         <p

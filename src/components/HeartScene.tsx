@@ -57,9 +57,13 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     if (!mountRef.current) return;
 
     const svgNS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgNS, "svg");
     const path = document.createElementNS(svgNS, "path");
     path.setAttribute("d", HEART_SVG_PATH);
+    svg.appendChild(path);
+    document.body.appendChild(svg); // Required for length calculation in some browsers
     const length = path.getTotalLength();
+    document.body.removeChild(svg);
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
@@ -74,25 +78,27 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     const tl = gsap.timeline({ repeat: -1, yoyo: true });
     const vertices: THREE.Vector3[] = [];
 
-    // Dense particles: i += 0.04 for high resolution (~45,000 particles)
-    for (let i = 0; i < length; i += 0.04) {
-      const point = path.getPointAtLength(i);
-      const x = (point.x - 300) * 1.18; // Slightly larger frame for zero overlap
-      const y = (-(point.y - 276)) * 1.18;
-      
-      const vector = new THREE.Vector3(x, y + 40, 0);
-      vector.x += (Math.random() - 0.5) * 15;
-      vector.y += (Math.random() - 0.5) * 15;
-      vector.z += (Math.random() - 0.5) * 70;
-      vertices.push(vector);
+    // Safety check for length
+    if (length > 0) {
+      for (let i = 0; i < length; i += 0.04) {
+        const point = path.getPointAtLength(i);
+        const x = (point.x - 300) * 1.18;
+        const y = (-(point.y - 276)) * 1.18;
+        
+        const vector = new THREE.Vector3(x, y + 40, 0);
+        vector.x += (Math.random() - 0.5) * 15;
+        vector.y += (Math.random() - 0.5) * 15;
+        vector.z += (Math.random() - 0.5) * 70;
+        vertices.push(vector);
 
-      tl.from(vector, {
-        x: 0,
-        y: 40,
-        z: 0,
-        ease: "power2.inOut",
-        duration: 2 + Math.random() * 3,
-      }, i * 0.0004);
+        tl.from(vector, {
+          x: 0,
+          y: 40,
+          z: 0,
+          ease: "power2.inOut",
+          duration: 2 + Math.random() * 3,
+        }, i * 0.0004);
+      }
     }
 
     const geometry = new THREE.BufferGeometry().setFromPoints(vertices);

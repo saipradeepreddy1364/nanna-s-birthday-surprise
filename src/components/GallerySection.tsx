@@ -78,25 +78,26 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 1.1 }}
-              className="grid grid-cols-3 gap-0 w-full max-w-2xl"
+              className="flex flex-col items-center w-full max-w-2xl px-4"
             >
-              {[...Array(9)].map((_, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: index < gridStep ? 1 : 0 }}
-                  className="relative overflow-hidden aspect-square bg-pink-900/10 flex items-center justify-center border-[0.5px] border-pink-500/10"
-                >
-                  {index < gridStep && (
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                       <div className="w-8 h-8 bg-pink-500/30 rotate-45 transform origin-center">
-                          <div className="absolute top-0 left-0 w-full h-full bg-pink-500/30 -translate-x-1/2 rounded-full" />
-                          <div className="absolute top-0 left-0 w-full h-full bg-pink-500/30 -translate-y-1/2 rounded-full" />
-                       </div>
-                    </div>
-                  )}
-                </motion.div>
-              ))}
+              <div className="grid grid-cols-3 gap-0 w-full">
+                {/* Row 1 */}
+                {[...Array(3)].map((_, i) => (
+                  <motion.div key={i} animate={{ opacity: i < gridStep ? 1 : 0 }} className="aspect-square bg-pink-900/10 border-[0.5px] border-pink-500/10" />
+                ))}
+              </div>
+              <div className="grid grid-cols-3 gap-0 w-full -mt-[10%] sm:-mt-[15%] md:-mt-[20%] lg:-mt-[30%] z-10">
+                {/* Row 2 - 30% overlap */}
+                {[...Array(3)].map((_, i) => (
+                  <motion.div key={i+3} animate={{ opacity: (i+3) < gridStep ? 1 : 0 }} className="aspect-square bg-pink-900/10 border-[0.5px] border-pink-500/10" />
+                ))}
+              </div>
+              <div className="grid grid-cols-3 gap-0 w-full -mt-[10%] sm:-mt-[15%] md:-mt-[20%] lg:-mt-[30%] z-20">
+                {/* Row 3 - 30% overlap */}
+                {[...Array(3)].map((_, i) => (
+                  <motion.div key={i+6} animate={{ opacity: (i+6) < gridStep ? 1 : 0 }} className="aspect-square bg-pink-900/10 border-[0.5px] border-pink-500/10" />
+                ))}
+              </div>
             </motion.div>
           ) : (
             <motion.div
@@ -104,7 +105,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 1 }}
-              className="flex flex-col lg:flex-row items-center justify-center gap-12 w-full"
+              className="flex flex-col lg:flex-row items-center justify-center gap-0 w-full max-w-5xl"
             >
               {/* Left Side: Portrait */}
               <motion.div 
@@ -112,7 +113,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                 animate={{ x: 0, opacity: 1 }}
                 className="w-full lg:w-1/2 flex justify-center"
               >
-                <div className="relative w-full max-w-sm aspect-[4/5] rounded-2xl overflow-hidden !shadow-none !border-none">
+                <div className="relative w-full max-w-sm aspect-[4/5] overflow-hidden !shadow-none !border-none">
                   <img
                     src={FINAL_IMAGE}
                     alt="Final Memory"
@@ -121,11 +122,11 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                 </div>
               </motion.div>
 
-              {/* Right Side: Card with 2-point-at-a-time text */}
+              {/* Right Side: Card - Same size, no gap */}
               <motion.div 
                 initial={{ x: 50, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
-                className="w-full lg:w-1/2 relative aspect-square lg:aspect-[4/5] max-w-md flex items-center justify-center rounded-2xl overflow-hidden shadow-2xl"
+                className="w-full lg:w-1/2 relative max-w-sm aspect-[4/5] flex items-center justify-center overflow-hidden shadow-2xl"
               >
                 <img 
                   src="/gallery/card.png" 

@@ -76,19 +76,18 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     const vertices: THREE.Vector3[] = [];
     const originalPositions: THREE.Vector3[] = [];
 
-    // Dense particles from your reference logic
-    for (let i = 0; i < length; i += 0.1) {
+    // Particle density: i += 0.05 for ~36,000 particles
+    for (let i = 0; i < length; i += 0.05) {
       const point = path.getPointAtLength(i);
-      // Particle multiplier 1.15 to sit perfectly outside the image
+      // Particle multiplier 1.15 for clean framing
       const x = (point.x - 300) * 1.15;
       const y = (-(point.y - 276)) * 1.15;
       
       const vector = new THREE.Vector3(x, y + 40, 0);
-      vector.x += (Math.random() - 0.5) * 12;
-      vector.y += (Math.random() - 0.5) * 12;
-      vector.z += (Math.random() - 0.5) * 60;
+      vector.x += (Math.random() - 0.5) * 15;
+      vector.y += (Math.random() - 0.5) * 15;
+      vector.z += (Math.random() - 0.5) * 70;
       vertices.push(vector);
-      originalPositions.push(vector.clone());
 
       tl.from(vector, {
         x: 0,
@@ -96,14 +95,14 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
         z: 0,
         ease: "power2.out",
         duration: 2 + Math.random() * 2,
-      }, i * 0.001); // Faster reveal
+      }, i * 0.0005); // Faster reveal for more particles
     }
 
     const geometry = new THREE.BufferGeometry().setFromPoints(vertices);
     const material = new THREE.PointsMaterial({
       color: 0xee5282,
       blending: THREE.AdditiveBlending,
-      size: 4,
+      size: 3.5, // Slightly smaller particles for better density look
       transparent: true,
       opacity: 0.9,
     });
@@ -120,12 +119,10 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     let animId: number;
     const render = (time: number) => {
       animId = requestAnimationFrame(render);
-      // Add subtle shimmering movement to particles
       const positions = geometry.attributes.position.array as Float32Array;
       for (let i = 0; i < vertices.length; i++) {
         const i3 = i * 3;
         const orig = vertices[i];
-        // Minor shimmer offset
         positions[i3] = orig.x + Math.sin(time * 0.003 + i) * 1.5;
         positions[i3 + 1] = orig.y + Math.cos(time * 0.003 + i) * 1.5;
       }
@@ -145,13 +142,13 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       setShowClosing(true);
       if (portraitRef.current) {
         gsap.fromTo(portraitRef.current, 
-          { scale: 0, opacity: 0 }, 
-          { scale: 1, opacity: 1, duration: 2, ease: "power2.out" }
+          { scale: 0.95, opacity: 0 }, 
+          { scale: 1, opacity: 1, duration: 2.5, ease: "power2.out" }
         );
       }
-    }, 2000); 
+    }, 2500); 
 
-    const textTimer = setTimeout(() => setShowText(true), 4500);
+    const textTimer = setTimeout(() => setShowText(true), 5000);
 
     return () => {
       window.removeEventListener("resize", onResize);
@@ -215,7 +212,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
         </div>
       ))}
 
-      {/* Portrait - Sized slightly smaller to fit PERFECTLY inside the shimmering ring */}
+      {/* Portrait - Perfectly sized and fixed in position */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-30">
         <div className="relative !bg-transparent" style={{ transform: "translateY(-40px)" }}>
           <motion.img 
@@ -225,7 +222,6 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
             className="w-[260px] h-[238px] sm:w-[390px] sm:h-[358px] md:w-[520px] md:h-[478px] object-cover !bg-transparent !border-none !outline-none !shadow-none !p-0 !m-0"
             style={{
               opacity: 0,
-              scale: 0,
               maskImage: maskUrl,
               WebkitMaskImage: maskUrl,
               maskSize: '100% 100%',

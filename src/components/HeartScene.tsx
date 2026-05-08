@@ -31,7 +31,7 @@ interface HeartSceneProps {
 
 const HeartScene = ({ onComplete }: HeartSceneProps) => {
   const mountRef = useRef<HTMLDivElement>(null);
-  const portraitRef = useRef<HTMLImageElement>(null);
+  const portraitRef = useRef<SVGImageElement>(null);
   const [showClosing, setShowClosing] = useState(false);
   const [showText, setShowText] = useState(false);
 
@@ -194,27 +194,28 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       {/* Three.js Particle Canvas */}
       <div ref={mountRef} className="absolute inset-0 z-10 pointer-events-none" />
 
-      {/* Portrait - Using CLIP-PATH for zero-border perfection (Z-50 to be on top) */}
+      {/* Portrait Reveal - Using SVG Mask for guaranteed visibility and zero-border perfection */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
-        <motion.img 
-          ref={portraitRef}
-          src={PORTRAIT_IMAGE} 
-          alt="Nanna"
-          className="w-[280px] h-[256px] sm:w-[420px] sm:h-[385px] md:w-[560px] md:h-[513px] object-cover"
-          style={{
-            opacity: 0,
-            scale: 0,
-            clipPath: "url(#heart-clip)",
-            WebkitClipPath: "url(#heart-clip)",
-            background: "none",
-            backgroundColor: "transparent",
-            border: "none",
-            outline: "none",
-            boxShadow: "none",
-            filter: "none",
-            transform: "translateY(-40px)",
-          }}
-        />
+        <svg 
+          viewBox="0 0 600 550" 
+          className="w-[280px] h-[256px] sm:w-[420px] sm:h-[385px] md:w-[560px] md:h-[513px]"
+          style={{ transform: "translateY(-40px)" }}
+        >
+          <defs>
+            <mask id="heart-mask">
+              <path d={HEART_SVG_PATH} fill="white" />
+            </mask>
+          </defs>
+          <image
+            ref={portraitRef}
+            href={PORTRAIT_IMAGE}
+            width="600"
+            height="550"
+            preserveAspectRatio="xMidYMid slice"
+            mask="url(#heart-mask)"
+            style={{ opacity: 0 }}
+          />
+        </svg>
       </div>
 
       {showText && (

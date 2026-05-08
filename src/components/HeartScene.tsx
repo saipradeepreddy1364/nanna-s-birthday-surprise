@@ -25,14 +25,14 @@ type FallingItem = {
   color: string;
 };
 
-const PETAL_COLORS   = ["hsl(342,82%,70%)", "hsl(350,90%,75%)", "hsl(330,80%,65%)", "hsl(355,85%,72%)"];
-const HEART_COLORS   = ["hsl(342,82%,60%)", "hsl(38,70%,60%)",  "hsl(350,90%,70%)", "hsl(320,75%,65%)"];
-const SPARKLE_COLORS = ["hsl(38,90%,65%)",  "hsl(50,95%,70%)",  "hsl(38,70%,55%)",  "hsl(55,100%,75%)"];
+const PETAL_COLORS = ["hsl(342,82%,70%)", "hsl(350,90%,75%)", "hsl(330,80%,65%)", "hsl(355,85%,72%)"];
+const HEART_COLORS = ["hsl(342,82%,60%)", "hsl(38,70%,60%)", "hsl(350,90%,70%)", "hsl(320,75%,65%)"];
+const SPARKLE_COLORS = ["hsl(38,90%,65%)", "hsl(50,95%,70%)", "hsl(38,70%,55%)", "hsl(55,100%,75%)"];
 
 const HeartScene = ({ onComplete }: HeartSceneProps) => {
-  const mountRef    = useRef<HTMLDivElement>(null);
+  const mountRef = useRef<HTMLDivElement>(null);
   const portraitRef = useRef<SVGImageElement>(null);
-  const [showText, setShowText]       = useState(false);
+  const [showText, setShowText] = useState(false);
   const [showFalling, setShowFalling] = useState(false);
 
   const fallingItems = useMemo<FallingItem[]>(() =>
@@ -40,40 +40,40 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       const type: FallingItem["type"] =
         i < 22 ? "petal" : i < 42 ? "heart" : "sparkle";
       const colors =
-        type === "petal"   ? PETAL_COLORS :
-        type === "heart"   ? HEART_COLORS : SPARKLE_COLORS;
+        type === "petal" ? PETAL_COLORS :
+          type === "heart" ? HEART_COLORS : SPARKLE_COLORS;
       return {
         id: i,
         type,
-        left:     Math.random() * 100,
-        delay:    Math.random() * 4,
+        left: Math.random() * 100,
+        delay: Math.random() * 4,
         duration: 4 + Math.random() * 5,
         size:
           type === "sparkle" ? 4 + Math.random() * 6 :
-          type === "heart"   ? 10 + Math.random() * 14 :
-                               12 + Math.random() * 16,
-        opacity:  0.5 + Math.random() * 0.5,
-        drift:    (Math.random() - 0.5) * 100,
-        rotate:   Math.random() * 360,
-        color:    colors[Math.floor(Math.random() * colors.length)],
+            type === "heart" ? 10 + Math.random() * 14 :
+              12 + Math.random() * 16,
+        opacity: 0.5 + Math.random() * 0.5,
+        drift: (Math.random() - 0.5) * 100,
+        rotate: Math.random() * 360,
+        color: colors[Math.floor(Math.random() * colors.length)],
       };
     }),
-  []);
+    []);
 
   useEffect(() => {
     if (!mountRef.current) return;
 
     const svgNS = "http://www.w3.org/2000/svg";
-    const svg   = document.createElementNS(svgNS, "svg");
-    const path  = document.createElementNS(svgNS, "path");
+    const svg = document.createElementNS(svgNS, "svg");
+    const path = document.createElementNS(svgNS, "path");
     path.setAttribute("d", HEART_SVG_PATH);
     svg.appendChild(path);
     document.body.appendChild(svg);
     const length = path.getTotalLength();
     document.body.removeChild(svg);
 
-    const scene    = new THREE.Scene();
-    const camera   = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
     camera.position.z = 500;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -88,12 +88,16 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
 
     for (let i = 0; i < particleCount; i++) {
       const distance = (i / particleCount) * length;
-      const point    = path.getPointAtLength(distance);
-      const x = (point.x - 300) * 0.63;
-      const y = (-(point.y - 255)) * 0.63 + 20;
-      const vector = new THREE.Vector3(x, y, (Math.random() - 0.5) * 14);
-      vector.x += (Math.random() - 0.5) * 10;
-      vector.y += (Math.random() - 0.5) * 10;
+      const point = path.getPointAtLength(distance);
+      // Random scale from portrait boundary (0.63) → outer ring (1.4)
+      // fills the gap so particles bloom seamlessly from image edge outward
+      const scale = 0.63 + Math.random() * 0.77;
+      const x = (point.x - 300) * scale;
+      const y = (-(point.y - 255)) * scale + 20;
+      const vector = new THREE.Vector3(x, y, (Math.random() - 0.5) * 8);
+      vector.x += (Math.random() - 0.5) * 3;
+      vector.y += (Math.random() - 0.5) * 3;
+
       vertices.push(vector);
       tl.from(vector, {
         x: 0, y: 20, z: 0,
@@ -137,7 +141,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       }
     }, 1500);
 
-    const textTimer    = setTimeout(() => setShowText(true),    4000);
+    const textTimer = setTimeout(() => setShowText(true), 4000);
     const fallingTimer = setTimeout(() => setShowFalling(true), 4500);
 
     return () => {
@@ -195,18 +199,18 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
 
       {/*
         Z-INDEX STACK (low → high):
-          base             → dark background (this div)
-          z-30             → Three.js particle heart (mountRef)
-          z-50             → Heart portrait SVG
-          z-55             → Falling petals / hearts / sparkles  ← FIX: was z-25 (behind particles & portrait)
-          z-60             → Birthday text                        ← FIX: was z-40 (behind portrait)
+          base   → dark purple background
+          z-40   → Heart portrait SVG (photo sits behind the particle heart)
+          z-55   → Three.js particle heart (LARGE, rendered above portrait)
+          z-58   → Falling petals / hearts / sparkles
+          z-60   → Birthday text
       */}
 
-      {/* Three.js canvas — sits behind portrait so particles glow around its edges */}
-      <div ref={mountRef} className="absolute inset-0 z-30 pointer-events-none" />
+      {/* Three.js canvas — ABOVE portrait so big particle heart is fully visible */}
+      <div ref={mountRef} className="absolute inset-0 z-55 pointer-events-none" />
 
-      {/* Heart portrait */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
+      {/* Heart portrait — behind particles so photo shows through particle heart */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-40">
         <div style={{ animation: "heartbeat-scale 2.5s ease-in-out infinite" }}>
           <svg
             viewBox="0 0 600 510"
@@ -234,7 +238,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
         </div>
       </div>
 
-      {/* Falling petals / hearts / sparkles — FIX: z-index 55, in front of portrait */}
+      {/* Falling petals / hearts / sparkles — z-58, above particle canvas */}
       {showFalling && fallingItems.map((item) => (
         <div
           key={item.id}
@@ -242,7 +246,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
             position: "absolute",
             top: 0,
             left: `${item.left}%`,
-            zIndex: 55,                          // ← was 25
+            zIndex: 58,
             pointerEvents: "none",
             animationName: item.type === "sparkle" ? "hs-sparkle-fall" : "hs-fall",
             animationDuration: `${item.duration}s`,
@@ -251,7 +255,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
             animationIterationCount: "infinite",
             animationFillMode: "both",
             ["--hs-drift" as string]: `${item.drift}px`,
-            ["--hs-spin"  as string]: `${item.rotate * (Math.random() > 0.5 ? 1 : -1)}deg`,
+            ["--hs-spin" as string]: `${item.rotate * (Math.random() > 0.5 ? 1 : -1)}deg`,
             ["--hs-color" as string]: item.color,
           }}
         >

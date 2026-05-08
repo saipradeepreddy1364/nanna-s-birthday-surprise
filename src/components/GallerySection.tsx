@@ -102,14 +102,14 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 1 }}
-              className="flex flex-col lg:flex-row items-center justify-center gap-0 w-full max-w-5xl"
+              className="flex flex-col lg:flex-row items-center justify-center gap-0 w-full px-2"
             >
               <motion.div 
-                initial={{ x: -50, opacity: 0 }}
+                initial={{ x: -20, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
-                className="w-full lg:w-1/2 flex justify-center"
+                className="flex justify-center"
               >
-                <div className="relative w-full max-w-sm aspect-[4/5] overflow-hidden">
+                <div className="relative w-[240px] sm:w-[280px] md:w-[320px] max-h-[38vh] aspect-[4/5] overflow-hidden">
                   <img
                     src={FINAL_IMAGE}
                     alt="Final Memory"
@@ -119,15 +119,17 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
               </motion.div>
 
               <motion.div 
-                initial={{ x: 50, opacity: 0 }}
+                initial={{ x: 20, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
-                className="w-full lg:w-1/2 relative max-w-sm aspect-[4/5] flex items-center justify-center overflow-hidden shadow-2xl"
+                className="relative w-[240px] sm:w-[280px] md:w-[320px] max-h-[38vh] aspect-[4/5] flex items-center justify-center overflow-hidden shadow-2xl"
               >
                 <img 
                   src="/gallery/card.png" 
                   alt="Message Card" 
                   className="absolute inset-0 w-full h-full object-cover"
                 />
+
+
                 <div className="absolute inset-0 bg-black/50" />
 
                 <div className="relative z-10 w-full h-full flex items-center justify-center p-8 text-center overflow-hidden">

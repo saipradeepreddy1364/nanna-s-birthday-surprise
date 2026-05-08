@@ -214,7 +214,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
         <div style={{ animation: "heartbeat-scale 2.5s ease-in-out infinite" }}>
           <svg
             viewBox="0 0 600 510"
-            className="w-[245px] h-[196px] sm:w-[360px] sm:h-[289px] md:w-[455px] md:h-[366px]"
+            className="w-[255px] h-[196px] sm:w-[375px] sm:h-[289px] md:w-[475px] md:h-[366px]"
             style={{ overflow: "visible" }}
           >
             <defs>
@@ -258,7 +258,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
                 </feMerge>
               </filter>
             </defs>
-            {/* Outer soft glow — wide bloom, shifted up 20 SVG units so top curve doesn't overlap portrait */}
+            {/* Outer soft glow — wide bloom, shifted up to clear top curve */}
             <path
               d={HEART_SVG_PATH}
               fill="none"
@@ -266,7 +266,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
               strokeWidth="28"
               opacity="0.55"
               filter="url(#heart-edge-glow)"
-              transform="translate(0, -12)"
+              transform="translate(0, -28)"
             />
             {/* Inner tight glow — hugs the edge cleanly */}
             <path
@@ -275,7 +275,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
               stroke="#ff80aa"
               strokeWidth="10"
               opacity="0.7"
-              transform="translate(0, -12)"
+              transform="translate(0, -28)"
             />
           </svg>
         </div>

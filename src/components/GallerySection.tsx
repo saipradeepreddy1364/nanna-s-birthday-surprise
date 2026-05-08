@@ -72,33 +72,20 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 1.5, ease: "easeInOut" }}
-              className="w-full max-w-6xl px-4 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
+              className="w-full max-w-4xl px-4 flex items-center justify-center"
             >
-              {/* Left Side: Standard 3x3 Grid Reveal */}
-              <div className="order-2 lg:order-1 grid grid-cols-3 gap-1 w-full max-w-md mx-auto">
+              {/* Centered Large 3x3 Grid Reveal */}
+              <div className="grid grid-cols-3 gap-2 w-full max-w-3xl mx-auto">
                 {[...Array(9)].map((_, index) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: index < gridStep ? 1 : 0 }}
-                    className="relative overflow-hidden aspect-square bg-pink-900/10 flex items-center justify-center border border-pink-500/10"
+                    className="relative overflow-hidden aspect-square bg-pink-900/15 flex items-center justify-center border border-pink-500/20 shadow-2xl"
                   >
                     <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 to-transparent" />
                   </motion.div>
                 ))}
-              </div>
-
-              {/* Right Side: Initial Greeting */}
-              <div className="order-1 lg:order-2 h-[400px] flex items-center justify-center relative">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-center space-y-6"
-                >
-                  <h2 className="font-cursive text-3xl md:text-4xl text-pink-200 opacity-80">
-                    Capturing our moments...
-                  </h2>
-                </motion.div>
               </div>
             </motion.div>
           ) : (

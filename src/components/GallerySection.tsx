@@ -105,11 +105,11 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                 animate={{ x: 0, opacity: 1 }}
                 className="flex justify-center"
               >
-                <div className="relative w-[240px] sm:w-[280px] md:w-[320px] shadow-xl overflow-hidden bg-black/20">
+                <div className="relative w-[240px] sm:w-[280px] md:w-[320px] aspect-[4/5] shadow-xl overflow-hidden bg-black/20">
                   <img
                     src={FINAL_IMAGE}
                     alt="Final Memory"
-                    className="w-full h-auto block"
+                    className="w-full h-full object-cover"
                   />
                 </div>
               </motion.div>
@@ -117,7 +117,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
               <motion.div 
                 initial={{ x: 20, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
-                className="relative w-[240px] sm:w-[280px] md:w-[320px] flex items-center justify-center overflow-hidden shadow-2xl bg-black/20 min-h-[300px] sm:min-h-[350px]"
+                className="relative w-[240px] sm:w-[280px] md:w-[320px] aspect-[4/5] flex items-center justify-center overflow-hidden shadow-2xl bg-black/20"
               >
                 <div className="absolute inset-0">
                   <img 
@@ -128,7 +128,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                   <div className="absolute inset-0 bg-black/40" />
                 </div>
 
-                <div className="relative z-10 w-full flex items-center justify-center p-6 text-center">
+                <div className="relative z-10 w-full flex items-center justify-center p-6 text-center h-full">
                   <AnimatePresence mode="wait">
                     <motion.div 
                       key={scrollStep}
@@ -136,7 +136,6 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                       animate={{ y: 0, opacity: 1 }}
                       exit={{ y: -20, opacity: 0 }}
                       transition={{ duration: 1 }}
-                      className="py-4"
                     >
                       {TEXT_GROUPS[scrollStep]?.map((line, idx) => (
                         <p

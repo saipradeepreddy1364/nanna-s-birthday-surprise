@@ -93,7 +93,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                       <img 
                         src={`/gallery/${i + 4}.jpeg`} 
                         alt="" 
-                        className="w-full h-full object-cover" 
+                        className={`w-full h-full object-cover ${i + 4 === 6 ? 'object-top' : ''}`} 
                         onError={(e) => (e.currentTarget.style.display = 'none')}
                       />
                     </motion.div>

@@ -1,9 +1,5 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
-const GRID_IMAGES = [
-  "/placeholder.svg"
-];
 
 const FINAL_IMAGE = "/gallery/final.jpeg";
 
@@ -29,13 +25,11 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
     "Forever grateful to you Nanna"
   ];
 
-  // Split lines into groups of 2
   const TEXT_GROUPS: string[][] = [];
   for (let i = 0; i < ALL_LINES.length; i += 2) {
     TEXT_GROUPS.push(ALL_LINES.slice(i, i + 2));
   }
 
-  // Grid reveal logic
   useEffect(() => {
     if (!isFinal) {
       const timer = setInterval(() => {
@@ -52,12 +46,11 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
     }
   }, [isFinal]);
 
-  // Step-wise scroll logic
   useEffect(() => {
     if (isFinal && scrollStep < TEXT_GROUPS.length) {
       const timer = setTimeout(() => {
         setScrollStep(prev => prev + 1);
-      }, 12000); // 12s pause per 2 lines
+      }, 12000); 
       return () => clearTimeout(timer);
     } else if (isFinal && scrollStep === TEXT_GROUPS.length) {
       const timer = setTimeout(onComplete, 5000);
@@ -75,28 +68,37 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
           {!isFinal ? (
             <motion.div
               key="grid"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.1 }}
-              className="flex flex-col items-center w-full max-w-2xl px-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 1.5, ease: "easeInOut" }}
+              className="w-full max-w-6xl px-4 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
             >
-              <div className="grid grid-cols-3 gap-0 w-full">
-                {/* Row 1 */}
-                {[...Array(3)].map((_, i) => (
-                  <motion.div key={i} animate={{ opacity: i < gridStep ? 1 : 0 }} className="aspect-square bg-pink-900/10 border-[0.5px] border-pink-500/10" />
+              {/* Left Side: Standard 3x3 Grid Reveal */}
+              <div className="order-2 lg:order-1 grid grid-cols-3 gap-1 w-full max-w-md mx-auto">
+                {[...Array(9)].map((_, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: index < gridStep ? 1 : 0 }}
+                    className="relative overflow-hidden aspect-square bg-pink-900/10 flex items-center justify-center border border-pink-500/10"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 to-transparent" />
+                  </motion.div>
                 ))}
               </div>
-              <div className="grid grid-cols-3 gap-0 w-full -mt-[10%] sm:-mt-[15%] md:-mt-[20%] lg:-mt-[30%] z-10">
-                {/* Row 2 - 30% overlap */}
-                {[...Array(3)].map((_, i) => (
-                  <motion.div key={i+3} animate={{ opacity: (i+3) < gridStep ? 1 : 0 }} className="aspect-square bg-pink-900/10 border-[0.5px] border-pink-500/10" />
-                ))}
-              </div>
-              <div className="grid grid-cols-3 gap-0 w-full -mt-[10%] sm:-mt-[15%] md:-mt-[20%] lg:-mt-[30%] z-20">
-                {/* Row 3 - 30% overlap */}
-                {[...Array(3)].map((_, i) => (
-                  <motion.div key={i+6} animate={{ opacity: (i+6) < gridStep ? 1 : 0 }} className="aspect-square bg-pink-900/10 border-[0.5px] border-pink-500/10" />
-                ))}
+
+              {/* Right Side: Initial Greeting */}
+              <div className="order-1 lg:order-2 h-[400px] flex items-center justify-center relative">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-center space-y-6"
+                >
+                  <h2 className="font-cursive text-3xl md:text-4xl text-pink-200 opacity-80">
+                    Capturing our moments...
+                  </h2>
+                </motion.div>
               </div>
             </motion.div>
           ) : (
@@ -107,13 +109,12 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
               transition={{ duration: 1 }}
               className="flex flex-col lg:flex-row items-center justify-center gap-0 w-full max-w-5xl"
             >
-              {/* Left Side: Portrait */}
               <motion.div 
                 initial={{ x: -50, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 className="w-full lg:w-1/2 flex justify-center"
               >
-                <div className="relative w-full max-w-sm aspect-[4/5] overflow-hidden !shadow-none !border-none">
+                <div className="relative w-full max-w-sm aspect-[4/5] overflow-hidden">
                   <img
                     src={FINAL_IMAGE}
                     alt="Final Memory"
@@ -122,7 +123,6 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                 </div>
               </motion.div>
 
-              {/* Right Side: Card - Same size, no gap */}
               <motion.div 
                 initial={{ x: 50, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
@@ -133,7 +133,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                   alt="Message Card" 
                   className="absolute inset-0 w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-black/45" />
+                <div className="absolute inset-0 bg-black/50" />
 
                 <div className="relative z-10 w-full h-full flex items-center justify-center p-8 text-center overflow-hidden">
                   <AnimatePresence mode="wait">

@@ -164,7 +164,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     <div
       className="fixed inset-0 z-40 overflow-hidden"
       style={{
-        background: "radial-gradient(ellipse at 50% 48%, #1a0a35 0%, #110620 40%, #080010 75%, #020005 100%)",
+        background: "#0d0520",
       }}
     >
       <style>{`
@@ -258,7 +258,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
                 </feMerge>
               </filter>
             </defs>
-            {/* Outer soft glow — wide bloom */}
+            {/* Outer soft glow — wide bloom, shifted up 20 SVG units so top curve doesn't overlap portrait */}
             <path
               d={HEART_SVG_PATH}
               fill="none"
@@ -266,6 +266,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
               strokeWidth="28"
               opacity="0.55"
               filter="url(#heart-edge-glow)"
+              transform="translate(0, -20)"
             />
             {/* Inner tight glow — hugs the edge cleanly */}
             <path
@@ -274,6 +275,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
               stroke="#ff80aa"
               strokeWidth="10"
               opacity="0.7"
+              transform="translate(0, -20)"
             />
           </svg>
         </div>

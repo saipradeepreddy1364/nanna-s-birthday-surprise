@@ -62,7 +62,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
 
   return (
     <div
-      className="fixed inset-0 flex items-center lg:items-start justify-center overflow-hidden"
+      className={`fixed inset-0 flex items-center ${!isFinal ? "lg:items-start" : ""} justify-center overflow-hidden`}
       style={{ background: "var(--gradient-romantic)" }}
     >
       <div className="relative w-full max-w-6xl px-4 flex items-center justify-center">

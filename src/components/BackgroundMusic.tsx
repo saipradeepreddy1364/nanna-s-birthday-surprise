@@ -7,17 +7,24 @@ const BackgroundMusic = () => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    // Autoplay with user interaction fallback
     const playAudio = () => {
+      // Try immediate play
       audio.play().catch(() => {
-        // Browser blocked autoplay — play on first click or touch
-        const handleClick = () => {
-          audio.play();
-          document.removeEventListener("click", handleClick);
-          document.removeEventListener("touchstart", handleClick);
+        const startAudio = () => {
+          audio.play()
+            .then(() => {
+              // Once playing, remove all listeners
+              ["click", "touchstart", "mousedown", "pointerdown"].forEach(ev => 
+                document.removeEventListener(ev, startAudio)
+              );
+            })
+            .catch(err => console.log("Audio play failed:", err));
         };
-        document.addEventListener("click", handleClick);
-        document.addEventListener("touchstart", handleClick, { once: true });
+
+        // Add multiple listeners for reliability
+        ["click", "touchstart", "mousedown", "pointerdown"].forEach(ev => 
+          document.addEventListener(ev, startAudio, { once: true })
+        );
       });
     };
 

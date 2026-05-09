@@ -10,12 +10,6 @@ const StartScreen = ({ onStart }: StartScreenProps) => {
 
   const handleOpen = () => {
     setIsOpening(true);
-    // Play sound trigger
-    const audio = new Audio("/audio/song.mp3");
-    audio.play().then(() => {
-        audio.pause(); // Just to trigger the user interaction permission
-    }).catch(() => {});
-    
     setTimeout(onStart, 1500);
   };
 

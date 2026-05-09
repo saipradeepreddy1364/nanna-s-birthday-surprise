@@ -89,18 +89,18 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     for (let i = 0; i < particleCount; i++) {
       const distance = (i / particleCount) * length;
       const point = path.getPointAtLength(distance);
-      // Scale range 0.50 → 1.4: starts from inside portrait so inner particles
-      // overlap the portrait edge — no dark gap/ring visible at the boundary
+      // Scale range 1.05 → 1.55: leaves the center (portrait area) clear
+      // so the image fits perfectly inside the "hole" of particles
       const scale = 0.50 + Math.random() * 0.90;
       const x = (point.x - 300) * scale;
-      const y = (-(point.y - 255)) * scale + 20;
+      const y = (-(point.y - 255)) * scale;
       const vector = new THREE.Vector3(x, y, (Math.random() - 0.5) * 8);
       vector.x += (Math.random() - 0.5) * 3;
       vector.y += (Math.random() - 0.5) * 3;
 
       vertices.push(vector);
       tl.from(vector, {
-        x: 0, y: 20, z: 0,
+        x: 0, y: 0, z: 0,
         duration: 2 + Math.random() * 2,
         ease: "power2.inOut",
       }, i * 0.0001);
@@ -137,9 +137,9 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
 
     const revealTimer = setTimeout(() => {
       if (portraitRef.current) {
-        gsap.to(portraitRef.current, { opacity: 1, duration: 2.5, ease: "power2.out" });
+        gsap.to(portraitRef.current, { opacity: 1, duration: 1.5, ease: "power2.out" });
       }
-    }, 1500);
+    }, 500);
 
     const textTimer = setTimeout(() => setShowText(true), 4000);
     const fallingTimer = setTimeout(() => setShowFalling(true), 4500);
@@ -214,7 +214,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
         <div style={{ animation: "heartbeat-scale 2.5s ease-in-out infinite" }}>
           <svg
             viewBox="0 0 600 510"
-            className="w-[265px] h-[196px] sm:w-[390px] sm:h-[289px] md:w-[495px] md:h-[366px]"
+            className="w-[226px] h-[192px] sm:w-[334px] sm:h-[284px] md:w-[422px] md:h-[359px]"
             style={{ overflow: "visible" }}
           >
             <defs>
@@ -244,7 +244,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
         <div style={{ animation: "heartbeat-scale 2.5s ease-in-out infinite" }}>
           <svg
             viewBox="0 0 600 510"
-            className="w-[235px] h-[200px] sm:w-[347px] sm:h-[295px] md:w-[439px] md:h-[373px]"
+            className="w-[226px] h-[192px] sm:w-[334px] sm:h-[284px] md:w-[422px] md:h-[359px]"
             style={{ overflow: "visible" }}
           >
             <defs>
@@ -258,7 +258,6 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
                 </feMerge>
               </filter>
             </defs>
-            {/* Outer soft glow — wide bloom, shifted up to clear top curve */}
             <path
               d={HEART_SVG_PATH}
               fill="none"
@@ -266,7 +265,6 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
               strokeWidth="28"
               opacity="0.55"
               filter="url(#heart-edge-glow)"
-              transform="translate(0, -28)"
             />
             {/* Inner tight glow — hugs the edge cleanly */}
             <path
@@ -275,7 +273,6 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
               stroke="#ff80aa"
               strokeWidth="10"
               opacity="0.7"
-              transform="translate(0, -28)"
             />
           </svg>
         </div>

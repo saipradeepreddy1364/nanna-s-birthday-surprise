@@ -62,7 +62,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
 
   return (
     <div
-      className="fixed inset-0 flex items-center sm:items-start justify-center overflow-hidden sm:pt-32"
+      className="fixed inset-0 flex items-center sm:items-start justify-center overflow-hidden pt-0 sm:pt-1"
       style={{ background: "var(--gradient-romantic)" }}
     >
       <div className="relative w-full max-w-6xl px-4 flex items-center justify-center">

@@ -19,7 +19,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen" style={{ background: "var(--gradient-romantic)" }}>
-      {section !== "start" && <BackgroundMusic />}
+      <BackgroundMusic />
       <AnimatePresence mode="wait">
         {section === "start" && (
           <motion.div

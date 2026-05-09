@@ -91,7 +91,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                     </motion.div>
                   ))}
                 </div>
-                <div className="grid grid-cols-3 gap-0 w-full relative z-10 -mt-[5%]">
+                <div className="grid grid-cols-3 gap-0 w-full relative z-10 mt-0 lg:-mt-[5%]">
                   {[...Array(3)].map((_, i) => (
                     <motion.div key={i+3} animate={{ opacity: (i+3) < gridStep ? 1 : 0 }} className="aspect-square bg-pink-900/20 border border-pink-500/10 overflow-hidden">
                       <img
@@ -103,7 +103,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                     </motion.div>
                   ))}
                 </div>
-                <div className="grid grid-cols-3 gap-0 w-full relative z-20 -mt-[5%]">
+                <div className="grid grid-cols-3 gap-0 w-full relative z-20 mt-0 lg:-mt-[5%]">
                   {[...Array(3)].map((_, i) => (
                     <motion.div key={i+6} animate={{ opacity: (i+6) < gridStep ? 1 : 0 }} className="aspect-square bg-pink-900/20 border border-pink-500/10 overflow-hidden">
                       <img

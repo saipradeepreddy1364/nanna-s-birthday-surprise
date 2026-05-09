@@ -10,12 +10,14 @@ const BackgroundMusic = () => {
     // Autoplay with user interaction fallback
     const playAudio = () => {
       audio.play().catch(() => {
-        // Browser blocked autoplay — play on first click
+        // Browser blocked autoplay — play on first click or touch
         const handleClick = () => {
           audio.play();
           document.removeEventListener("click", handleClick);
+          document.removeEventListener("touchstart", handleClick);
         };
         document.addEventListener("click", handleClick);
+        document.addEventListener("touchstart", handleClick, { once: true });
       });
     };
 
@@ -28,6 +30,7 @@ const BackgroundMusic = () => {
       src="/audio/song.mp3"
       loop
       autoPlay
+      preload="auto"
       className="hidden"
     />
   );

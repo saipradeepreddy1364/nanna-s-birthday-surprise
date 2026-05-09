@@ -25,7 +25,7 @@ const StartScreen = ({ onStart }: StartScreenProps) => {
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1 }}
-        className="text-center"
+        className="text-center px-6 w-full max-w-lg mx-auto"
       >
         <h1 className="font-cursive text-3xl sm:text-4xl text-primary mb-12 glow-pink">
           Nanna, I have a suprice for u... 💝
@@ -46,7 +46,7 @@ const StartScreen = ({ onStart }: StartScreenProps) => {
             ease: "easeInOut"
           }}
           onClick={handleOpen}
-          className="relative cursor-pointer group"
+          className="relative cursor-pointer group flex items-center justify-center mx-auto"
         >
           <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150 animate-pulse" />
           

@@ -367,7 +367,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
                 "0 0 20px rgba(0,0,0,0.9), 0 0 30px hsla(38,70%,55%,0.4), 0 0 60px hsla(342,82%,56%,0.3)",
             }}
           >
-            Happy 21st Nanna 💝
+            Happy 21st Birthday Nanna 💝
           </h1>
         </div>
       )}

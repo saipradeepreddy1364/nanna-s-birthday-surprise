@@ -60,7 +60,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
 
   return (
     <div
-      className="fixed inset-0 flex items-start justify-center overflow-hidden pt-1 sm:pt-10"
+      className="fixed inset-0 flex items-center sm:items-start justify-center overflow-hidden sm:pt-32"
       style={{ background: "var(--gradient-romantic)" }}
     >
       <div className="relative w-full max-w-6xl px-4 flex items-center justify-center">
@@ -72,9 +72,9 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 1.5, ease: "easeInOut" }}
-              className="w-full max-w-4xl px-4 flex flex-col items-center justify-start"
+              className="w-full max-w-4xl px-4 flex flex-col items-center justify-center"
             >
-              <div className="w-full max-w-[90vw] sm:max-w-xl md:max-w-2xl mx-auto flex flex-col">
+              <div className="w-full max-w-[85vw] sm:max-w-xl md:max-w-2xl max-h-[75vh] mx-auto flex flex-col">
                 <div className="grid grid-cols-3 gap-0 w-full relative z-0">
                   {[...Array(3)].map((_, i) => (
                     <motion.div key={i} animate={{ opacity: i < gridStep ? 1 : 0 }} className="aspect-square bg-pink-900/20 border border-pink-500/10 overflow-hidden">

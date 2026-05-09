@@ -25,7 +25,7 @@ const BackgroundMusic = () => {
   return (
     <audio
       ref={audioRef}
-      src="/audio/birthday-music.mp3"
+      src="/audio/song.mp3"
       loop
       autoPlay
       className="hidden"

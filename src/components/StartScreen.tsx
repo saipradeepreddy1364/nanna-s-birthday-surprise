@@ -28,7 +28,7 @@ const StartScreen = ({ onStart }: StartScreenProps) => {
         className="text-center"
       >
         <h1 className="font-cursive text-3xl sm:text-4xl text-primary mb-12 glow-pink">
-          Nanna, I have a surprise for you... 💝
+          Nanna, I have a suprice for u... 💝
         </h1>
 
         <motion.div

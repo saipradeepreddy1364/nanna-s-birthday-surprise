@@ -92,8 +92,8 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     for (let i = 0; i < particleCount; i++) {
       const distance = (i / particleCount) * length;
       const point = path.getPointAtLength(distance);
-      // Particle scale range expanded to ensure full coverage and overlap with the ring
-      const scale = 0.50 + Math.random() * 1.10;
+      // Particle scale range expanded to fill the center more densely (0.1 -> 1.6)
+      const scale = 0.10 + Math.random() * 1.50;
       const x = (point.x - 300) * scale;
       const y = (-(point.y - 255)) * scale - 12;
       const vector = new THREE.Vector3(x, y, (Math.random() - 0.5) * 8);
@@ -216,7 +216,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
         <div style={{ animation: "heartbeat-scale 2.5s ease-in-out infinite" }}>
           <svg
             viewBox="0 0 600 510"
-            className="w-[222px] h-[188px] sm:w-[327px] sm:h-[278px] md:w-[413px] md:h-[351px]"
+            className="w-[231px] h-[196px] sm:w-[327px] sm:h-[278px] md:w-[413px] md:h-[351px]"
             style={{ overflow: "visible" }}
           >
             <defs>
@@ -246,7 +246,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
         <div style={{ animation: "heartbeat-scale 2.5s ease-in-out infinite" }}>
           <svg
             viewBox="0 0 600 510"
-            className="w-[217px] h-[188px] sm:w-[321px] sm:h-[278px] md:w-[405px] md:h-[351px]"
+            className="w-[226px] h-[196px] sm:w-[321px] sm:h-[278px] md:w-[405px] md:h-[351px]"
             style={{ overflow: "visible" }}
           >
             <defs>

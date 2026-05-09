@@ -103,9 +103,9 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       vertices.push(vector);
       tl.from(vector, {
         x: 0, y: 0, z: 0,
-        duration: 2 + Math.random() * 2,
+        duration: 1.5 + Math.random() * 1.5,
         ease: "power2.inOut",
-      }, i * 0.0001);
+      }, i * 0.00004);
     }
 
     const geometry = new THREE.BufferGeometry().setFromPoints(vertices);

@@ -55,7 +55,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
       }, 8000);
       return () => clearTimeout(timer);
     } else if (isFinal && scrollStep === TEXT_GROUPS.length) {
-      const timer = setTimeout(onComplete, 1500);
+      const timer = setTimeout(onComplete, 300);
       return () => clearTimeout(timer);
     }
   }, [isFinal, scrollStep, onComplete, TEXT_GROUPS.length]);

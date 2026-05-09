@@ -38,6 +38,11 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
   const [showText, setShowText] = useState(false);
   const [showFalling, setShowFalling] = useState(false);
 
+  useEffect(() => {
+    const timer = setTimeout(onComplete, 20000);
+    return () => clearTimeout(timer);
+  }, [onComplete]);
+
   const fallingItems = useMemo<FallingItem[]>(() =>
     Array.from({ length: 55 }, (_, i) => {
       const type: FallingItem["type"] =

@@ -74,10 +74,19 @@ const FinalPage = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2.5, duration: 1 }}
-        className="font-elegant text-xl sm:text-2xl mt-8 text-muted-foreground italic"
+        className="font-elegant text-xl sm:text-2xl mt-8 text-muted-foreground italic mb-4"
       >
         Wishing you all the love & happiness in the world ✨
       </motion.p>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.6 }}
+        transition={{ delay: 3.5, duration: 2 }}
+        className="text-sm tracking-[0.2em] uppercase text-primary/60 font-elegant mt-8"
+      >
+        — The End —
+      </motion.div>
 
       {/* Replay button */}
       <motion.button

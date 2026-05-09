@@ -38,11 +38,6 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
   const [showText, setShowText] = useState(false);
   const [showFalling, setShowFalling] = useState(false);
 
-  useEffect(() => {
-    const timer = setTimeout(onComplete, 20000);
-    return () => clearTimeout(timer);
-  }, [onComplete]);
-
   const fallingItems = useMemo<FallingItem[]>(() =>
     Array.from({ length: 55 }, (_, i) => {
       const type: FallingItem["type"] =
@@ -108,7 +103,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       vertices.push(vector);
       tl.from(vector, {
         x: 0, y: 0, z: 0,
-        duration: 1.5 + Math.random() * 1.5,
+        duration: 1.2 + Math.random() * 1.0,
         ease: "power2.inOut",
       }, i * 0.00001);
     }
@@ -150,13 +145,14 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
 
     const textTimer = setTimeout(() => setShowText(true), 4000);
     const fallingTimer = setTimeout(() => setShowFalling(true), 4500);
+    const completeTimer = setTimeout(onComplete, 24000); // 4s for forming + 20s display duration
 
     return () => {
       window.removeEventListener("resize", onResize);
       cancelAnimationFrame(animId);
       clearTimeout(revealTimer);
-      clearTimeout(textTimer);
       clearTimeout(fallingTimer);
+      clearTimeout(completeTimer);
       tl.kill();
       renderer.dispose();
       geometry.dispose();

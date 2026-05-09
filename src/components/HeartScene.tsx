@@ -8,6 +8,9 @@ const PORTRAIT_IMAGE = "/nanna-potrait.jpeg";
 const HEART_SVG_PATH =
   "M300,480 C150,380 20,280 20,170 C20,90 80,30 160,30 C210,30 255,55 300,100 C345,55 390,30 440,30 C520,30 580,90 580,170 C580,280 450,380 300,480 Z";
 
+const HEART_RING_PATH =
+  "M300,480 C150,380 20,280 20,170 C20,90 80,30 160,30 C210,30 255,55 300,80 C345,55 390,30 440,30 C520,30 580,90 580,170 C580,280 450,380 300,480 Z";
+
 interface HeartSceneProps {
   onComplete: () => void;
 }
@@ -214,7 +217,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
         <div style={{ animation: "heartbeat-scale 2.5s ease-in-out infinite" }}>
           <svg
             viewBox="0 0 600 510"
-            className="w-[226px] h-[192px] sm:w-[334px] sm:h-[284px] md:w-[422px] md:h-[359px]"
+            className="w-[231px] h-[196px] sm:w-[341px] sm:h-[290px] md:w-[430px] md:h-[366px]"
             style={{ overflow: "visible" }}
           >
             <defs>
@@ -244,7 +247,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
         <div style={{ animation: "heartbeat-scale 2.5s ease-in-out infinite" }}>
           <svg
             viewBox="0 0 600 510"
-            className="w-[226px] h-[192px] sm:w-[334px] sm:h-[284px] md:w-[422px] md:h-[359px]"
+            className="w-[226px] h-[196px] sm:w-[334px] sm:h-[290px] md:w-[422px] md:h-[366px]"
             style={{ overflow: "visible" }}
           >
             <defs>
@@ -259,7 +262,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
               </filter>
             </defs>
             <path
-              d={HEART_SVG_PATH}
+              d={HEART_RING_PATH}
               fill="none"
               stroke="#ff4d8a"
               strokeWidth="28"
@@ -268,7 +271,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
             />
             {/* Inner tight glow — hugs the edge cleanly */}
             <path
-              d={HEART_SVG_PATH}
+              d={HEART_RING_PATH}
               fill="none"
               stroke="#ff80aa"
               strokeWidth="10"

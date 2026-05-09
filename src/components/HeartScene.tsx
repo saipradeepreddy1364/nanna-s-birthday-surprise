@@ -105,7 +105,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
         x: 0, y: 0, z: 0,
         duration: 1.5 + Math.random() * 1.5,
         ease: "power2.inOut",
-      }, i * 0.00004);
+      }, i * 0.00001);
     }
 
     const geometry = new THREE.BufferGeometry().setFromPoints(vertices);
@@ -141,7 +141,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
       if (portraitRef.current) {
         gsap.to(portraitRef.current, { opacity: 1, duration: 1.5, ease: "power2.out" });
       }
-    }, 500);
+    }, 200);
 
     const textTimer = setTimeout(() => setShowText(true), 4000);
     const fallingTimer = setTimeout(() => setShowFalling(true), 4500);

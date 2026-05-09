@@ -13,7 +13,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
   const [scrollStep, setScrollStep] = useState(0);
 
   const ALL_LINES = [
-    "I honestly don’t know what my presence means to you or how important I am in your life.",
+    "I honestly don't know what my presence means to you or how important I am in your life.",
     "But I know one thing for certain…",
     "When you entered my life, you brought back the smiles, trust, and happiness I had once lost.",
     "A world I thought had disappeared somehow came back just because of you.",
@@ -52,7 +52,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
     if (isFinal && scrollStep < TEXT_GROUPS.length) {
       const timer = setTimeout(() => {
         setScrollStep(prev => prev + 1);
-      }, 8000); 
+      }, 8000);
       return () => clearTimeout(timer);
     } else if (isFinal && scrollStep === TEXT_GROUPS.length) {
       const timer = setTimeout(onComplete, 5000);
@@ -80,10 +80,10 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                 <div className="grid grid-cols-3 gap-0 w-full relative z-0">
                   {[...Array(3)].map((_, i) => (
                     <motion.div key={i} animate={{ opacity: i < gridStep ? 1 : 0 }} className="aspect-square bg-pink-900/20 border border-pink-500/10 overflow-hidden">
-                      <img 
-                        src={`/gallery/${i + 1}.jpeg`} 
-                        alt="" 
-                        className="w-full h-full object-cover" 
+                      <img
+                        src={`/gallery/${i + 1}.jpeg`}
+                        alt=""
+                        className="w-full h-full object-cover"
                         onError={(e) => (e.currentTarget.style.display = 'none')}
                       />
                     </motion.div>
@@ -92,10 +92,10 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                 <div className="grid grid-cols-3 gap-0 w-full relative z-10 -mt-[5%]">
                   {[...Array(3)].map((_, i) => (
                     <motion.div key={i+3} animate={{ opacity: (i+3) < gridStep ? 1 : 0 }} className="aspect-square bg-pink-900/20 border border-pink-500/10 overflow-hidden">
-                      <img 
-                        src={`/gallery/${i + 4}.jpeg`} 
-                        alt="" 
-                        className={`w-full h-full object-cover ${i + 4 === 6 ? 'object-top' : ''}`} 
+                      <img
+                        src={`/gallery/${i + 4}.jpeg`}
+                        alt=""
+                        className={`w-full h-full object-cover ${i + 4 === 6 ? 'object-top' : ''}`}
                         onError={(e) => (e.currentTarget.style.display = 'none')}
                       />
                     </motion.div>
@@ -104,10 +104,10 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                 <div className="grid grid-cols-3 gap-0 w-full relative z-20 -mt-[5%]">
                   {[...Array(3)].map((_, i) => (
                     <motion.div key={i+6} animate={{ opacity: (i+6) < gridStep ? 1 : 0 }} className="aspect-square bg-pink-900/20 border border-pink-500/10 overflow-hidden">
-                      <img 
-                        src={`/gallery/${i + 7}.jpeg`} 
-                        alt="" 
-                        className="w-full h-full object-cover" 
+                      <img
+                        src={`/gallery/${i + 7}.jpeg`}
+                        alt=""
+                        className="w-full h-full object-cover"
                         onError={(e) => (e.currentTarget.style.display = 'none')}
                       />
                     </motion.div>
@@ -123,7 +123,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
               transition={{ duration: 1 }}
               className="flex flex-col lg:flex-row items-center justify-center gap-0 w-full px-2"
             >
-              <motion.div 
+              <motion.div
                 initial={{ x: -20, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 className="flex justify-center"
@@ -137,15 +137,15 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
                 </div>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 initial={{ x: 20, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 className="relative w-[240px] sm:w-[280px] md:w-[320px] aspect-[4/5] flex items-center justify-center overflow-hidden shadow-2xl bg-black/20"
               >
                 <div className="absolute inset-0">
-                  <img 
-                    src="/gallery/card.png" 
-                    alt="Message Card" 
+                  <img
+                    src="/gallery/card.png"
+                    alt="Message Card"
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-black/40" />
@@ -153,7 +153,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
 
                 <div className="relative z-10 w-full flex items-center justify-center p-6 text-center h-full">
                   <AnimatePresence mode="wait">
-                    <motion.div 
+                    <motion.div
                       key={scrollStep}
                       initial={{ y: 20, opacity: 0 }}
                       animate={{ y: 0, opacity: 1 }}

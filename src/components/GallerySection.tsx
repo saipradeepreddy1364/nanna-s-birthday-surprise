@@ -13,16 +13,18 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
   const [scrollStep, setScrollStep] = useState(0);
 
   const ALL_LINES = [
-    "I honestly don’t know what my presence means to you or how important this connection is in your life.",
+    "I honestly don’t know what my presence means to you or how important I am in your life.",
     "But I know one thing for certain…",
     "When you entered my life, you brought back the smiles, trust, and happiness I had once lost.",
-    "A world I thought had disappeared somehow came back just through knowing you.",
+    "A world I thought had disappeared somehow came back just because of you.",
     "So even if this may be just a normal acquaintance to you, to me it is something very special.",
     "Something that brought life back into my world.",
-    "In a time where many girls cross all boundaries without restraint,",
-    "she is like a moonlight beauty who has gracefully set her own limits —",
-    "soft, serene, and rare… a soul that shines with quiet dignity and self-respect.",
-    "Forever grateful to you Nanna"
+    "And in a time where many people easily cross boundaries without understanding their value,",
+    "the way you carry yourself with self-respect, dignity, and grace feels truly rare to me.",
+    "Like moonlight in a dark night, your nature feels soft, calm, pure, and rare…",
+    "You are someone who knows your limits, values yourself, and still carries kindness in your heart —",
+    "and that is one of the many things I genuinely admire about you.",
+    "Forever grateful to you, Nanna ❤️"
   ];
 
   const TEXT_GROUPS: string[][] = [];

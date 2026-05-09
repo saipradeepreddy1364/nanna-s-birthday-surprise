@@ -9,7 +9,7 @@ const HEART_SVG_PATH =
   "M300,480 C150,380 20,280 20,170 C20,90 80,30 160,30 C210,30 255,55 300,100 C345,55 390,30 440,30 C520,30 580,90 580,170 C580,280 450,380 300,480 Z";
 
 const HEART_RING_PATH =
-  "M300,480 C150,380 20,280 20,170 C20,90 80,30 160,30 C210,30 255,55 300,80 C345,55 390,30 440,30 C520,30 580,90 580,170 C580,280 450,380 300,480 Z";
+  "M300,480 C150,380 20,280 20,170 C20,90 80,30 160,30 C210,30 255,55 300,60 C345,55 390,30 440,30 C520,30 580,90 580,170 C580,280 450,380 300,480 Z";
 
 interface HeartSceneProps {
   onComplete: () => void;
@@ -247,7 +247,7 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
         <div style={{ animation: "heartbeat-scale 2.5s ease-in-out infinite" }}>
           <svg
             viewBox="0 0 600 510"
-            className="w-[226px] h-[196px] sm:w-[334px] sm:h-[290px] md:w-[422px] md:h-[366px]"
+            className="w-[220px] h-[196px] sm:w-[326px] sm:h-[290px] md:w-[412px] md:h-[366px]"
             style={{ overflow: "visible" }}
           >
             <defs>

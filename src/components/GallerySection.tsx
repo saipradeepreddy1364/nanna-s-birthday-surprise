@@ -50,9 +50,11 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
 
   useEffect(() => {
     if (isFinal && scrollStep < TEXT_GROUPS.length) {
+      const currentText = TEXT_GROUPS[scrollStep].join(" ");
+      const delay = currentText.length > 50 ? 10000 : 6000;
       const timer = setTimeout(() => {
         setScrollStep(prev => prev + 1);
-      }, 8000);
+      }, delay);
       return () => clearTimeout(timer);
     } else if (isFinal && scrollStep === TEXT_GROUPS.length) {
       const timer = setTimeout(onComplete, 300);

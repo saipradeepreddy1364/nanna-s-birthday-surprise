@@ -92,11 +92,10 @@ const HeartScene = ({ onComplete }: HeartSceneProps) => {
     for (let i = 0; i < particleCount; i++) {
       const distance = (i / particleCount) * length;
       const point = path.getPointAtLength(distance);
-      // Scale range 1.05 → 1.55: leaves the center (portrait area) clear
-      // so the image fits perfectly inside the "hole" of particles
-      const scale = 0.50 + Math.random() * 0.90;
+      // Particle scale range expanded to ensure full coverage and overlap with the ring
+      const scale = 0.50 + Math.random() * 1.10;
       const x = (point.x - 300) * scale;
-      const y = (-(point.y - 255)) * scale;
+      const y = (-(point.y - 255)) * scale - 12;
       const vector = new THREE.Vector3(x, y, (Math.random() - 0.5) * 8);
       vector.x += (Math.random() - 0.5) * 3;
       vector.y += (Math.random() - 0.5) * 3;

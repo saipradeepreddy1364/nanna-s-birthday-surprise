@@ -38,7 +38,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
         setGridStep(prev => {
           if (prev >= 9) {
             clearInterval(timer);
-            setTimeout(() => setIsFinal(true), 1500);
+            setTimeout(() => setIsFinal(true), 500);
             return 9;
           }
           return prev + 1;
@@ -55,7 +55,7 @@ const GallerySection = ({ onComplete }: GallerySectionProps) => {
       }, 8000);
       return () => clearTimeout(timer);
     } else if (isFinal && scrollStep === TEXT_GROUPS.length) {
-      const timer = setTimeout(onComplete, 5000);
+      const timer = setTimeout(onComplete, 1500);
       return () => clearTimeout(timer);
     }
   }, [isFinal, scrollStep, onComplete, TEXT_GROUPS.length]);
